@@ -40,9 +40,13 @@ int main(int argc, char const *argv[]) {
       neurons[n].V += neurons[n].incomingSpike;
       neurons[n].incomingSpike = 0;
 
+      if (n == 2) {
+        std::cout << t << ", " << neurons[n].V << '\n';
+      }
+
       // Check if the neuron fires
       if (neurons[n].V > neurons[n].threshold) {
-        std::cout << "Neuron " << n << " spiked at " << t << " with value " << neurons[n].V << '\n';
+        // std::cout << "Neuron " << n << " spiked at " << t << " with value " << neurons[n].V << '\n';
         neurons[n].spikes.push_back(t);
         neurons[n].refractory = 3*ms;
 

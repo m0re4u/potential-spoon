@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
       neurons[n].V += neurons[n].incomingSpike;
       neurons[n].incomingSpike = 0;
 
-      // Check if the neuron fires
+      // Check if the neuron fires  m
       if (neurons[n].V > neurons[n].threshold) {
         std::cout << "Neuron " << n << " spiked at " << t << " with value " << neurons[n].V << '\n';
         neurons[n].spikes.push_back(t);
