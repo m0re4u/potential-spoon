@@ -51,6 +51,7 @@ int main(int argc, char *argv[])
     for (size_t n = 0; n < N; n++) {
       // Assign possible incoming spikes
       neurons[n].V += neurons[n].incomingSpike;
+      neurons[n].incomingSpike = 0;
 
       // Check if the neuron fires
       if (neurons[n].V > neurons[n].threshold) {
