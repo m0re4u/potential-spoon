@@ -1,3 +1,7 @@
+# clion config folder
 .idea/*
-cmake-build-debug/*
-eigen/*
+# build folder
+build/*
+
+# data folder for MNIST/CIFAR
+data/*

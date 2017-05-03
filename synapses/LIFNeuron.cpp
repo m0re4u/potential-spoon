@@ -1,6 +1,5 @@
 /**
- * Models three LIF neurons an a synaptic connection
- *
+ * Implementation of a Leaky-Integrate-and-Fire neuron
  * Author: Michiel van der Meer
  */
 
@@ -9,31 +8,19 @@
 #include <math.h>
 #include <stdlib.h>
 
+#include "LIFNeuron.h"
+
 double deltaV(double I, double V, int tau) {
   return (I - V) / tau;
 }
 
-struct neuron {
-  neuron() : threshold(1), refractory(0), V(0), tau(10), incomingSpike(0) {}
-  double threshold; // threshold
-  double refractory; // refractory period counter
-  double V; // current potential
-  double I; // current impulse
-  int tau; // timing constant
-  std::vector<unsigned> spikes;
-  double incomingSpike; // incoming spike from the last cycle
-} neurons[3];
-
-
-
-int main(int argc, char *argv[])
-{
-
+int main(int argc, char const *argv[]) {
   // setup parameters and state variables
   int N = 3; // number of neurons
   int T = 100; // total time to simulate
   int ms = 1; // simulation time step
 
+  neuron neurons[3];
   // Set neuron specific parameters
   neurons[0].tau = 10;
   neurons[1].tau = 100;
@@ -51,6 +38,7 @@ int main(int argc, char *argv[])
     for (size_t n = 0; n < N; n++) {
       // Assign possible incoming spikes
       neurons[n].V += neurons[n].incomingSpike;
+      neurons[n].incomingSpike = 0;
 
       // Check if the neuron fires
       if (neurons[n].V > neurons[n].threshold) {
@@ -77,4 +65,5 @@ int main(int argc, char *argv[])
     }
   }
 
+  return 0;
 }
