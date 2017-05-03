@@ -7,6 +7,6 @@ set(CMAKE_CXX_COMPILER clang++)
 
 include_directories(/home/m0re/projects/uni/potential-spoon/eigen)
 
-add_executable(neuron neuron.cpp)
-add_executable(network network.cpp)
-add_executable(sample test.cpp)
+add_executable(neuron neurons/neuron.cpp)
+add_executable(sample neurons/test.cpp)
+add_executable(brain synapses/brain_syn.cpp)

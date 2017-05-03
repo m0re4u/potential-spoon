@@ -1,5 +1,5 @@
 /**
- * Models one LIF neuron
+ * Models LIF neurons
  *
  * Author: Michiel van der Meer
  */
