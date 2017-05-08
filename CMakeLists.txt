@@ -25,7 +25,7 @@ add_executable(LIF synapses/LIFNeuron.cpp synapses/LIFNeuron.h)
 # Reading in images and present them as spike train
 add_executable(main main.cpp)
 # CImg tester
-add_executable(cimg CImg_test.cpp)
+add_executable(cimg test/CImg_test.cpp)
 
 # Fixes pthread errors
 target_link_libraries (cimg ${CMAKE_THREAD_LIBS_INIT})
