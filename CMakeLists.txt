@@ -19,11 +19,12 @@ find_package(Threads REQUIRED)
 
 # Include libraries
 include_directories(util/include)
+include_directories(${CMAKE_CURRENT_LIST_DIR})
 
 # Test a small network of LIF neurons
-add_executable(LIF synapses/LIFNeuron.cpp synapses/LIFNeuron.h)
+add_executable(LIF neurons/LIFNeuron.cpp neurons/LIFNeuron.h)
 # Reading in images and present them as spike train
-add_executable(main main.cpp)
+add_executable(main main.cpp synapses/LIFNetwork.cpp)
 # CImg tester
 add_executable(cimg test/CImg_test.cpp)
 

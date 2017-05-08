@@ -1,6 +1,6 @@
 /**
  * Implementation of a Leaky-Integrate-and-Fire neuron
- * Author: Michiel van der Meer
+ * @author Michiel van der Meer <michiel@dutchnaoteam.nl>
  */
 
 #include <iostream>
@@ -44,7 +44,7 @@ int main(int argc, char const *argv[]) {
 
   neuron neurons[N_NEURONS];
 
-  // Set neuron specific parameters
+  // Set neuron specific parameters for input neuron
   neurons[0].tau = 10;
   neurons[0].I = 2;
 
