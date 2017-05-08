@@ -6,5 +6,8 @@ build/*
 # data folder for MNIST/CIFAR
 data/*
 
-# MNIST reader
-util/mnist_reader
+# Include libraries: MNIST-reader, CImg
+util/include
+
+# Sample Python code from (Diehl & Cook, 2014)
+util/diehl
