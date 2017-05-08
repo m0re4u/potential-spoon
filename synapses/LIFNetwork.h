@@ -20,9 +20,9 @@ public:
   bool sleepingCycle = false; // whether the current cycle is sleeping
 
   // Constants
-  const double DT = 0.001; // time step for
-  const unsigned SLEEP_TIME = 150;
-  const unsigned IMG_TIME = 350;
+  const double DT = 0.001; // time step for spike generation(in seconds)
+  const unsigned SLEEP_TIME = 150; // no. of sleeping cycles
+  const unsigned IMG_TIME = 350; // no. of active input cycles
   const unsigned BOTH_TIME = SLEEP_TIME + IMG_TIME;
 
   // Random generators for spike generation(Poisson distribution)
@@ -30,8 +30,19 @@ public:
   std::mt19937 gen; // Standard mersenne_twister_engine seeded with rd()
   std::uniform_real_distribution<> dist;
 
+  // data
+  std::vector<std::vector<unsigned char, std::allocator<unsigned char>>> data;
+  // Check where the spikes occur
+  std::vector<std::vector<unsigned>> img_spikes;
   // Input layer
   std::vector<neuron> input_layer;
+
+  /**
+   * Load in the dataset given
+   * @param dataset data to be loaded in
+   */
+  void load_dataset(std::vector<std::vector<unsigned char, std::allocator<unsigned char>>>& dataset);
+
   /**
    * Show an image from the loaded in MNIST dataset
    * @param vec vector containing image data

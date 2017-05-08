@@ -1,5 +1,5 @@
 /**
- * Models a network of LIF neurons
+ * Implements a network of LIF neurons
  * @author Michiel van der Meer <michiel@dutchnaoteam.nl>
  */
 
@@ -14,6 +14,10 @@ LIFNetwork::LIFNetwork() {
   this->dist = distribution;
 }
 
+void LIFNetwork::load_dataset(std::vector<std::vector<unsigned char, std::allocator<unsigned char>>>& dataset) {
+  this->data = dataset;
+}
+
 void LIFNetwork::show_image(std::vector<unsigned char, std::allocator<unsigned char>> &vec) {
   cimg_library::CImg<uint8_t> img(28,28,1,1);
   unsigned pixel_ = 0;
@@ -25,25 +29,27 @@ void LIFNetwork::show_image(std::vector<unsigned char, std::allocator<unsigned c
   img.display("First image");
 }
 
-bool LIFNetwork::generate_spike(unsigned pixel) {
+bool LIFNetwork::generate_spike(unsigned value) {
   // Generating spike train from pixel value
-  double firing_rate = 100 / 4;
+  double firing_rate = value / 4;
   double num = this->dist(this->gen);
   return num <= firing_rate * this->DT;
 }
 
 void LIFNetwork::input_spikes(unsigned image_index) {
-  std::cout << "Processing image: " << image_index << '\n';
   for (std::size_t i = 0, e = this->input_layer.size(); i != e; ++i) {
-    bool spike = generate_spike(i);
+    bool spike = generate_spike(this->data[0][i]);
     if (spike) {
-      std::cout << "Spiking pixel at index " << i << '\n';
+      std::cout << "Spike in neuron " << i << '\n';
+      int x = i / 28;
+      int y = i % 28;
+      this->img_spikes[x][y]++;
     }
   }
 }
 
 void LIFNetwork::cycle() {
-  std::cout << "Cycle " << this->stime_ << '\n';
+  std::cout << "Cycle " << this->stime_ << " working image: " << this->stime_ / this->BOTH_TIME << '\n';
   if (this->sleepingCycle) {
     // Check state of the next cycle
     this->cycle_switcher++;
