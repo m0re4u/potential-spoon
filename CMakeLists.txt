@@ -5,7 +5,7 @@ project(potential_spoon C CXX)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_C_COMPILER clang)
 set(CMAKE_CXX_COMPILER clang++)
-
+set(CMAKE_BUILD_TYPE Debug)
 # X11 for CImg
 message(STATUS "Searching for X11...")
 find_package(X11 REQUIRED)
@@ -27,6 +27,8 @@ add_executable(LIF neurons/LIFNeuron.cpp neurons/LIFNeuron.h)
 add_executable(main main.cpp synapses/LIFNetwork.cpp)
 # CImg tester
 add_executable(cimg test/CImg_test.cpp)
+# SPNet
+add_executable(spnet synapses/SPNet.cpp)
 
 # Fixes pthread errors
 target_link_libraries (cimg ${CMAKE_THREAD_LIBS_INIT})
