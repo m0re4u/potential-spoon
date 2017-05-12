@@ -6,9 +6,13 @@
  */
 
 #include "neurons/LIFNeuron.h"
+
+#include "CImg/CImg.h"
+
 #include <iostream>
 #include <vector>
 #include <random>
+#include <cassert>
 
 class LIFNetwork {
 public:
@@ -18,11 +22,9 @@ public:
   unsigned stime_ = 0; // current second of the simulation
   unsigned mstime_ = 0; // current millisecond of the simulation
   unsigned cycle_switcher = 0; // counter between sleeping input/active input
-  unsigned image_index = 0; // current image being presented
   bool sleepingCycle = false; // whether the current cycle is sleeping
 
   // Constants used for the simulation
-  const double DT = 0.001; // time step for spike generation(in seconds)
   const unsigned SLEEP_TIME = 150; // no. of sleeping cycles
   const unsigned IMG_TIME = 350; // no. of active input cycles
   const unsigned BOTH_TIME = SLEEP_TIME + IMG_TIME;
@@ -40,16 +42,18 @@ public:
   // Ordering in arrays of neurons: [Ne,Ni,Nd]
   float sm = 10.0;           // maximal synaptic strength
   std::vector<int> post[N];  // indices of postsynaptic neurons(connection M FROM N goes to post[N][M])
-  std::vector<float> s[N], sd[N];   // matrix of synaptic weights and their derivatives
+  std::vector<std::vector<float>*> s, sd;   // matrix of synaptic weights and their derivatives
   short delays_length[N][D];        // distribution of delays
-  std::vector<short> delays[N][D];  // List of connection from neuron N having delay D
-  // int N_pre[N], I_pre[N][3*M], D_pre[N][3*M];  // presynaptic information
+  std::vector<short> delays[N][D];  // List of connections from neuron N having delay D
+  std::vector<int> D_pre[N]; //
   int N_pre[N];              // Number of presynaptic connectionsk
   std::vector<int> I_pre[N]; // presynaptic information
-  std::vector<float> *s_pre[N], *sd_pre[N]; // presynaptic connection weights
+  // Might cause issues, should be a pointe
+  std::vector<std::vector<float>*> s_pre;  // presynaptic connection weights
+  std::vector<std::vector<float>*> sd_pre; // presynaptic connection weights derivatives
   float LTP[N][1001+D], LTD[N]; // STDP functions
-  float a[Nn], d[Nn]; // neuronal dynamics parameters
-  float v[N], u[N]; // activity variables
+  float a[N], d[N]; // neuronal dynamics parameters
+  float v[N], u[N]; // voltage, recovery variables
   int N_firings;    // the number of fired neurons
   static constexpr int N_firings_max=100*N; // upper limit on the number of fired neurons per sec
   int firings[N_firings_max][2]; // indices and timings of spikes
@@ -59,12 +63,8 @@ public:
   std::mt19937 gen; // Standard mersenne_twister_engine seeded with rd()
   std::uniform_real_distribution<> dist;
 
-  // data
+  // Dataset used as input
   std::vector<std::vector<unsigned char, std::allocator<unsigned char>>> data;
-  // Check where the spikes occur
-  std::vector<std::vector<unsigned>> img_spikes;
-  // Input layer
-  std::vector<neuron> input_layer;
 
   /**
    * Initializes the paramters for the network. Derived from the Izhikevich
@@ -96,7 +96,13 @@ public:
    * Handle the first layer of the network
    * @param image_index current image being presented to the network
    */
-  void input_spikes(unsigned image_index);
+  void input_spikes();
+
+  /**
+   * Check whether input should be presented(350ms) and provide input, or
+   * let the input layer sleep(150ms)
+   */
+  void present_data();
 
   /**
    * Run one cycle(one second) of the network

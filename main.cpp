@@ -28,15 +28,6 @@ int main(int argc, char const *argv[]) {
   // Test to see if images have loaded
   // network->show_image(network->data[0]);
 
-  // for (size_t m = 0; m < 28; m++) {
-  //   network->img_spikes.push_back(std::vector<unsigned>{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0});
-  // }
-
-  // Input layer, one neuron per pixel
-  // for (size_t i = 0; i < dataset.training_images[0].size(); i++) {
-  //   network->input_layer.push_back(neuron());
-  // }
-
   network->initialize_params();
 
   // Run simulation
@@ -47,17 +38,5 @@ int main(int argc, char const *argv[]) {
     network->stime_++;
   }
 
-  // for (std::vector<unsigned> s : network->img_spikes) {
-  //   for (unsigned k : s) {
-  //     if (k > 0 && k < 10) {
-  //       std::cout << k << " ";
-  //     } else if (k >= 10) {
-  //       std::cout << k;
-  //     } else {
-  //       std::cout << "0 ";
-  //     }
-  //   }
-  //   std::cout << "\n";
-  // }
   return 0;
 }

@@ -27,6 +27,8 @@ add_executable(LIF neurons/LIFNeuron.cpp neurons/LIFNeuron.h)
 add_executable(main main.cpp synapses/LIFNetwork.cpp)
 # CImg tester
 add_executable(cimg test/CImg_test.cpp)
+# Messing around with vectors
+add_executable(vectest test/vec_assign.cpp)
 # SPNet
 add_executable(spnet synapses/SPNet.cpp)
 
