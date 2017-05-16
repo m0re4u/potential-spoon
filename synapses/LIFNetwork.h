@@ -7,7 +7,10 @@
 
 #include "neurons/LIFNeuron.h"
 
+// Viewing images
 #include "CImg/CImg.h"
+// Reading in json configuration
+#include "json/json.hpp"
 
 #include <iostream>
 #include <vector>
@@ -113,4 +116,11 @@ public:
    * Prepare the network for the next cycle
    */
   void prepare();
+
+  /**
+   * Handle a spike based on the neuron index
+   * @param index
+   */
+  void handleSpikes(int index);
+
 };

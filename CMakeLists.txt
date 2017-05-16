@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_C_COMPILER clang)
 set(CMAKE_CXX_COMPILER clang++)
 set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_CXX_COMPILER_FLAGS "-Wall")
 # X11 for CImg
 message(STATUS "Searching for X11...")
 find_package(X11 REQUIRED)
@@ -27,8 +28,6 @@ add_executable(LIF neurons/LIFNeuron.cpp neurons/LIFNeuron.h)
 add_executable(main main.cpp synapses/LIFNetwork.cpp)
 # CImg tester
 add_executable(cimg test/CImg_test.cpp)
-# Messing around with vectors
-add_executable(vectest test/vec_assign.cpp)
 # SPNet
 add_executable(spnet synapses/SPNet.cpp)
 
