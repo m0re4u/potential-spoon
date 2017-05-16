@@ -6,12 +6,14 @@
 
 // Utilities
 #include "mnist/mnist_reader.hpp"
+#include "json/json.hpp"
 
 // Spiking neurons
 #include "neurons/LIFNeuron.h"
 // Network
 #include "synapses/LIFNetwork.h"
 
+using json = nlohmann::json;
 
 int main(int argc, char const *argv[]) {
   std::cout << "Reading in MNIST dataset.." << '\n';
