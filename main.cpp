@@ -33,9 +33,9 @@ int main(int argc, char const *argv[]) {
   network->initialize_params();
 
   // Run simulation
-  while(network->stime_ < 1) {
+  while(network->stime_ < 100) {
     network->cycle();
-    std::cout << "stime_=" << network->stime_ << " firing rate=" << float(network->N_firings)/network->N << "\n";
+    std::cout << "stime_=" << network->stime_ << " firing rate=" << float(network->N_firings)/network->N << " Image: " << network->cur_img  << "\n";
     network->prepare();
     network->stime_++;
   }

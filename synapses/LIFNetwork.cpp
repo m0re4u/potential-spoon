@@ -58,14 +58,12 @@ void LIFNetwork::initialize_params() {
 
   // Initialize connection weights
   for (i = 0; i < Ne; i++)  {
-    std::cout << "no. connections for exc: " << post[i].size() << '\n';
     auto v = new std::vector<float>();
     for (int j : post[i]) v->push_back(6.0);   // excitatory synaptic weights
     s_tmp.push_back(v);
   }
   for (i = Ne; i < Nn; i++) {
     auto v = new std::vector<float>();
-    std::cout << "no. connections for inh: " << post[i].size() << '\n';
     for (int j : post[i]) v->push_back(-5.0);  // inhibitory synaptic weights
     s_tmp.push_back(v);
   }
@@ -102,8 +100,8 @@ void LIFNetwork::initialize_params() {
   // Set presynaptic information & weights
   for (i = 0; i < N; i++) {
     N_pre[i] = 0;
-    std::vector<float> pre_v = {};
-    std::vector<float> pre_vd = {};
+    std::vector<float>* pre_v = new std::vector<float>();
+    std::vector<float>* pre_vd = new std::vector<float>();
     for (j = 0; j < N; j++) {
       for (int k = 0; k < post[j].size(); k++) {
         if (post[j][k] == i) {
@@ -116,15 +114,14 @@ void LIFNetwork::initialize_params() {
               }
             }
           }
-          pre_v.push_back(s[j]->at(k));   // pointer to the synaptic weight
-          pre_vd.push_back(sd[j]->at(k)); // pointer to the derivative
+          pre_v->push_back(s[j]->at(k));   // pointer to the synaptic weight
+          pre_vd->push_back(sd[j]->at(k)); // pointer to the derivative
           N_pre[i]++;              // Count this as a presynaptic connection
         }
       }
     }
-    std::cout << "Pushing back " << pre_v.size() << " connections" << '\n';
-    s_pre.push_back(&pre_v);
-    sd_pre.push_back(&pre_vd);
+    s_pre.push_back(pre_v);
+    sd_pre.push_back(pre_vd);
   }
 
   for (i = 0; i < N; i++) {
@@ -133,9 +130,9 @@ void LIFNetwork::initialize_params() {
     }
   }
   for (i = 0; i < N; i++)  LTD[i] = 0.0;
-
   for (i = 0; i < Ne; i++)  v[i] = -65.0;    // initial values for v for exc neurons
-  for (i = Ne; i < N; i++)  v[i] = -60.0;    // initial values for v for inh neurons -- value for input neurons doesnt matter
+  for (i = Ne; i < N; i++)  v[i] = -60.0;    // initial values for v for inh neurons
+  // value for input neurons doesnt matter
   for (i = 0; i < N; i++)  u[i] = 0.2*v[i]; // initial values for u
   //
   N_firings = 0;      // number of spikes in a second
@@ -153,7 +150,6 @@ void LIFNetwork::show_image(std::vector<unsigned char, std::allocator<unsigned c
     pixel_ = y * 28 + x;
     img(x,y) = vec[pixel_];
   }
-
   img.display("Test image");
 }
 
@@ -167,7 +163,7 @@ bool LIFNetwork::generate_spike(unsigned value) {
 void LIFNetwork::input_spikes() {
   for (int i = Nn; i != N; ++i) {
     assert(i - 784 > 0);
-    bool spike = generate_spike(this->data[0][i - 784]);
+    bool spike = generate_spike(this->data[this->cur_img][i - 784]);
     if (spike) {
       v[i] = 50;
     }
@@ -179,6 +175,7 @@ void LIFNetwork::present_data() {
     // Check state of the next cycle
     this->cycle_switcher++;
     if (this->cycle_switcher >= this->SLEEP_TIME) {
+      this->cur_img++;
       this->sleepingCycle = false;
       this->cycle_switcher = 0;
     }
@@ -196,40 +193,45 @@ void LIFNetwork::present_data() {
 
 void LIFNetwork::handleSpikes(int index) {
   bool spiked = false;
+  bool noninput = false;
   if (index >= Nn) {
     // input neurons
     if (v[index] >= 30) {  // did it fire?
       v[index] = -65.0;    // input voltage does not matter
-      std::cout << "Spike in input: " << index << '\n';
+      // std::cout << "Spike in input: " << index << '\n';
+      spiked = true;
     }
   } else if (index >= Ne && index < Nn) {
     // inh neurons
     if (v[index] >= -40) {  // did it fire?
       v[index] = -45.0;    // voltage reset
-      std::cout << "Spike in inh: " << index << '\n';
+      // std::cout << "Spike in inh: " << index << '\n';
       spiked = true;
+      noninput = true;
     }
   } else {
     // exc neurons
     if (v[index] >= -52) {  // did it fire?
       v[index] = -65.0;    // voltage reset
-      std::cout << "Spike in exc: " << index << '\n';
+      // std::cout << "Spike in exc: " << index << '\n';
       spiked = true;
+      noninput = true;
     }
   }
 
   if (spiked) {
-    u[index] += d[index];    // recovery variable reset
-    // STDP function variables
-    LTP[index][this->mstime_ + D] = 0.1;
-    LTD[index] = 0.12;
-    // Loop over presynaptic connections
-    for (int j = 0; j < N_pre[index]; j++) {
-      // This spike was after pre-synaptic spikes, so strengthen the connection
-      (*sd_pre[index])[j] += LTP[I_pre[index][j]][this->mstime_ + D - D_pre[index][j] - 1];
+    if (noninput) {
+      u[index] += d[index];    // recovery variable reset
+      // STDP function variables
+      LTP[index][this->mstime_ + D] = 0.1;
+      LTD[index] = 0.12;
+      // Loop over presynaptic connections
+      for (int j = 0; j < N_pre[index]; j++) {
+        // This spike was after pre-synaptic spikes, so strengthen the connection
+        (*sd_pre[index])[j] += LTP[I_pre[index][j]][this->mstime_ + D - D_pre[index][j] - 1];
+      }
     }
     // Store the firings
-    std::cout << "N_firings: " << N_firings << '\n';
     firings[N_firings  ][0] = this->mstime_;
     firings[N_firings++][1] = index;
     if (N_firings == N_firings_max) {
@@ -243,19 +245,20 @@ void LIFNetwork::cycle() {
   float  I[N];
 
   for (this->mstime_ = 0; this->mstime_ < 1000; this->mstime_++) {
-    std::cout << "Second: " << this->stime_ << " Cycle " << this->mstime_ << " working image: " << this->mstime_ / this->BOTH_TIME << '\n';
+    std::cerr << std::setfill('0') << std::setw(5) << this->stime_ <<this->mstime_ << " " << v[0] << '\n';
+
+    // std::cout << "Second: " << this->stime_ << " Cycle " << this->mstime_ << " working image: " << this->mstime_ / this->BOTH_TIME << '\n';
 
     for (i = 0; i < N; i++) {
       I[i] = 0.0; // reset input
     }
 
     this->present_data();
-
     for (i = 0; i < N; i++) {
       this->handleSpikes(i);
     }
 
-    std::cout << "Firings: " << N_firings << '\n';
+    // std::cout << "Firings: " << N_firings << '\n';
     k = N_firings;
     // While the difference between an observed spike and the current timestamp
     // is smaller than the maximum spike delay, process spikes
@@ -297,10 +300,12 @@ void LIFNetwork::prepare() {
   N_firings = N_firings-k;
 
   // Use derivatives to update the weight
-  for (i = 0; i < Ne; i++) { // modify only exc connections
+  for (i = 0; i < Ne; i++) {
+    // modify only exc connections
     for (j = 0; j < post[i].size();  j++) {
       (*s[i])[j]  += 0.01 + (*sd[i])[j];
       (*sd[i])[j] *= 0.9;
+      // cap weights
       if ((*s[i])[j] > sm) (*s[i])[j] = sm;
       if ((*s[i])[j] < 0)  (*s[i])[j] = 0.0;
     }

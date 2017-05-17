@@ -5,7 +5,6 @@
  * @author Michiel van der Meer <michiel@dutchnaoteam.nl>
  */
 
-#include "neurons/LIFNeuron.h"
 
 // Viewing images
 #include "CImg/CImg.h"
@@ -16,6 +15,7 @@
 #include <vector>
 #include <random>
 #include <cassert>
+#include <iomanip>
 
 class LIFNetwork {
 public:
@@ -31,6 +31,7 @@ public:
   const unsigned SLEEP_TIME = 150; // no. of sleeping cycles
   const unsigned IMG_TIME = 350; // no. of active input cycles
   const unsigned BOTH_TIME = SLEEP_TIME + IMG_TIME;
+  unsigned cur_img = 0;
 
   // Constants used in the neuron network setup
   static constexpr int Ne = 400;     // excitatory neurons
@@ -39,7 +40,6 @@ public:
   static constexpr int Nd = 784;     // input neurons
   static constexpr int N = Nd+Ne+Ni; // total number of neurons
   static constexpr int D = 20;       // maximal axonal conduction delay
-  // static constexpr int M = 100;      // the number of synapses per neuron
 
   // Parameters of the network
   // Ordering in arrays of neurons: [Ne,Ni,Nd]
