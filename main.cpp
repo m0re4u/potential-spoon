@@ -40,5 +40,12 @@ int main(int argc, char const *argv[]) {
     network->stime_++;
   }
 
+  // std::cout << "Labelling neurons.." << '\n';
+  // for (size_t i = 0; i < network->data.size(); i++) {
+  //   network->cycle();
+  //   network->prepare();
+  //   network->stime_++;
+  // }
+
   return 0;
 }

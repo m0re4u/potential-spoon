@@ -191,7 +191,7 @@ void LIFNetwork::present_data() {
   }
 }
 
-void LIFNetwork::handleSpikes(int index) {
+void LIFNetwork::handleSpikes(int index, bool learning) {
   bool spiked = false;
   bool noninput = false;
   if (index >= Nn) {
@@ -220,7 +220,7 @@ void LIFNetwork::handleSpikes(int index) {
   }
 
   if (spiked) {
-    if (noninput) {
+    if (noninput && learning) {
       u[index] += d[index];    // recovery variable reset
       // STDP function variables
       LTP[index][this->mstime_ + D] = 0.1;
@@ -236,50 +236,6 @@ void LIFNetwork::handleSpikes(int index) {
     firings[N_firings++][1] = index;
     if (N_firings == N_firings_max) {
       std::cout << "Too many spikes at t=" << this->mstime_ << " (ignoring all)";N_firings=1;
-    }
-  }
-}
-
-void LIFNetwork::cycle() {
-  size_t i, j, k;
-  float  I[N];
-
-  for (this->mstime_ = 0; this->mstime_ < 1000; this->mstime_++) {
-    std::cerr << std::setfill('0') << std::setw(5) << this->stime_ <<this->mstime_ << " " << v[0] << '\n';
-
-    // std::cout << "Second: " << this->stime_ << " Cycle " << this->mstime_ << " working image: " << this->mstime_ / this->BOTH_TIME << '\n';
-
-    for (i = 0; i < N; i++) {
-      I[i] = 0.0; // reset input
-    }
-
-    this->present_data();
-    for (i = 0; i < N; i++) {
-      this->handleSpikes(i);
-    }
-
-    // std::cout << "Firings: " << N_firings << '\n';
-    k = N_firings;
-    // While the difference between an observed spike and the current timestamp
-    // is smaller than the maximum spike delay, process spikes
-    while (this->mstime_ - firings[--k][0] < D) {
-      for (j = 0; j < delays_length[firings[k][1]][this->mstime_ - firings[k][0]]; j++) {
-        i = post[firings[k][1]][delays[firings[k][1]][this->mstime_ - firings[k][0]][j]];
-        // Execute delayed spikings
-        I[i] += (*s[firings[k][1]])[delays[firings[k][1]][this->mstime_ - firings[k][0]][j]];
-        if (firings[k][1] < Ne) { // this is an excitatory spike
-          // Update derivative of the connection weight
-          (*sd[firings[k][1]])[delays[firings[k][1]][this->mstime_ - firings[k][0]][j]] -= LTD[i];
-        }
-      }
-    }
-    // Update potential for every neuron using the processed spikes
-    for (i = 0; i < N; i++) {
-      v[i] += 0.5 * ((0.04*v[i]+5)*v[i]+140-u[i]+I[i]); // for numerical stability
-      v[i] += 0.5 * ((0.04*v[i]+5)*v[i]+140-u[i]+I[i]); // time step is 0.5 ms
-      u[i] += a[i]* (0.2*v[i]-u[i]);
-      LTP[i][this->mstime_+D+1] = 0.95*LTP[i][this->mstime_+D];
-      LTD[i] *= 0.95;
     }
   }
 }
@@ -308,6 +264,56 @@ void LIFNetwork::prepare() {
       // cap weights
       if ((*s[i])[j] > sm) (*s[i])[j] = sm;
       if ((*s[i])[j] < 0)  (*s[i])[j] = 0.0;
+    }
+  }
+}
+
+void LIFNetwork::processDelayedSpikes(int k, float inputCurrents[]) {
+  for (int j = 0; j < delays_length[firings[k][1]][this->mstime_ - firings[k][0]]; j++) {
+    // find the neuron from first index using connection second index
+    int i = post[firings[k][1]][delays[firings[k][1]][this->mstime_ - firings[k][0]][j]];
+    // Add the weight of that connection as a delayed spike
+    inputCurrents[i] += (*s[firings[k][1]])[delays[firings[k][1]][this->mstime_ - firings[k][0]][j]];
+    if (firings[k][1] < Ne) { // this is an excitatory spike
+      // Update derivative of the connection weight
+      (*sd[firings[k][1]])[delays[firings[k][1]][this->mstime_ - firings[k][0]][j]] -= LTD[i];
+    }
+  }
+}
+
+void LIFNetwork::updatePotential(int i, float inputCurrent) {
+  v[i] += 0.5 * ((0.04*v[i]+5)*v[i]+140-u[i]+inputCurrent); // for numerical stability
+  v[i] += 0.5 * ((0.04*v[i]+5)*v[i]+140-u[i]+inputCurrent); // time step is 0.5 ms
+  u[i] += a[i]* (0.2*v[i]-u[i]);
+  LTP[i][this->mstime_+D+1] = 0.95*LTP[i][this->mstime_+D];
+  LTD[i] *= 0.95;
+}
+
+void LIFNetwork::cycle() {
+  size_t i, j;
+  int k;
+  float  I[N];
+
+  for (this->mstime_ = 0; this->mstime_ < 500; this->mstime_++) {
+    std::cerr << std::setfill('0') << std::setw(5) << this->stime_ <<this->mstime_ << " " << v[0] << '\n';
+    // std::cout << "Second: " << this->stime_ << " Cycle " << this->mstime_ << " working image: " << this->mstime_ / this->BOTH_TIME << '\n';
+
+    for (i = 0; i < N; i++) I[i] = 0.0; // reset input
+    this->present_data();
+    for (i = 0; i < N; i++) {
+      this->handleSpikes(i, true);
+    }
+
+    k = N_firings;
+    // While the difference between an observed spike and the current timestamp
+    // is smaller than the maximum spike delay, process spikes
+    while ((this->mstime_ - firings[--k][0]) < D) {
+      this->processDelayedSpikes(k, I);
+    }
+
+    // Update potential for every neuron using the processed spikes
+    for (i = 0; i < N; i++) {
+      this->updatePotential(i, I[i]);
     }
   }
 }

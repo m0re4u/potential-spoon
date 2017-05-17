@@ -22,16 +22,16 @@ public:
   LIFNetwork();
 
   // Overall simulation variables
-  unsigned stime_ = 0; // current second of the simulation
-  unsigned mstime_ = 0; // current millisecond of the simulation
-  unsigned cycle_switcher = 0; // counter between sleeping input/active input
-  bool sleepingCycle = false; // whether the current cycle is sleeping
+  unsigned stime_ = 0;          // current second of the simulation
+  unsigned mstime_ = 0;         // current millisecond of the simulation
+  unsigned cycle_switcher = 0;  // counter between sleeping input/active input
+  unsigned cur_img = 0;         // current image being presented
+  bool sleepingCycle = false;   // whether the input is active or sleeping
 
   // Constants used for the simulation
   const unsigned SLEEP_TIME = 150; // no. of sleeping cycles
   const unsigned IMG_TIME = 350; // no. of active input cycles
   const unsigned BOTH_TIME = SLEEP_TIME + IMG_TIME;
-  unsigned cur_img = 0;
 
   // Constants used in the neuron network setup
   static constexpr int Ne = 400;     // excitatory neurons
@@ -54,7 +54,7 @@ public:
   // Might cause issues, should be a pointe
   std::vector<std::vector<float>*> s_pre;  // presynaptic connection weights
   std::vector<std::vector<float>*> sd_pre; // presynaptic connection weights derivatives
-  float LTP[N][1001+D], LTD[N]; // STDP functions
+  float LTP[N][501+D], LTD[N]; // STDP functions
   float a[N], d[N]; // neuronal dynamics parameters
   float v[N], u[N]; // voltage, recovery variables
   int N_firings;    // the number of fired neurons
@@ -108,7 +108,7 @@ public:
   void present_data();
 
   /**
-   * Run one cycle(one second) of the network
+   * Run one cycle(500ms) of the network, presenting one image
    */
   void cycle();
 
@@ -120,7 +120,21 @@ public:
   /**
    * Handle a spike based on the neuron index
    * @param index
+   * @param learning whether adjusting the weights of the synapse should be turned on
    */
-  void handleSpikes(int index);
+  void handleSpikes(int index, bool learning);
 
+  /**
+   * Process spikes that have a delay
+   * @param k
+   * @param inputCurrent
+   */
+  void processDelayedSpikes(int k, float inputCurrents[]);
+
+  /**
+   * Update the voltages for a given neuron
+   * @param index
+   * @param inputCurrent
+   */
+  void updatePotential(int index, float inputCurrent);
 };
