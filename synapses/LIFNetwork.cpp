@@ -14,7 +14,7 @@ LIFNetwork::LIFNetwork() {
   this->dist = distribution;
 }
 
-void LIFNetwork::initialize_params() {
+void LIFNetwork::initialize_params(json config) {
   // Indexing variables
   int i, j, k, jj, dd, exists, r;
 
@@ -58,12 +58,12 @@ void LIFNetwork::initialize_params() {
   // Initialize connection weights
   for (i = 0; i < Ne; i++)  {
     auto v = new std::vector<float>();
-    for (int j : post[i]) v->push_back(6.0);   // excitatory synaptic weights
+    for (int j : post[i]) v->push_back(config["e_weights"]);   // excitatory synaptic weights
     s_tmp.push_back(v);
   }
   for (i = Ne; i < Nn; i++) {
     auto v = new std::vector<float>();
-    for (int j : post[i]) v->push_back(-5.0);  // inhibitory synaptic weights
+    for (int j : post[i]) v->push_back(config["i_weights"]);  // inhibitory synaptic weights
     s_tmp.push_back(v);
   }
   // TODO: find the appropriate connection weight for the input -> exc layers
@@ -129,8 +129,8 @@ void LIFNetwork::initialize_params() {
     }
   }
   for (i = 0; i < N; i++)  LTD[i] = 0.0;
-  for (i = 0; i < Ne; i++)  v[i] = -65.0;    // initial values for v for exc neurons
-  for (i = Ne; i < N; i++)  v[i] = -60.0;    // initial values for v for inh neurons
+  for (i = 0; i < Ne; i++)  v[i] = config["e_init_v"];    // initial values for v for exc neurons
+  for (i = Ne; i < N; i++)  v[i] = config["i_init_v"];    // initial values for v for inh neurons
   // value for input neurons doesnt matter
   for (i = 0; i < N; i++) {
     u[i] = 0.2 * v[i]; // initial values for u

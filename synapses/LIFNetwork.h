@@ -17,6 +17,8 @@
 #include <cassert>
 #include <iomanip>
 
+using json = nlohmann::json;
+
 class LIFNetwork {
 public:
   LIFNetwork();
@@ -76,7 +78,7 @@ public:
    * Initializes the paramters for the network. Derived from the Izhikevich
    * implementation(see this file's header)
    */
-  void initialize_params();
+  void initialize_params(json config);
 
   /**
    * Load in the dataset given

@@ -3,6 +3,7 @@
  * @author Michiel van der Meer <michiel@dutchnaoteam.nl>
  */
 #include <iostream>
+#include <fstream>
 
 // Utilities
 #include "mnist/mnist_reader.hpp"
@@ -19,6 +20,19 @@ int main(int argc, char const *argv[]) {
   std::cout << "Reading in MNIST dataset.." << '\n';
   auto dataset = mnist::read_dataset<std::vector, std::vector, uint8_t, uint8_t>();
 
+
+  std::string filename = "../config/isk.json";
+  std::cout << "Reading in configuration: " << filename << '\n';
+  std::ifstream configFile;
+  json config;
+
+  configFile.open(filename);
+  if (configFile.is_open()) {
+    configFile >> config;
+  } else {
+    std::cout << "Something went wrong while reading config(probably missing config file)" << '\n';
+  }
+
   // Initialize network
   LIFNetwork *network = new LIFNetwork();
   network->load_dataset(dataset.training_images, dataset.training_labels);
@@ -26,12 +40,12 @@ int main(int argc, char const *argv[]) {
   // Test to see if images have loaded
   // network->show_image(network->data[0]);
 
-  std::cout << "Initializing paramters" << '\n';
-  network->initialize_params();
-  std::cout << "Finished initializing paramters" << '\n';
+  std::cout << "Initializing parameters" << '\n';
+  network->initialize_params(config);
+  std::cout << "Finished initializing parameters" << '\n';
 
   // Run simulation
-  while(network->stime_ < 10) {
+  while(network->stime_ < 25) {
     network->cycle(true);
     std::cout << "stime_=" << network->stime_ << " firing rate=" << float(network->N_firings)/network->N << " Image: " << network->cur_img  << "\n";
     network->prepare(true);
