@@ -5,8 +5,6 @@
 
 #include "LIFNetwork.h"
 
-#define getrandom(max1) ((rand()%(int)((max1)))) // random integer between 0 and max-1
-
 LIFNetwork::LIFNetwork() {
   std::mt19937 generator(this->rd());
   this->gen = generator;
@@ -66,10 +64,10 @@ void LIFNetwork::initialize_params(json config) {
     for (int j : post[i]) v->push_back(config["i_weights"]);  // inhibitory synaptic weights
     s_tmp.push_back(v);
   }
-  // TODO: find the appropriate connection weight for the input -> exc layers
+  // Connection weight for the input -> exc layers are random between 0 and 1
   for (i = Nn; i < N; i++) {
     auto v = new std::vector<float>();
-    for (int j : post[i]) v->push_back(1.);  // input synaptic weights
+    for (int j : post[i]) v->push_back(this->dist(this->gen));  // input synaptic weights
     s_tmp.push_back(v);
   }
 
@@ -208,7 +206,7 @@ void LIFNetwork::handleSpikes(int index, bool learning) {
     // inh neurons
     if (v[index] >= -40) {  // did it fire?
       v[index] = -45.0;    // voltage reset
-      std::cout << "Spike in inh: " << index << '\n';
+      // std::cout << "Spike in inh: " << index << '\n';
       spiked = true;
       noninput = true;
     }

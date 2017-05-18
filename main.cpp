@@ -17,11 +17,15 @@
 using json = nlohmann::json;
 
 int main(int argc, char const *argv[]) {
-  std::cout << "Reading in MNIST dataset.." << '\n';
-  auto dataset = mnist::read_dataset<std::vector, std::vector, uint8_t, uint8_t>();
 
+  std::string filename;
+  if (argc == 2) {
+    filename = argv[1];
+  } else {
+    // default configuration
+    filename = "../config/isk.json";
+  }
 
-  std::string filename = "../config/isk.json";
   std::cout << "Reading in configuration: " << filename << '\n';
   std::ifstream configFile;
   json config;
@@ -32,6 +36,9 @@ int main(int argc, char const *argv[]) {
   } else {
     std::cout << "Something went wrong while reading config(probably missing config file)" << '\n';
   }
+
+  std::cout << "Reading in MNIST dataset.." << '\n';
+  auto dataset = mnist::read_dataset<std::vector, std::vector, uint8_t, uint8_t>();
 
   // Initialize network
   LIFNetwork *network = new LIFNetwork();
@@ -59,20 +66,19 @@ int main(int argc, char const *argv[]) {
 
   std::cout << "Evaluating test set" << '\n';
   float correct = 0.;
-  int size = 100;
+  int size = 2000;
   // int size = network->data.size();
   network->load_dataset(dataset.test_images, dataset.test_labels);
+
   for (size_t i = 0; i < size; i++) {
     int label = network->getLabelFromSpikes();
     std::cout << "Guessed: " << label << " versus actual: " << int(network->labels[i]) << '\n';
     if (label == int(network->labels[i])) {
-      // correct!
-      std::cout << "Correct!" << '\n';
-      correct++;
+      correct++; // correct guess
     }
   }
+
   std::cout << "Accuracy: " << correct << "/" << size
             << " = " << correct / float(size) << '\n';
-
   return 0;
 }
