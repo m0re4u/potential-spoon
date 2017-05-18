@@ -59,7 +59,9 @@ public:
   float v[N], u[N]; // voltage, recovery variables
   int N_firings;    // the number of fired neurons
   static constexpr int N_firings_max=100*N; // upper limit on the number of fired neurons per sec
-  int firings[N_firings_max][2]; // indices and timings of spikes
+  int firings[N_firings_max][2]; // timing and index of spikes
+
+  int highestSpikes[N][2];
 
   // Random generators for spike generation(Poisson distribution)
   std::random_device rd;  // Will be used to obtain a seed for the random number engine
@@ -68,6 +70,7 @@ public:
 
   // Dataset used as input
   std::vector<std::vector<unsigned char, std::allocator<unsigned char>>> data;
+  std::vector<unsigned char> labels;
 
   /**
    * Initializes the paramters for the network. Derived from the Izhikevich
@@ -79,7 +82,7 @@ public:
    * Load in the dataset given
    * @param dataset data to be loaded in
    */
-  void load_dataset(std::vector<std::vector<unsigned char, std::allocator<unsigned char>>>& dataset);
+  void load_dataset(std::vector<std::vector<unsigned char, std::allocator<unsigned char>>>& dataset, std::vector<unsigned char>& labels);
 
   /**
    * Show an image from the loaded in MNIST dataset
@@ -109,13 +112,15 @@ public:
 
   /**
    * Run one cycle(500ms) of the network, presenting one image
+   * @param learning whether adjusting the weights of the synapse should be turned on
    */
-  void cycle();
+  void cycle(bool learning);
 
   /**
    * Prepare the network for the next cycle
+   * @param learning whether adjusting the weights of the synapse should be turned on
    */
-  void prepare();
+  void prepare(bool learning);
 
   /**
    * Handle a spike based on the neuron index
@@ -128,8 +133,9 @@ public:
    * Process spikes that have a delay
    * @param k
    * @param inputCurrent
+   * @param learning whether adjusting the weights of the synapse should be turned on
    */
-  void processDelayedSpikes(int k, float inputCurrents[]);
+  void processDelayedSpikes(int k, float inputCurrents[], bool learning);
 
   /**
    * Update the voltages for a given neuron
@@ -137,4 +143,15 @@ public:
    * @param inputCurrent
    */
   void updatePotential(int index, float inputCurrent);
+
+  /**
+   * label the neurons with the class it presented the highest response on
+   */
+  void labelNeurons();
+
+  /**
+   * Based on the presentation of one test image, get the class
+   * @return the label predicted by the network
+   */
+  int getLabelFromSpikes();
 };
