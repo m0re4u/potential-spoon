@@ -1,0 +1,7 @@
+{
+  "e_weights" : 6.0,
+  "i_weights" : -5.0,
+
+  "e_init_v" : -65.0,
+  "i_init_v" : -60.0
+}
