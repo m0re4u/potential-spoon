@@ -8,8 +8,10 @@
 LIFNetwork::LIFNetwork() {
   std::mt19937 generator(this->rd());
   this->gen = generator;
-  std::uniform_real_distribution<> distribution(0, 1);
-  this->dist = distribution;
+  std::uniform_real_distribution<> distribution1(0, 1);
+  this->dist1 = distribution1;
+  std::uniform_real_distribution<> distribution03(0, 0.3);
+  this->dist03 = distribution03;
 }
 
 void LIFNetwork::initialize_params(json config) {
@@ -65,9 +67,16 @@ void LIFNetwork::initialize_params(json config) {
     s_tmp.push_back(v);
   }
   // Connection weight for the input -> exc layers are random between 0 and 1
+  int counter = 0;
   for (i = Nn; i < N; i++) {
     auto v = new std::vector<float>();
-    for (int j : post[i]) v->push_back(this->dist(this->gen));  // input synaptic weights
+    for (int j : post[i]) {
+      // random value between 0 and 0.3
+      float val = this->dist03(this->gen);
+      v->push_back(val);  // input synaptic weights
+      std::cerr << counter << ", " << val << '\n';
+      counter++;
+    }
     s_tmp.push_back(v);
   }
 
@@ -157,7 +166,7 @@ void LIFNetwork::show_image(std::vector<unsigned char, std::allocator<unsigned c
 bool LIFNetwork::generate_spike(unsigned value) {
   // Generating spike train from pixel value
   double firing_rate = value / 4000.; // per millisecond
-  double num = this->dist(this->gen);
+  double num = this->dist1(this->gen);
   return num <= firing_rate;
 }
 
@@ -301,7 +310,7 @@ void LIFNetwork::cycle(bool learning) {
   float  I[N];
 
   for (this->mstime_ = 0; this->mstime_ < 500; this->mstime_++) {
-    std::cerr << std::setfill('0') << std::setw(5) << this->stime_ <<this->mstime_ << " " << v[0] << '\n';
+    // std::cerr << std::setfill('0') << std::setw(5) << this->stime_ <<this->mstime_ << " " << v[400] << '\n';
 
     for (i = 0; i < N; i++) I[i] = 0.0; // reset input
     this->present_data();
