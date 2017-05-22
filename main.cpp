@@ -66,7 +66,7 @@ int main(int argc, char const *argv[]) {
 
   std::cout << "Evaluating test set" << '\n';
   float correct = 0.;
-  int size = 2000;
+  int size = 20;
   // int size = network->data.size();
   network->load_dataset(dataset.test_images, dataset.test_labels);
 

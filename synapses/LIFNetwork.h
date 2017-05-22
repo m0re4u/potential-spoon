@@ -13,6 +13,7 @@
 
 #include <iostream>
 #include <vector>
+#include <tuple>
 #include <random>
 #include <cassert>
 #include <iomanip>
@@ -21,7 +22,7 @@ using json = nlohmann::json;
 
 class LIFNetwork {
 public:
-  LIFNetwork();
+  LIFNetwork() = default;
 
   // Overall simulation variables
   unsigned stime_ = 0;          // current second of the simulation
@@ -59,9 +60,9 @@ public:
   float LTP[N][501+D], LTD[N]; // STDP functions
   float a[N], d[N]; // neuronal dynamics parameters
   float v[N], u[N]; // voltage, recovery variables
-  int N_firings;    // the number of fired neurons
-  static constexpr int N_firings_max=100*N; // upper limit on the number of fired neurons per sec
-  int firings[N_firings_max][2]; // timing and index of spikes
+  unsigned N_firings;    // the number of fired neurons
+  static constexpr int N_firings_max=10000*N; // upper limit on the number of fired neurons per sec
+  std::vector<std::tuple<int,int>> firings; // timing and index of spikes
 
   int highestSpikes[N][2];
 
@@ -69,11 +70,12 @@ public:
   std::random_device rd;  // Will be used to obtain a seed for the random number engine
   std::mt19937 gen; // Standard mersenne_twister_engine seeded with rd()
   std::uniform_real_distribution<> dist1;
-  std::uniform_real_distribution<> dist03;
+  std::uniform_real_distribution<> dist_weights;
 
   // Dataset used as input
   std::vector<std::vector<unsigned char, std::allocator<unsigned char>>> data;
   std::vector<unsigned char> labels;
+  json config;
 
   /**
    * Initializes the paramters for the network. Derived from the Izhikevich
@@ -111,7 +113,7 @@ public:
    * Check whether input should be presented(350ms) and provide input, or
    * let the input layer sleep(150ms)
    */
-  void present_data();
+  void presentData();
 
   /**
    * Run one cycle(500ms) of the network, presenting one image
