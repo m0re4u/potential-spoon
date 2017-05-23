@@ -344,10 +344,13 @@ void LIFNetwork::labelNeurons() {
   for (size_t i = 0; i < N_firings; i++) {
     for (size_t j = 0; j < N; j++) {
       if (std::get<1>(firings[i]) == j) {
+        // count number of spikes per neuron
         cycleSpikes[j]++;
       }
     }
   }
+  // For each neuron, if its response in this cycle was higher than the
+  // previous highest, update the class associated with this neuron
   for (size_t i = 0; i < N; i++) {
     if (cycleSpikes[i] > highestSpikes[i][0]) {
       highestSpikes[i][0] = cycleSpikes[i];
@@ -380,12 +383,14 @@ int LIFNetwork::getLabelFromSpikes() {
     classSpikes[label][0]++;
     classSpikes[label][1] += cycleSpikes[i];
   }
+
   float highest = 0.;
   // default answer is 11, such that not coming up with a different answer
   // leads to a 0% accuracy
-  int answer = 0;
+  int answer = 11;
   for (size_t i = 0; i < 10; i++) {
     float avg = classSpikes[i][1] / float(classSpikes[i][0]);
+    std::cout << "Class " << i << " has activation: " << avg << '\n';
     if (avg > highest) {
         highest = avg;
         answer = i;
