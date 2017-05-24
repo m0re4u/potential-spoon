@@ -18,7 +18,7 @@ using json = nlohmann::json;
 
 int main(int argc, char const *argv[]) {
 
-  bool eval = false;
+  bool eval = true;
   std::string filename;
   if (argc == 2) {
     filename = argv[1];
@@ -60,6 +60,7 @@ int main(int argc, char const *argv[]) {
     network->t += network->dt;
     network->mstime_++;
   }
+  std::cout << "Outputting for plots" << '\n';
   network->plotSpikes();
   // network->plotNeuron();
 
@@ -68,9 +69,7 @@ int main(int argc, char const *argv[]) {
   }
 
   std::cout << "Labelling neurons.." << '\n';
-  for (size_t i = 0; i < 10; i++) {
-    network->labelNeurons();
-  }
+  network->labelNeurons();
 
   std::cout << "Evaluating test set" << '\n';
   float correct = 0.;

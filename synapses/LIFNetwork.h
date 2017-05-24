@@ -47,13 +47,14 @@ public:
   static constexpr int N = Nd+Ne+Ni; // total number of neurons
   // static constexpr int D = 20;       // maximal axonal conduction delay
   static constexpr double mV = 1e-3;
+  static constexpr int max_delay = 100;
   double ms = 1e-3;
   double dt = 0.1*ms;
   double t = 0 * ms;
   double taum = 20*ms;
   double taue = 1*ms;
   double taui = 2*ms;
-  double duration = 200*ms;
+  double duration = 1000*ms;
 
   static constexpr double v_rest_e = -65*mV;
   static constexpr double v_rest_i = -60*mV;
@@ -66,18 +67,21 @@ public:
   Eigen::Matrix<double, 3, N> S;
 
   std::vector<std::vector<int>*> connectionTargets;
+  std::vector<std::vector<int>*> connectionDelays;
   std::vector<std::vector<float>*> connectionWeights;
 
   std::vector<std::tuple<int, int>> firings;
   std::vector<double> state;
   int refractory[N];
   int highestSpikes[N][2];
+  double spikeQueue[max_delay][Ne];
 
   // Random generators for spike generation(Poisson distribution)
   std::random_device rd;  // Will be used to obtain a seed for the random number engine
   std::mt19937 gen; // Standard mersenne_twister_engine seeded with rd()
   std::uniform_real_distribution<> dist1;
   std::uniform_real_distribution<> dist_weights;
+  std::uniform_real_distribution<> dist_delay;
 
   // Dataset used as input
   std::vector<std::vector<unsigned char, std::allocator<unsigned char>>> data;

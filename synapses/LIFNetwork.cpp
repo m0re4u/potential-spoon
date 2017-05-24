@@ -15,6 +15,8 @@ void LIFNetwork::initialize_params() {
   this->dist1 = distribution1;
   std::uniform_real_distribution<> distribution_weights(0, 0.3);
   this->dist_weights = distribution_weights;
+  std::uniform_real_distribution<> distribution_delay(0, 100);
+  this->dist_delay = distribution_delay;
 
   // Indexing variables
   int i, j;
@@ -30,18 +32,22 @@ void LIFNetwork::initialize_params() {
   // Starting voltages
   for (i = 0; i < Ne; i++) {
     S(0,i) = -105.;
+    for (j = 0; j < max_delay; j++) {
+      spikeQueue[j][i] = 0;
+    }
   }
   for (i = Ne; i < Nn; i++) {
     S(0,i) = -100.;
   }
   for (i = Nn; i < N; i++) {
-    S(0,i) = 0; // does not matter, rate based
+    S(0,i) = -100; // does not matter, rate based
   }
 
   // Create connections between neurons
   for (i = 0; i < N; i++) {
     refractory[i] = 0; // no neuron is has fired, so no refraction
     auto targets = new std::vector<int>();
+    auto delays = new std::vector<int>();
     auto weights = new std::vector<float>();
     if (i < Ne) {
       // exc neuron connection to inhibitory: one on one
@@ -59,12 +65,20 @@ void LIFNetwork::initialize_params() {
       // input connections, all to all input to exc
       for (j = 0; j < Ne; j++) {
         targets->push_back(j);
+        int d = this->dist_delay(this->gen);
+        delays->push_back(d);
         float val = this->dist_weights(this->gen);
         weights->push_back(val);
       }
     }
     connectionTargets.push_back(targets);
+    connectionDelays.push_back(delays);
     connectionWeights.push_back(weights);
+  }
+
+  for (i = 0; i < N; i++) {
+    highestSpikes[i][0] = 0; // highest spike count
+    highestSpikes[i][1] = 0; // highest spike label
   }
 }
 
@@ -123,6 +137,12 @@ void LIFNetwork::presentData() {
 
 void LIFNetwork::handleSpikes(int i) {
   if (i < Ne) {
+    // Add up any delayed spikes
+    if (spikeQueue[mstime_% max_delay][i] > 0) {
+      // std::cout << "Neuron: " << i << " received spike weight: " << spikeQueue[mstime_ % max_delay][i] << '\n';
+      S(0, i) += spikeQueue[mstime_ % max_delay][i];
+      spikeQueue[mstime_ % max_delay][i] = 0;
+    }
     if (refractory[i] > 0) {
       refractory[i]--;
       return;
@@ -154,9 +174,11 @@ void LIFNetwork::handleSpikes(int i) {
     }
   } else {
     if (S(0, i) > v_thresh_i) { // does not matter, will fire
-      // std::cout << "Spike in input" << '\n';
       for (size_t j = 0; j < connectionTargets[i]->size(); j++) {
-        S(1, j) += (*connectionWeights[i])[j];
+        // if ((*connectionDelays[i])[j] < 2) {
+        //   std::cout << "Spike in input: " << i << " to neuron: " << (*connectionTargets[i])[j] << " with delay: " << (*connectionDelays[i])[j] << " spiking at: " << mstime_ + (*connectionDelays[i])[j] << " with weight: " << (*connectionWeights[i])[j] <<'\n';
+        // }
+        spikeQueue[(mstime_ + (*connectionDelays[i])[j]) % max_delay][j] += (*connectionWeights[i])[j];
       }
       S(0, i) = v_reset_i;  // reset potential
       // Store spike
@@ -179,14 +201,19 @@ void LIFNetwork::cycle() {
   for (size_t i = 0; i < N; i++) {
     handleSpikes(i);
   }
+
 }
 void LIFNetwork::labelNeurons() {
   int cycleSpikes[N];
   for (size_t i = 0; i < N; i++) {
     cycleSpikes[i] = 0;
   }
+  firings.clear();
 
-  cycle();
+  for (size_t i = 0; i < 10000; i++) {
+    cycle();
+  }
+
   for (size_t i = 0; i < firings.size(); i++) {
     for (size_t j = 0; j < N; j++) {
       if (std::get<1>(firings[i]) == j) {
@@ -198,6 +225,7 @@ void LIFNetwork::labelNeurons() {
   // For each neuron, if its response in this cycle was higher than the
   // previous highest, update the class associated with this neuron
   for (size_t i = 0; i < N; i++) {
+    std::cout << "spikes for neuron: " << i << ": " << cycleSpikes[i] << '\n';
     if (cycleSpikes[i] > highestSpikes[i][0]) {
       highestSpikes[i][0] = cycleSpikes[i];
       highestSpikes[i][1] = int(this->labels[cur_img]);

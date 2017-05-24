@@ -5,7 +5,7 @@ project(potential_spoon C CXX)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_C_COMPILER clang)
 set(CMAKE_CXX_COMPILER clang++)
-set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_BUILD_TYPE Release)
 set(CMAKE_CXX_COMPILER_FLAGS "-Wall")
 # X11 for CImg
 message(STATUS "Searching for X11...")
