@@ -10,6 +10,9 @@
 #include "CImg/CImg.h"
 // Reading in json configuration
 #include "json/json.hpp"
+// X11 also defines Success, but I'm not using it so unset it
+#undef Success
+#include "Eigen/Dense"
 
 #include <iostream>
 #include <vector>
@@ -17,6 +20,7 @@
 #include <random>
 #include <cassert>
 #include <iomanip>
+#include <math.h>
 
 using json = nlohmann::json;
 
@@ -25,7 +29,6 @@ public:
   LIFNetwork() = default;
 
   // Overall simulation variables
-  unsigned stime_ = 0;          // current second of the simulation
   unsigned mstime_ = 0;         // current millisecond of the simulation
   unsigned cycle_switcher = 0;  // counter between sleeping input/active input
   unsigned cur_img = 0;         // current image being presented
@@ -42,28 +45,24 @@ public:
   static constexpr int Nn = Ne+Ni;   // all non-input neurons
   static constexpr int Nd = 784;     // input neurons
   static constexpr int N = Nd+Ne+Ni; // total number of neurons
-  static constexpr int D = 20;       // maximal axonal conduction delay
+  // static constexpr int D = 20;       // maximal axonal conduction delay
+  static constexpr double mV = 1e-3;
+  static constexpr double ms = 1e-3;
+  static constexpr double dt = 0.1*ms;
+  static constexpr double taum = 20*ms;
+  static constexpr double taue = 1*ms;
+  static constexpr double taui = 2*ms;
+  static constexpr double vt = -1*mV;
+  static constexpr double vr = -11*mV;
 
-  // Parameters of the network
-  // Ordering in arrays of neurons: [Ne,Ni,Nd]
-  float sm = 10.0;           // maximal synaptic strength
-  std::vector<int> post[N];  // indices of postsynaptic neurons(connection M FROM N goes to post[N][M])
-  std::vector<std::vector<float>*> s, sd;   // matrix of synaptic weights and their derivatives
-  short delays_length[N][D];        // distribution of delays
-  std::vector<short> delays[N][D];  // List of connections from neuron N having delay D
-  std::vector<int> D_pre[N]; //
-  int N_pre[N];              // Number of presynaptic connectionsk
-  std::vector<int> I_pre[N]; // presynaptic information
-  // Might cause issues, should be a pointe
-  std::vector<std::vector<float>*> s_pre;  // presynaptic connection weights
-  std::vector<std::vector<float>*> sd_pre; // presynaptic connection weights derivatives
-  float LTP[N][501+D], LTD[N]; // STDP functions
-  float a[N], d[N]; // neuronal dynamics parameters
-  float v[N], u[N]; // voltage, recovery variables
-  unsigned N_firings;    // the number of fired neurons
-  static constexpr int N_firings_max=10000*N; // upper limit on the number of fired neurons per sec
-  std::vector<std::tuple<int,int>> firings; // timing and index of spikes
+  Eigen::Matrix<double, 3, 3> A;
+  Eigen::Matrix<double, 3, N> S;
 
+  std::vector<std::vector<int>*> connectionTargets;
+  std::vector<std::vector<float>*> connectionWeights;
+
+  std::vector<std::tuple<int, int>> firings;
+  std::vector<double> state;
   int highestSpikes[N][2];
 
   // Random generators for spike generation(Poisson distribution)
@@ -81,19 +80,19 @@ public:
    * Initializes the paramters for the network. Derived from the Izhikevich
    * implementation(see this file's header)
    */
-  void initialize_params(json config);
+  void initialize_params();
 
   /**
    * Load in the dataset given
    * @param dataset data to be loaded in
    */
   void load_dataset(std::vector<std::vector<unsigned char, std::allocator<unsigned char>>>& dataset, std::vector<unsigned char>& labels);
-
-  /**
-   * Show an image from the loaded in MNIST dataset
-   * @param vec vector containing image data
-   */
-  void show_image(std::vector<unsigned char, std::allocator<unsigned char>> &vec);
+  //
+  // /**
+  //  * Show an image from the loaded in MNIST dataset
+  //  * @param vec vector containing image data
+  //  */
+  // void show_image(std::vector<unsigned char, std::allocator<unsigned char>> &vec);
 
   /**
    * Check if the spike train returns a spike at the current cycle, dependent
@@ -101,13 +100,13 @@ public:
    * @param  pixel index for the current pixel
    * @return true if there is a spike
    */
-  bool generate_spike(unsigned pixel);
+  bool generateSpike(unsigned pixel);
 
   /**
    * Handle the first layer of the network
    * @param image_index current image being presented to the network
    */
-  void input_spikes();
+  void inputSpikes();
 
   /**
    * Check whether input should be presented(350ms) and provide input, or
@@ -119,35 +118,20 @@ public:
    * Run one cycle(500ms) of the network, presenting one image
    * @param learning whether adjusting the weights of the synapse should be turned on
    */
-  void cycle(bool learning);
+  void cycle();
 
-  /**
-   * Prepare the network for the next cycle
-   * @param learning whether adjusting the weights of the synapse should be turned on
-   */
-  void prepare(bool learning);
-
-  /**
-   * Handle a spike based on the neuron index
-   * @param index
-   * @param learning whether adjusting the weights of the synapse should be turned on
-   */
-  void handleSpikes(int index, bool learning);
-
-  /**
-   * Process spikes that have a delay
-   * @param k
-   * @param inputCurrent
-   * @param learning whether adjusting the weights of the synapse should be turned on
-   */
-  void processDelayedSpikes(int k, float inputCurrents[], bool learning);
-
-  /**
-   * Update the voltages for a given neuron
-   * @param index
-   * @param inputCurrent
-   */
-  void updatePotential(int index, float inputCurrent);
+  // /**
+  //  * Prepare the network for the next cycle
+  //  * @param learning whether adjusting the weights of the synapse should be turned on
+  //  */
+  // void prepare(bool learning);
+  //
+  // /**
+  //  * Handle a spike based on the neuron index
+  //  * @param index
+  //  * @param learning whether adjusting the weights of the synapse should be turned on
+  //  */
+  void handleSpikes(int index);
 
   /**
    * label the neurons with the class it presented the highest response on
@@ -159,4 +143,10 @@ public:
    * @return the label predicted by the network
    */
   int getLabelFromSpikes();
+
+  /**
+   * output spikes per cycle to cerr
+   */
+  void plotSpikes();
+
 };

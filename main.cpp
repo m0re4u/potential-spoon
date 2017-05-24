@@ -48,16 +48,16 @@ int main(int argc, char const *argv[]) {
   // network->show_image(network->data[0]);
 
   std::cout << "Initializing parameters" << '\n';
-  network->initialize_params(config);
+  network->initialize_params();
   std::cout << "Finished initializing parameters" << '\n';
 
   // Run simulation
-  while(network->stime_ < 25) {
-    network->cycle(true);
-    std::cout << "stime_=" << network->stime_ << " firing rate=" << float(network->N_firings)/network->N << " Image: " << network->cur_img  << "\n";
-    network->prepare(true);
-    network->stime_++;
+  while(network->mstime_ < 10000) {
+    network->cycle();
+    std::cout << "stime_=" << network->mstime_ << "\n";
+    network->mstime_++;
   }
+  network->plotSpikes();
 
   std::cout << "Labelling neurons.." << '\n';
   for (size_t i = 0; i < 10; i++) {
