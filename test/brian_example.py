@@ -23,7 +23,7 @@ Vt = -1*mV       # threshold = -50+49
 Vr = -11*mV      # reset = -60+49
 we = 60*0.27/10  # excitatory weight
 wi = -20*4.5/10  # inhibitory weight
-duration = 1000*ms
+duration = 100*ms
 
 """
 Equations
@@ -107,7 +107,6 @@ run(duration)
 t1=time()
 t=0*ms
 while t<duration:
-    print(A.shape, S.shape)
     # STATE UPDATES
     S[:]=dot(A,S)
 
@@ -139,3 +138,25 @@ while t<duration:
 t2=time()
 print "Simulated in",t2-t1,"s"
 print len(spike_monitor),"spikes"
+
+"""
+Plot
+----
+subplot(211)
+raster_plot(M)
+subplot(212)
+plot(trace.times/ms,trace[0]/mV)
+show()
+
+Here we cheat a little.
+"""
+from brian import raster_plot
+import matplotlib.pyplot as plt
+xes = []
+yes = []
+for x, y in spike_monitor:
+    xes.append(x)
+    yes.append(y)
+print("Plotting")
+plt.plot(yes, xes, 'ro')
+plt.show()

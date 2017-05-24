@@ -47,13 +47,20 @@ public:
   static constexpr int N = Nd+Ne+Ni; // total number of neurons
   // static constexpr int D = 20;       // maximal axonal conduction delay
   static constexpr double mV = 1e-3;
-  static constexpr double ms = 1e-3;
-  static constexpr double dt = 0.1*ms;
-  static constexpr double taum = 20*ms;
-  static constexpr double taue = 1*ms;
-  static constexpr double taui = 2*ms;
-  static constexpr double vt = -1*mV;
-  static constexpr double vr = -11*mV;
+  double ms = 1e-3;
+  double dt = 0.1*ms;
+  double t = 0 * ms;
+  double taum = 20*ms;
+  double taue = 1*ms;
+  double taui = 2*ms;
+  double duration = 200*ms;
+
+  static constexpr double v_rest_e = -65*mV;
+  static constexpr double v_rest_i = -60*mV;
+  static constexpr double v_reset_e = -65*mV;
+  static constexpr double v_reset_i = -45*mV;
+  static constexpr double v_thresh_e = -52*mV;
+  static constexpr double v_thresh_i = -40*mV;
 
   Eigen::Matrix<double, 3, 3> A;
   Eigen::Matrix<double, 3, N> S;
@@ -63,6 +70,7 @@ public:
 
   std::vector<std::tuple<int, int>> firings;
   std::vector<double> state;
+  int refractory[N];
   int highestSpikes[N][2];
 
   // Random generators for spike generation(Poisson distribution)
@@ -87,12 +95,12 @@ public:
    * @param dataset data to be loaded in
    */
   void load_dataset(std::vector<std::vector<unsigned char, std::allocator<unsigned char>>>& dataset, std::vector<unsigned char>& labels);
-  //
-  // /**
-  //  * Show an image from the loaded in MNIST dataset
-  //  * @param vec vector containing image data
-  //  */
-  // void show_image(std::vector<unsigned char, std::allocator<unsigned char>> &vec);
+
+  /**
+   * Show an image from the loaded in MNIST dataset
+   * @param vec vector containing image data
+   */
+  void show_image(std::vector<unsigned char, std::allocator<unsigned char>> &vec);
 
   /**
    * Check if the spike train returns a spike at the current cycle, dependent
@@ -104,7 +112,6 @@ public:
 
   /**
    * Handle the first layer of the network
-   * @param image_index current image being presented to the network
    */
   void inputSpikes();
 
@@ -116,21 +123,14 @@ public:
 
   /**
    * Run one cycle(500ms) of the network, presenting one image
-   * @param learning whether adjusting the weights of the synapse should be turned on
    */
   void cycle();
 
-  // /**
-  //  * Prepare the network for the next cycle
-  //  * @param learning whether adjusting the weights of the synapse should be turned on
-  //  */
-  // void prepare(bool learning);
-  //
-  // /**
-  //  * Handle a spike based on the neuron index
-  //  * @param index
-  //  * @param learning whether adjusting the weights of the synapse should be turned on
-  //  */
+  /**
+   * Handle a spike based on the neuron index
+   * @param index
+   * @param learning whether adjusting the weights of the synapse should be turned on
+   */
   void handleSpikes(int index);
 
   /**
@@ -148,5 +148,9 @@ public:
    * output spikes per cycle to cerr
    */
   void plotSpikes();
+  /**
+   * output voltage for a given neuron per cycle to cerr
+   */
+  void plotNeuron();
 
 };

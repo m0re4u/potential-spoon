@@ -18,6 +18,7 @@ using json = nlohmann::json;
 
 int main(int argc, char const *argv[]) {
 
+  bool eval = false;
   std::string filename;
   if (argc == 2) {
     filename = argv[1];
@@ -26,16 +27,16 @@ int main(int argc, char const *argv[]) {
     filename = "../config/isk.json";
   }
 
-  std::cout << "Reading in configuration: " << filename << '\n';
-  std::ifstream configFile;
-  json config;
-
-  configFile.open(filename);
-  if (configFile.is_open()) {
-    configFile >> config;
-  } else {
-    std::cout << "Something went wrong while reading config(probably missing config file)" << '\n';
-  }
+  // std::cout << "Reading in configuration: " << filename << '\n';
+  // std::ifstream configFile;
+  // json config;
+  //
+  // configFile.open(filename);
+  // if (configFile.is_open()) {
+  //   configFile >> config;
+  // } else {
+  //   std::cout << "Something went wrong while reading config(probably missing config file)" << '\n';
+  // }
 
   std::cout << "Reading in MNIST dataset.." << '\n';
   auto dataset = mnist::read_dataset<std::vector, std::vector, uint8_t, uint8_t>();
@@ -52,12 +53,19 @@ int main(int argc, char const *argv[]) {
   std::cout << "Finished initializing parameters" << '\n';
 
   // Run simulation
-  while(network->mstime_ < 10000) {
+  network->t = 0 * network->ms;
+  while(network->t < network->duration) {
     network->cycle();
-    std::cout << "stime_=" << network->mstime_ << "\n";
+    std::cout << "t: " << network->t << " | mstime_=" << network->mstime_ << " | Image: " << network->cur_img << "\n";
+    network->t += network->dt;
     network->mstime_++;
   }
   network->plotSpikes();
+  // network->plotNeuron();
+
+  if (!eval) {
+    return 0;
+  }
 
   std::cout << "Labelling neurons.." << '\n';
   for (size_t i = 0; i < 10; i++) {
