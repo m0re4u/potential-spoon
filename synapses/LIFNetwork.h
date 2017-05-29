@@ -17,6 +17,7 @@
 #include <iostream>
 #include <vector>
 #include <tuple>
+#include <algorithm>
 #include <random>
 #include <cassert>
 #include <iomanip>
@@ -70,10 +71,10 @@ public:
   std::vector<std::vector<int>*> connectionDelays;
   std::vector<std::vector<float>*> connectionWeights;
 
-  std::vector<std::tuple<int, int>> firings;
+  std::vector<std::tuple<int, int, int>> firings;
   std::vector<double> state;
   int refractory[N];
-  int highestSpikes[N][2];
+  int neuronClass[N];
   double spikeQueue[max_delay][Ne];
 
   // Random generators for spike generation(Poisson distribution)

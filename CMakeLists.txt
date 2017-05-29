@@ -30,8 +30,6 @@ add_executable(main main.cpp synapses/LIFNetwork.cpp)
 add_executable(cimg test/CImg_test.cpp)
 # SPNet
 add_executable(spnet synapses/SPNet.cpp)
-# LIFNetwork
-add_executable(comp synapses/LIFNetwork.cpp)
 
 # Fixes pthread errors
 target_link_libraries (cimg ${CMAKE_THREAD_LIBS_INIT})

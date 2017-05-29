@@ -75,16 +75,17 @@ void LIFNetwork::initialize_params() {
     connectionDelays.push_back(delays);
     connectionWeights.push_back(weights);
   }
-
-  for (i = 0; i < N; i++) {
-    highestSpikes[i][0] = 0; // highest spike count
-    highestSpikes[i][1] = 0; // highest spike label
-  }
 }
 
 void LIFNetwork::load_dataset(std::vector<std::vector<unsigned char, std::allocator<unsigned char>>>& dataset, std::vector<unsigned char>& labels) {
+  // reset simulation variables
+  this->mstime_ = 0;
+  this->cycle_switcher = 0;
+  this->cur_img = 0;
+  this->sleepingCycle = false;
   this->data = dataset;
   this->labels = labels;
+  firings.clear();
 }
 
 void LIFNetwork::show_image(std::vector<unsigned char, std::allocator<unsigned char>> &vec) {
@@ -139,7 +140,6 @@ void LIFNetwork::handleSpikes(int i) {
   if (i < Ne) {
     // Add up any delayed spikes
     if (spikeQueue[mstime_% max_delay][i] > 0) {
-      // std::cout << "Neuron: " << i << " received spike weight: " << spikeQueue[mstime_ % max_delay][i] << '\n';
       S(0, i) += spikeQueue[mstime_ % max_delay][i];
       spikeQueue[mstime_ % max_delay][i] = 0;
     }
@@ -155,7 +155,8 @@ void LIFNetwork::handleSpikes(int i) {
       S(0, i) = v_reset_e;  // reset potential
       refractory[i] = 50;
       // Store spike
-      firings.push_back(std::make_tuple(mstime_, i));
+      int c = int(this->labels[this->cur_img]);
+      firings.push_back(std::make_tuple(mstime_, i, c));
     }
   } else if (i >= Ne && i < Nn) {
     if (refractory[i] > 0) {
@@ -170,19 +171,18 @@ void LIFNetwork::handleSpikes(int i) {
       refractory[i] = 20;
       S(0, i) = v_reset_i;  // reset potential
       // Store spike
-      firings.push_back(std::make_tuple(mstime_, i));
+      int c = int(this->labels[this->cur_img]);
+      firings.push_back(std::make_tuple(mstime_, i, c));
     }
   } else {
     if (S(0, i) > v_thresh_i) { // does not matter, will fire
       for (size_t j = 0; j < connectionTargets[i]->size(); j++) {
-        // if ((*connectionDelays[i])[j] < 2) {
-        //   std::cout << "Spike in input: " << i << " to neuron: " << (*connectionTargets[i])[j] << " with delay: " << (*connectionDelays[i])[j] << " spiking at: " << mstime_ + (*connectionDelays[i])[j] << " with weight: " << (*connectionWeights[i])[j] <<'\n';
-        // }
         spikeQueue[(mstime_ + (*connectionDelays[i])[j]) % max_delay][j] += (*connectionWeights[i])[j];
       }
       S(0, i) = v_reset_i;  // reset potential
       // Store spike
-      firings.push_back(std::make_tuple(mstime_, i));
+      int c = int(this->labels[this->cur_img]);
+      firings.push_back(std::make_tuple(mstime_, i, c));
 
     }
   }
@@ -204,61 +204,84 @@ void LIFNetwork::cycle() {
 
 }
 void LIFNetwork::labelNeurons() {
-  int cycleSpikes[N];
+  // reset image counter
+  this->cur_img = 0;
+
+  // For each neuron, count spikes per class
+  int classSpikes[N][10];
   for (size_t i = 0; i < N; i++) {
-    cycleSpikes[i] = 0;
+    for (size_t j = 0; j < 10; j++) {
+      classSpikes[i][j] = 0;
+    }
   }
   firings.clear();
 
-  for (size_t i = 0; i < 10000; i++) {
+  // Iterate through dataset once
+  for (size_t i = 0; i < 60000; i++) {
     cycle();
+    std::cout << "Label iteration: " << i << " class: " << int(this->labels[this->cur_img]) << "\n";
+  }
+  std::cout << "No. of labeling spikes: " << firings.size() << '\n';
+
+  int lastClass = 0;
+  for (size_t i = 0; i < firings.size(); i++) {
+    if (lastClass != std::get<2>(firings[i])) {
+      std::cout << "Class: " << std::get<2>(firings[i]) << '\n';
+      lastClass = std::get<2>(firings[i]);
+    }
+    classSpikes[std::get<1>(firings[i])][std::get<2>(firings[i])]++;
   }
 
-  for (size_t i = 0; i < firings.size(); i++) {
-    for (size_t j = 0; j < N; j++) {
-      if (std::get<1>(firings[i]) == j) {
-        // count number of spikes per neuron
-        cycleSpikes[j]++;
-      }
-    }
-  }
   // For each neuron, if its response in this cycle was higher than the
   // previous highest, update the class associated with this neuron
   for (size_t i = 0; i < N; i++) {
-    std::cout << "spikes for neuron: " << i << ": " << cycleSpikes[i] << '\n';
-    if (cycleSpikes[i] > highestSpikes[i][0]) {
-      highestSpikes[i][0] = cycleSpikes[i];
-      highestSpikes[i][1] = int(this->labels[cur_img]);
-    }
+    // std::cout << "Spike count for neuron: " << i << ": { ";
+    // std::cout << classSpikes[i][0] << ", ";
+    // std::cout << classSpikes[i][1] << ", ";
+    // std::cout << classSpikes[i][2] << ", ";
+    // std::cout << classSpikes[i][3] << ", ";
+    // std::cout << classSpikes[i][4] << ", ";
+    // std::cout << classSpikes[i][5] << ", ";
+    // std::cout << classSpikes[i][6] << ", ";
+    // std::cout << classSpikes[i][7] << ", ";
+    // std::cout << classSpikes[i][8] << ", ";
+    // std::cout << classSpikes[i][9] << " } | Highest class is ";
+    // std::cout << std::max_element(classSpikes[i], classSpikes[i]+10) - classSpikes[i] << '\n';
+    neuronClass[i] = std::max_element(classSpikes[i], classSpikes[i]+10) - classSpikes[i];
   }
 }
 
 int LIFNetwork::getLabelFromSpikes() {
-  int cycleSpikes[N];
+  // spikes per neuron
+  int neuronSpikes[N];
+  // no. of neurons per class & spikes per class
   int classSpikes[10][2];
+  // reset firings
+  firings.clear();
 
   for (size_t i = 0; i < N; i++) {
-    cycleSpikes[i] = 0;
+    neuronSpikes[i] = 0;
   }
 
-  cycle();
-  for (size_t i = 0; i < firings.size(); i++) {
-    for (size_t j = 0; j < N; j++) {
-      if (std::get<1>(firings[i]) == j) {
-        cycleSpikes[j]++;
-      }
-    }
+  // 350 ms input test image + 150 ms sleep
+  for (size_t i = 0; i < 500; i++) {
+    cycle();
   }
+
+  for (size_t i = 0; i < firings.size(); i++) {
+    neuronSpikes[std::get<1>(firings[i])]++;
+  }
+
   for (size_t i = 0; i < N; i++) {
     // label associated with this neuron
-    int label = highestSpikes[i][1];
+    int label = neuronClass[i];
     classSpikes[label][0]++;
-    classSpikes[label][1] += cycleSpikes[i];
+    classSpikes[label][1] += neuronSpikes[i];
   }
 
-  float highest = 0.;
   // default answer is 11, such that not coming up with a different answer
   // leads to a 0% accuracy
+  float highest = 0.;
   int answer = 11;
   for (size_t i = 0; i < 10; i++) {
     float avg = classSpikes[i][1] / float(classSpikes[i][0]);
@@ -266,7 +289,9 @@ int LIFNetwork::getLabelFromSpikes() {
         highest = avg;
         answer = i;
     }
+    // std::cout << classSpikes[i][1] << " | ";
   }
+  // std::cout << '\n';
   return answer;
 }
 
