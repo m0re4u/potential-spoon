@@ -107,16 +107,21 @@ bool LIFNetwork::generateSpike(unsigned value) {
 
 void LIFNetwork::inputSpikes() {
   for (int i = Nn; i != N; ++i) {
-    assert(i - Nd > 0);
-    bool spike = generateSpike(this->data[this->cur_img][i - Nd]);
+    assert(i - Nn >= 0);
+    bool spike = generateSpike(this->data[this->cur_img][i - Nn]);
     if (spike) {
-      S(0, i) = 1;
+      S(0, i) = 111;
+    } else {
+      S(0, i) = -60;
     }
   }
 }
 
 void LIFNetwork::presentData() {
   if (sleepingCycle) {
+    for (size_t i = Nn; i < N; i++) {
+      S(0, i) = -60;
+    }
     // Check state of the next cycle
     cycle_switcher++;
     if (cycle_switcher >= SLEEP_TIME) {
@@ -156,9 +161,15 @@ void LIFNetwork::handleSpikes(int i) {
       refractory[i] = 50;
       // Store spike
       int c = int(this->labels[this->cur_img]);
+      previousSpike[i] = t;
       firings.push_back(std::make_tuple(mstime_, i, c));
     }
   } else if (i >= Ne && i < Nn) {
+    // Add up any delayed spikes
+    if (spikeQueue[mstime_% max_delay][i] > 0) {
+      S(0, i) += spikeQueue[mstime_ % max_delay][i];
+      spikeQueue[mstime_ % max_delay][i] = 0;
+    }
     if (refractory[i] > 0) {
       refractory[i]--;
       return;

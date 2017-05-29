@@ -72,7 +72,7 @@ public:
   std::vector<std::vector<float>*> connectionWeights;
 
   std::vector<std::tuple<int, int, int>> firings;
-  std::vector<double> state;
+  std::vector<double> state; // state of a single neuron - for plotting
   int refractory[N];
   int neuronClass[N];
   double spikeQueue[max_delay][Ne];
