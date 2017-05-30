@@ -34,6 +34,7 @@ public:
   unsigned cycle_switcher = 0;  // counter between sleeping input/active input
   unsigned cur_img = 0;         // current image being presented
   bool sleepingCycle = false;   // whether the input is active or sleeping
+  bool learning= true;          // whether the connection weights are being adjusted using STDP
 
   // Constants used for the simulation
   const unsigned SLEEP_TIME = 150; // no. of sleeping cycles
@@ -45,7 +46,7 @@ public:
   static constexpr int Ni = Ne;      // inhibitory neurons
   static constexpr int Nn = Ne+Ni;   // all non-input neurons
   static constexpr int Nd = 784;     // input neurons
-  static constexpr int N = Nd+Ne+Ni; // total number of neurons
+  static constexpr int N = Ne+Ni+Nd; // total number of neurons
   // static constexpr int D = 20;       // maximal axonal conduction delay
   static constexpr double mV = 1e-3;
   static constexpr int max_delay = 100;
@@ -55,6 +56,8 @@ public:
   double taum = 20*ms;
   double taue = 1*ms;
   double taui = 2*ms;
+  double stdp_pre_tau = 20*ms;
+
   double duration = 1000*ms;
 
   static constexpr double v_rest_e = -65*mV;
@@ -63,6 +66,9 @@ public:
   static constexpr double v_reset_i = -45*mV;
   static constexpr double v_thresh_e = -52*mV;
   static constexpr double v_thresh_i = -40*mV;
+  static constexpr double stdp_lr = 0.01;
+  static constexpr double wmax = 1.0;
+  static constexpr double wmin = 1.0;
 
   Eigen::Matrix<double, 3, 3> A;
   Eigen::Matrix<double, 3, N> S;
@@ -70,11 +76,15 @@ public:
   std::vector<std::vector<int>*> connectionTargets;
   std::vector<std::vector<int>*> connectionDelays;
   std::vector<std::vector<float>*> connectionWeights;
+  std::vector<std::vector<float>*> connectionTrace;
+
+  std::vector<std::vector<int>*> incomingConnections;
 
   std::vector<std::tuple<int, int, int>> firings;
   std::vector<double> state; // state of a single neuron - for plotting
   int refractory[N];
   int neuronClass[N];
+  float previousSpike[N]; // store the timestamp of the previous spike
   double spikeQueue[max_delay][Ne];
 
   // Random generators for spike generation(Poisson distribution)
@@ -120,6 +130,8 @@ public:
    */
   void inputSpikes();
 
+  void processPreviousSpikes(int i);
+
   /**
    * Check whether input should be presented(350ms) and provide input, or
    * let the input layer sleep(150ms)
@@ -137,6 +149,10 @@ public:
    * @param learning whether adjusting the weights of the synapse should be turned on
    */
   void handleSpikes(int index);
+
+  void decayTrace();
+
+  void updateIncomingWeights(int index);
 
   /**
    * label the neurons with the class it presented the highest response on

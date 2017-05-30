@@ -55,8 +55,12 @@ int main(int argc, char const *argv[]) {
   // Run simulation
   network->t = 0 * network->ms;
   while(network->t < network->duration) {
+    if (network->sleepingCycle) {
+      std::cout << "t: " << network->t << " | mstime_=" << network->mstime_ << " | Image: sleeping" << "\n";
+    } else {
+      std::cout << "t: " << network->t << " | mstime_=" << network->mstime_ << " | Image: " << network->cur_img << "\n";
+    }
     network->cycle();
-    std::cout << "t: " << network->t << " | mstime_=" << network->mstime_ << " | Image: " << network->cur_img << "\n";
     network->t += network->dt;
     network->mstime_++;
   }
@@ -68,6 +72,8 @@ int main(int argc, char const *argv[]) {
     return 0;
   }
 
+  
+  network->learning = false;
   std::cout << "Labelling neurons.." << '\n';
   network->labelNeurons();
 
