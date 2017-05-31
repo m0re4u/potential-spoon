@@ -64,25 +64,30 @@ int main(int argc, char const *argv[]) {
     network->t += network->dt;
     network->mstime_++;
   }
-  std::cout << "Outputting for plots" << '\n';
-  network->plotSpikes();
+  // std::cout << "Outputting training plots" << '\n';
+  // network->plotSpikes();
   // network->plotNeuron();
 
   if (!eval) {
     return 0;
   }
 
-  
+  std::cout << "Resetting values" << '\n';
   network->learning = false;
+  network->reset_values();
+
   std::cout << "Labelling neurons.." << '\n';
   network->labelNeurons();
 
+  std::cout << "Outputting labelling plots" << '\n';
+  network->plotSpikes();
+
   std::cout << "Evaluating test set" << '\n';
   float correct = 0.;
-  int size = 100;
-  // int size = network->data.size();
+  int size = 50;
   network->load_dataset(dataset.test_images, dataset.test_labels);
 
+  // Per image, predict a label and check if it is correct
   for (size_t i = 0; i < size; i++) {
     int label = network->getLabelFromSpikes();
     std::cout << "Guessed: " << label << " versus actual: " << int(network->labels[i]) << '\n';
@@ -90,8 +95,8 @@ int main(int argc, char const *argv[]) {
       correct++; // correct guess
     }
   }
-
   std::cout << "Accuracy: " << correct << "/" << size
             << " = " << correct / float(size) << '\n';
+
   return 0;
 }

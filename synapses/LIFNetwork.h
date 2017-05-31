@@ -58,20 +58,19 @@ public:
   double taui = 2*ms;
   double stdp_pre_tau = 20*ms;
 
-  double duration = 1000*ms;
+  double duration = 0.2*ms;
 
-  static constexpr double v_rest_e = -65*mV;
-  static constexpr double v_rest_i = -60*mV;
-  static constexpr double v_reset_e = -65*mV;
-  static constexpr double v_reset_i = -45*mV;
-  static constexpr double v_thresh_e = -52*mV;
-  static constexpr double v_thresh_i = -40*mV;
+  static constexpr double v_rest_e = 0*mV;
+  static constexpr double v_rest_i = 0*mV;
+  static constexpr double v_reset_e = 0*mV;
+  static constexpr double v_reset_i = 20*mV;
+  static constexpr double v_thresh_e = 13*mV;
+  static constexpr double v_thresh_i = 25*mV;
   static constexpr double stdp_lr = 0.01;
   static constexpr double wmax = 1.0;
-  static constexpr double wmin = 1.0;
+  static constexpr double wmin = 0;
 
-  Eigen::Matrix<double, 3, 3> A;
-  Eigen::Matrix<double, 3, N> S;
+  Eigen::Matrix<double, 1, N> S;
 
   std::vector<std::vector<int>*> connectionTargets;
   std::vector<std::vector<int>*> connectionDelays;
@@ -106,6 +105,12 @@ public:
   void initialize_params();
 
   /**
+   * Reset the values used in the network without modifying the weights, such
+   * that we can run labelling/evaluation cycles after.
+   */
+  void reset_values();
+
+  /**
    * Load in the dataset given
    * @param dataset data to be loaded in
    */
@@ -130,7 +135,16 @@ public:
    */
   void inputSpikes();
 
+  /**
+   * Apply spikes that are timed to occur at the current cycle(delayed spikes)
+   * @param i current neuron index
+   */
   void processPreviousSpikes(int i);
+
+  /**
+   * Impose exponential decay on all neurons
+   */
+  void decayNeurons();
 
   /**
    * Check whether input should be presented(350ms) and provide input, or
