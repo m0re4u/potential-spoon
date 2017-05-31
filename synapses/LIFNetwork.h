@@ -21,6 +21,7 @@
 #include <random>
 #include <cassert>
 #include <iomanip>
+#include <fstream>
 #include <math.h>
 
 using json = nlohmann::json;
@@ -33,8 +34,10 @@ public:
   unsigned mstime_ = 0;         // current millisecond of the simulation
   unsigned cycle_switcher = 0;  // counter between sleeping input/active input
   unsigned cur_img = 0;         // current image being presented
+  unsigned image_spikes = 0;    // number of spikes in the exc layer during the presentation of the current image
+  unsigned input_intensity = 0; // input intensity of the current image
   bool sleepingCycle = false;   // whether the input is active or sleeping
-  bool learning= true;          // whether the connection weights are being adjusted using STDP
+  bool learning = true;          // whether the connection weights are being adjusted using STDP
 
   // Constants used for the simulation
   const unsigned SLEEP_TIME = 150; // no. of sleeping cycles
@@ -53,12 +56,12 @@ public:
   double ms = 1e-3;
   double dt = 0.1*ms;
   double t = 0 * ms;
-  double taum = 20*ms;
   double taue = 1*ms;
   double taui = 2*ms;
-  double stdp_pre_tau = 20*ms;
 
-  double duration = 0.2*ms;
+  int train_limit = 1; // number of images processed in the training stage
+  int label_limit = 1000; // number of images processed in the labelling stage
+  int test_limit = 100;  // number of images processed in the testing stage
 
   static constexpr double v_rest_e = 0*mV;
   static constexpr double v_rest_i = 0*mV;
@@ -75,9 +78,6 @@ public:
   std::vector<std::vector<int>*> connectionTargets;
   std::vector<std::vector<int>*> connectionDelays;
   std::vector<std::vector<float>*> connectionWeights;
-  std::vector<std::vector<float>*> connectionTrace;
-
-  std::vector<std::vector<int>*> incomingConnections;
 
   std::vector<std::tuple<int, int, int>> firings;
   std::vector<double> state; // state of a single neuron - for plotting
@@ -160,12 +160,14 @@ public:
   /**
    * Handle a spike based on the neuron index
    * @param index
-   * @param learning whether adjusting the weights of the synapse should be turned on
    */
   void handleSpikes(int index);
 
-  void decayTrace();
-
+  /**
+   * Update the weight values for the connections that are coming in to the
+   * neuron at index
+   * @param index update weights for connections to index
+   */
   void updateIncomingWeights(int index);
 
   /**
@@ -187,5 +189,10 @@ public:
    * output voltage for a given neuron per cycle to cerr
    */
   void plotNeuron();
+
+  /**
+   * Output the current weight values to a file
+   */
+  void saveWeights();
 
 };

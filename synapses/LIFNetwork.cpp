@@ -32,19 +32,16 @@ void LIFNetwork::initialize_params() {
     auto targets = new std::vector<int>();
     auto delays = new std::vector<int>();
     auto weights = new std::vector<float>();
-    auto trace = new std::vector<float>();
     if (i < Ne) {
       // exc neuron connection to inhibitory: one on one
       targets->push_back(i+Ne);
       weights->push_back(26*mV);
-      trace->push_back(0); // FIXME: these will not be used, remove later
     } else if (i >= Ne && i < Nn) {
       // inh neuron connection to all exc except incoming
       for (j = 0; j < Ne; j++) {
         if (!(i - Ne == j)) {
           targets->push_back(j);
           weights->push_back(-1*mV);
-          trace->push_back(0); // FIXME: these will not be used, remove later
         }
       }
     } else {
@@ -55,13 +52,11 @@ void LIFNetwork::initialize_params() {
         delays->push_back(d);
         float val = this->dist_weights(this->gen);
         weights->push_back(val*mV);
-        trace->push_back(0);
       }
     }
     connectionTargets.push_back(targets);
     connectionDelays.push_back(delays);
     connectionWeights.push_back(weights);
-    connectionTrace.push_back(trace);
   }
 }
 
@@ -114,6 +109,9 @@ void LIFNetwork::show_image(std::vector<unsigned char, std::allocator<unsigned c
 bool LIFNetwork::generateSpike(unsigned value) {
   // Generating spike train from pixel value
   double firing_rate = value / 4000.; // per millisecond
+  if (input_intensity > 0) {
+    firing_rate = ((0.06375 + (input_intensity*0.032)) * firing_rate) / 0.06375;
+  }
   double num = this->dist1(this->gen);
   return num <= firing_rate;
 }
@@ -132,24 +130,29 @@ void LIFNetwork::inputSpikes() {
 
 void LIFNetwork::presentData() {
   if (sleepingCycle) {
-    for (size_t i = Nn; i < N; i++) {
-      S(0, i) = -60;
-    }
     // Check state of the next cycle
     cycle_switcher++;
     if (cycle_switcher >= SLEEP_TIME) {
       cur_img++;
       sleepingCycle = false;
       cycle_switcher = 0;
+      image_spikes = 0;
     }
-
   } else {
     inputSpikes();
     // Check state of the next cycle
     cycle_switcher++;
     if (cycle_switcher >= IMG_TIME) {
-      cycle_switcher = 0;
-      sleepingCycle = true;
+      if (image_spikes < 5) {
+        // not enough activation, present the image again with a higher intensity
+        std::cout << "Not enough spikes, repeating image" << '\n';
+        cycle_switcher = 0;
+        input_intensity++;
+      } else {
+        cycle_switcher = 0;
+        sleepingCycle = true;
+        input_intensity = 0;
+      }
     }
   }
 }
@@ -176,15 +179,15 @@ void LIFNetwork::handleSpikes(int i) {
         updateIncomingWeights(i);
       }
       for (size_t j = 0; j < connectionTargets[i]->size(); j++) {
-        // S(1, j) += (*connectionWeights[i])[j];
         S(0, (*connectionTargets[i])[j]) += (*connectionWeights[i])[j];
       }
       S(0, i) = v_reset_e;  // reset potential
       refractory[i] = 50;
       // Store spike
       int c = int(this->labels[this->cur_img]);
-      previousSpike[i] = t;
       firings.push_back(std::make_tuple(mstime_, i, c));
+      image_spikes++;
+      previousSpike[i] = t;
     }
   } else if (i >= Ne && i < Nn) {
     if (refractory[i] > 0) {
@@ -194,15 +197,14 @@ void LIFNetwork::handleSpikes(int i) {
     if (S(0, i) > v_thresh_i) {
       // std::cout << "Spike in inh: " << i << '\n';
       for (size_t j = 0; j < connectionTargets[i]->size(); j++) {
-        // S(2, j) += (*connectionWeights[i])[j];
-        S(0, j) += (*connectionWeights[i])[j];
+        S(0, (*connectionTargets[i])[j]) += (*connectionWeights[i])[j];
       }
       refractory[i] = 20;
       S(0, i) = v_reset_i;  // reset potential
       // Store spike
       int c = int(this->labels[this->cur_img]);
-      previousSpike[i] = t;
       firings.push_back(std::make_tuple(mstime_, i, c));
+      previousSpike[i] = t;
     }
   } else {
     // Since the input is rate based, use an arbitrary threshold
@@ -210,8 +212,7 @@ void LIFNetwork::handleSpikes(int i) {
       // std::cout << "Spike in input: " << i << '\n';
       for (size_t j = 0; j < connectionTargets[i]->size(); j++) {
         // presynaptic spike
-        // (*connectionTrace[i])[j]++;
-        spikeQueue[(mstime_ + (*connectionDelays[i])[j]) % max_delay][j] += (*connectionWeights[i])[j];
+        spikeQueue[(mstime_ + (*connectionDelays[i])[j]) % max_delay][(*connectionTargets[i])[j]] += (*connectionWeights[i])[j];
       }
       S(0, i) = -9;  // reset potential
       // Store spike
@@ -222,25 +223,15 @@ void LIFNetwork::handleSpikes(int i) {
   }
 }
 
-// void LIFNetwork::decayTrace() {
-//   for (size_t i = Nn; i < N; i++) {
-//     for (size_t j = 0; j < connectionTrace[i]->size(); j++) {
-//       float val = exp(-((t - previousSpike[i])/stdp_pre_tau));
-//       (*connectionTrace[i])[j] = val;
-//     }
-//   }
-// }
-
 void LIFNetwork::updateIncomingWeights(int index) {
   // from spike in neuron index, find incoming connections
   for (size_t i = 0; i < N; i++) {
     for (size_t j = 0; j < connectionTargets[i]->size(); j++) {
       if ((*connectionTargets[i])[j] == index) {
         // connection j from neuron i to index
-        // float trace = (*connectionTrace[i])[j] - 1.0;
-        float trace = exp((t - previousSpike[i]) / taue) - 0.02;
+        float dv = exp((t - previousSpike[i]) / taue) - 0.02;
         float dw = wmax - (*connectionWeights[i])[j];
-        float update = stdp_lr * trace * pow(dw, 1.0);
+        float update = stdp_lr * dv * pow(dw, 1.0);
         (*connectionWeights[i])[j] += update;
         if ((*connectionWeights[i])[j] > wmax) {
           (*connectionWeights[i])[j] = wmax;
@@ -268,9 +259,6 @@ void LIFNetwork::decayNeurons(){
 void LIFNetwork::cycle() {
   // Receive input spikes from image (or don't in an inactive cycle)
   presentData();
-
-  // Exponential decay on the traces used in STDP learning
-  // decayTrace();
 
   // Check whether a spike occurs in a neuron, and put that spike in the queue
   // at the given delay
@@ -300,21 +288,12 @@ void LIFNetwork::labelNeurons() {
   }
 
   // Iterate through dataset once
-  int size = 3;
-  for (size_t i = 0; i < size; i++) {
-    // 500 cycles per image
-    for (size_t j = 0; j < 500; j++) {
-      cycle();
-      t += dt;
-      mstime_++;
-      for (size_t k = 0; k < Nn; k++) {
-        if (S(0,k) > 0.01) {
-          std::cout << "Time: " << mstime_ << "Neuron: " << k << " state: " << S(0, k) << '\n';
-        }
-      }
-    }
-    std::cout << '\r'
-          << "Progress: " << std::setw(8) << std::setfill(' ') << (i / float(size))<< std::flush;
+  while (cur_img < label_limit) {
+    cycle();
+    t += dt;
+    mstime_++;
+    std::cout << '\r' << "Progress: " << std::setw(8) << std::setfill(' ')
+              << (cur_img / float(label_limit))<< std::flush;
   }
   std::cout << '\n';
   std::cout << "No. of labeling spikes: " << firings.size() << '\n';
@@ -330,18 +309,18 @@ void LIFNetwork::labelNeurons() {
   // For each neuron, if its response in this cycle was higher than the
   // previous highest, update the class associated with this neuron
   for (size_t i = 0; i < N; i++) {
-    std::cout << "Spike count for neuron: " << i << ": { ";
-    std::cout << classSpikes[i][0] << ", ";
-    std::cout << classSpikes[i][1] << ", ";
-    std::cout << classSpikes[i][2] << ", ";
-    std::cout << classSpikes[i][3] << ", ";
-    std::cout << classSpikes[i][4] << ", ";
-    std::cout << classSpikes[i][5] << ", ";
-    std::cout << classSpikes[i][6] << ", ";
-    std::cout << classSpikes[i][7] << ", ";
-    std::cout << classSpikes[i][8] << ", ";
-    std::cout << classSpikes[i][9] << " } | Highest class is ";
-    std::cout << std::max_element(classSpikes[i], classSpikes[i]+10) - classSpikes[i] << '\n';
+    // std::cout << "Spike count for neuron: " << i << ": { ";
+    // std::cout << classSpikes[i][0] << ", ";
+    // std::cout << classSpikes[i][1] << ", ";
+    // std::cout << classSpikes[i][2] << ", ";
+    // std::cout << classSpikes[i][3] << ", ";
+    // std::cout << classSpikes[i][4] << ", ";
+    // std::cout << classSpikes[i][5] << ", ";
+    // std::cout << classSpikes[i][6] << ", ";
+    // std::cout << classSpikes[i][7] << ", ";
+    // std::cout << classSpikes[i][8] << ", ";
+    // std::cout << classSpikes[i][9] << " } | Highest class is ";
+    // std::cout << std::max_element(classSpikes[i], classSpikes[i]+10) - classSpikes[i] << '\n';
     neuronClass[i] = std::max_element(classSpikes[i], classSpikes[i]+10) - classSpikes[i];
   }
 }
@@ -351,13 +330,17 @@ int LIFNetwork::getLabelFromSpikes() {
   int neuronSpikes[N];
   // no. of neurons per class & spikes per class
   int classSpikes[10][2];
+  for (size_t i = 0; i < 10; i++) {
+    for (size_t j = 0; j < 2; j++) {
+      classSpikes[i][j] = 0;
+    }
+  }
 
   for (size_t i = 0; i < N; i++) {
     neuronSpikes[i] = 0;
   }
-
-  // 350 ms input test image + 150 ms sleep
-  for (size_t i = 0; i < 500; i++) {
+  // Active presentation of the image
+  while (!sleepingCycle) {
     cycle();
     t += dt;
     mstime_++;
@@ -380,18 +363,17 @@ int LIFNetwork::getLabelFromSpikes() {
   int answer = 11;
   for (size_t i = 0; i < 10; i++) {
     float avg = classSpikes[i][1] / float(classSpikes[i][0]);
+    std::cout << "Class: " << i << " spikes:" << classSpikes[i][1] << " Neurons: " << classSpikes[i][0] << " score: " << avg << '\n';
     if (avg > highest) {
         highest = avg;
         answer = i;
     }
-    // std::cout << classSpikes[i][1] << " | ";
   }
-  // std::cout << '\n';
+  firings.clear();
   return answer;
 }
 
 void LIFNetwork::plotSpikes() {
-  std::cout << "Outputting " << firings.size() << " spikes.." << '\n';
   for (auto spike : firings) {
     std::cerr << std::get<0>(spike) << ", " << std::get<1>(spike) << '\n';
   }
@@ -403,19 +385,15 @@ void LIFNetwork::plotNeuron() {
   }
 }
 
-// int main(int argc, char const *argv[]) {
-//   LIFNetwork *n = new LIFNetwork();
-//   std::cout << "Reading in MNIST dataset.." << '\n';
-//   auto dataset = mnist::read_dataset<std::vector, std::vector, uint8_t, uint8_t>();
-//   n->load_dataset(dataset.training_images, dataset.training_labels);
-//   std::cout << "Init params" << '\n';
-//   n->initialize_params();
-//
-//   for (n->mstime_ = 0; n->mstime_ < 1000; n->mstime_++) {
-//     std::cout << "Cycle: " << n->mstime_ << '\n';
-//     n->cycle();
-//   }
-//   n->plotSpikes();
-//
-//   return 0;
-// }
+void LIFNetwork::saveWeights() {
+  std::ofstream weightFile;
+  weightFile.open ("weights.bin");
+  for (size_t i = 0; i < N; i++) {
+    weightFile << "Neuron: " << i << " weights: ";
+    for (auto x : (*connectionWeights[i]) ) {
+      weightFile << x << ", ";
+    }
+    weightFile << '\n';
+  }
+  weightFile.close();
+}
