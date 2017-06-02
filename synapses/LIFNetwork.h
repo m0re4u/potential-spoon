@@ -50,17 +50,17 @@ public:
   static constexpr int Nn = Ne+Ni;   // all non-input neurons
   static constexpr int Nd = 784;     // input neurons
   static constexpr int N = Ne+Ni+Nd; // total number of neurons
-  // static constexpr int D = 20;       // maximal axonal conduction delay
   static constexpr double mV = 1e-3;
   static constexpr int max_delay = 100;
   double ms = 1e-3;
   double dt = 0.1*ms;
   double t = 0 * ms;
-  double taue = 1*ms;
-  double taui = 2*ms;
+  double taue = 0.001;
+  double taui = 0.002;
+  double tau_trace_pre = 0.020;
 
-  int train_limit = 1; // number of images processed in the training stage
-  int label_limit = 1000; // number of images processed in the labelling stage
+  int train_limit = 100; // number of images processed in the training stage
+  int label_limit = 100; // number of images processed in the labelling stage
   int test_limit = 100;  // number of images processed in the testing stage
 
   static constexpr double v_rest_e = 0*mV;
@@ -69,15 +69,16 @@ public:
   static constexpr double v_reset_i = 20*mV;
   static constexpr double v_thresh_e = 13*mV;
   static constexpr double v_thresh_i = 25*mV;
-  static constexpr double stdp_lr = 0.01;
+  static constexpr double stdp_lr = 0.0001;
   static constexpr double wmax = 1.0;
   static constexpr double wmin = 0;
 
   Eigen::Matrix<double, 1, N> S;
 
-  std::vector<std::vector<int>*> connectionTargets;
-  std::vector<std::vector<int>*> connectionDelays;
+  std::vector<std::vector<int>*>   connectionTargets;
+  std::vector<std::vector<int>*>   connectionDelays;
   std::vector<std::vector<float>*> connectionWeights;
+  std::vector<std::vector<float>*> connectionTrace;
 
   std::vector<std::tuple<int, int, int>> firings;
   std::vector<double> state; // state of a single neuron - for plotting
@@ -147,6 +148,11 @@ public:
   void decayNeurons();
 
   /**
+   * Impose exponential decay on the connection weight trace
+   */
+  void decayTrace();
+
+  /**
    * Check whether input should be presented(350ms) and provide input, or
    * let the input layer sleep(150ms)
    */
@@ -189,6 +195,8 @@ public:
    * output voltage for a given neuron per cycle to cerr
    */
   void plotNeuron();
+
+  void plotWeights();
 
   /**
    * Output the current weight values to a file

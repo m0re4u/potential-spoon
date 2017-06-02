@@ -3,6 +3,8 @@
  * @author Michiel van der Meer <michiel@dutchnaoteam.nl>
  */
 #include <iostream>
+// time
+#include <chrono>
 
 // Utilities
 #include "mnist/mnist_reader.hpp"
@@ -30,6 +32,7 @@ int main(int argc, char const *argv[]) {
   network->initialize_params();
   std::cout << "Finished initializing parameters" << '\n';
 
+  // std::chrono::time_point<std::chrono::system_clock> start, end;
   // Run simulation
   while(network->cur_img < network->train_limit) {
     network->cycle();
@@ -41,9 +44,10 @@ int main(int argc, char const *argv[]) {
   }
   std::cout << '\n';
 
-  // std::cout << "Outputting training plots" << '\n';
-  // network->plotSpikes();
+  std::cout << "Outputting training plots" << '\n';
+  network->plotSpikes();
   // network->plotNeuron();
+  // network->plotWeights();
   network->saveWeights();
 
   if (!eval) {
@@ -67,7 +71,12 @@ int main(int argc, char const *argv[]) {
   // Per image, predict a label and check if it is correct
   int i = 0;
   while (network->cur_img < network->test_limit) {
+    // start = std::chrono::system_clock::now();
     int label = network->getLabelFromSpikes();
+    // end = std::chrono::system_clock::now();
+    // std::chrono::duration<double> dur = end - start;
+    // std::cerr << "Classification time: " << dur.count() << "s\n";
+
     std::cout << "Index: " << i << " Guessed: " << label << " versus actual: " << int(network->labels[i]) << '\n';
     if (label == int(network->labels[i])) {
       correct++; // correct guess
