@@ -37,10 +37,11 @@ public:
   unsigned image_spikes = 0;    // number of spikes in the exc layer during the presentation of the current image
   unsigned input_intensity = 0; // input intensity of the current image
   bool sleepingCycle = false;   // whether the input is active or sleeping
-  bool learning = true;          // whether the connection weights are being adjusted using STDP
+  bool learning = true;         // whether the connection weights are being adjusted using STDP
+  bool plotting = false;        // output all neuron states per cycle for plotting
 
   // Constants used for the simulation
-  const unsigned SLEEP_TIME = 150; // no. of sleeping cycles
+  const unsigned SLEEP_TIME = 300; // no. of sleeping cycles
   const unsigned IMG_TIME = 350; // no. of active input cycles
   const unsigned BOTH_TIME = SLEEP_TIME + IMG_TIME;
 
@@ -50,18 +51,19 @@ public:
   static constexpr int Nn = Ne+Ni;   // all non-input neurons
   static constexpr int Nd = 784;     // input neurons
   static constexpr int N = Ne+Ni+Nd; // total number of neurons
-  static constexpr double mV = 1e-3;
+  static constexpr double mV = 0.001;
   static constexpr int max_delay = 100;
-  double ms = 1e-3;
+  double ms = 0.001;
   double dt = 0.1*ms;
   double t = 0 * ms;
-  double taue = 0.001;
-  double taui = 0.002;
-  double tau_trace_pre = 0.020;
+  double taue = 0.005; // 60 cycles
+  double taui = 0.002; // 20 cycles
+  double tau_trace_pre = 0.002;
+  double tau_trace_post = 0.002;
 
   int train_limit = 100; // number of images processed in the training stage
-  int label_limit = 100; // number of images processed in the labelling stage
-  int test_limit = 100;  // number of images processed in the testing stage
+  int label_limit = 10; // number of images processed in the labelling stage
+  int test_limit = 1;  // number of images processed in the testing stage
 
   static constexpr double v_rest_e = 0*mV;
   static constexpr double v_rest_i = 0*mV;
@@ -69,7 +71,7 @@ public:
   static constexpr double v_reset_i = 20*mV;
   static constexpr double v_thresh_e = 13*mV;
   static constexpr double v_thresh_i = 25*mV;
-  static constexpr double stdp_lr = 0.0001;
+  static constexpr double stdp_lr = 0.00001;
   static constexpr double wmax = 1.0;
   static constexpr double wmin = 0;
 
@@ -78,7 +80,8 @@ public:
   std::vector<std::vector<int>*>   connectionTargets;
   std::vector<std::vector<int>*>   connectionDelays;
   std::vector<std::vector<float>*> connectionWeights;
-  std::vector<std::vector<float>*> connectionTrace;
+  std::vector<float> connectionTrace;
+  std::vector<float> postTrace;
 
   std::vector<std::tuple<int, int, int>> firings;
   std::vector<double> state; // state of a single neuron - for plotting
@@ -176,6 +179,13 @@ public:
    */
   void updateIncomingWeights(int index);
 
+  void updateFromInput(int index);
+  /**
+   * Update the weight values for the connectinons going out of the index
+   * @param index
+   */
+  // void updateOutgoingWeights(int index);
+
   /**
    * label the neurons with the class it presented the highest response on
    */
@@ -195,12 +205,18 @@ public:
    * output voltage for a given neuron per cycle to cerr
    */
   void plotNeuron();
+  void plotNeurons();
 
   void plotWeights();
+
+  void plotTrace();
 
   /**
    * Output the current weight values to a file
    */
   void saveWeights();
+  void saveStates();
+
+  void showWeightExtrema();
 
 };

@@ -32,6 +32,8 @@ int main(int argc, char const *argv[]) {
   network->initialize_params();
   std::cout << "Finished initializing parameters" << '\n';
 
+  network->showWeightExtrema();
+
   // std::chrono::time_point<std::chrono::system_clock> start, end;
   // Run simulation
   while(network->cur_img < network->train_limit) {
@@ -48,7 +50,10 @@ int main(int argc, char const *argv[]) {
   network->plotSpikes();
   // network->plotNeuron();
   // network->plotWeights();
+
   network->saveWeights();
+
+  network->showWeightExtrema();
 
   if (!eval) {
     return 0;
