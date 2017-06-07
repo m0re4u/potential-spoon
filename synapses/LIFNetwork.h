@@ -56,13 +56,15 @@ public:
   double ms = 0.001;
   double dt = 0.1*ms;
   double t = 0 * ms;
-  double taue = 0.005; // 60 cycles
+  double taue = 0.005; // 50 cycles
   double taui = 0.002; // 20 cycles
-  double tau_trace_pre = 0.002;
+  double tau_trace_pre = 0.001;
   double tau_trace_post = 0.002;
+  float theta_plus = 0.03;
+  float tau_theta = 500;
 
-  int train_limit = 100; // number of images processed in the training stage
-  int label_limit = 10; // number of images processed in the labelling stage
+  int train_limit = 10000; // number of images processed in the training stage
+  int label_limit = 10000; // number of images processed in the labelling stage
   int test_limit = 1;  // number of images processed in the testing stage
 
   static constexpr double v_rest_e = 0*mV;
@@ -82,9 +84,9 @@ public:
   std::vector<std::vector<float>*> connectionWeights;
   std::vector<float> connectionTrace;
   std::vector<float> postTrace;
+  std::vector<float> thetas;
 
   std::vector<std::tuple<int, int, int>> firings;
-  std::vector<double> state; // state of a single neuron - for plotting
   int refractory[N];
   int neuronClass[N];
   float previousSpike[N]; // store the timestamp of the previous spike
@@ -155,6 +157,8 @@ public:
    */
   void decayTrace();
 
+  void decayTheta();
+
   /**
    * Check whether input should be presented(350ms) and provide input, or
    * let the input layer sleep(150ms)
@@ -204,7 +208,6 @@ public:
   /**
    * output voltage for a given neuron per cycle to cerr
    */
-  void plotNeuron();
   void plotNeurons();
 
   void plotWeights();
@@ -218,5 +221,6 @@ public:
   void saveStates();
 
   void showWeightExtrema();
+  void showThetaExtrema();
 
 };

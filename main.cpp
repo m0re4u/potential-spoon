@@ -33,6 +33,7 @@ int main(int argc, char const *argv[]) {
   std::cout << "Finished initializing parameters" << '\n';
 
   network->showWeightExtrema();
+  network->showThetaExtrema();
 
   // std::chrono::time_point<std::chrono::system_clock> start, end;
   // Run simulation
@@ -40,20 +41,16 @@ int main(int argc, char const *argv[]) {
     network->cycle();
     network->t += network->dt;
     network->mstime_++;
-    // std::cout << "Time: " << network->t << " current image: " << network->cur_img << '\n';
     std::cout << '\r' << "Progress: " << std::setw(8) << std::setfill(' ')
               << (network->cur_img / float(network->train_limit))<< std::flush;
   }
   std::cout << '\n';
 
   std::cout << "Outputting training plots" << '\n';
-  network->plotSpikes();
-  // network->plotNeuron();
-  // network->plotWeights();
 
   network->saveWeights();
-
   network->showWeightExtrema();
+  network->showThetaExtrema();
 
   if (!eval) {
     return 0;
