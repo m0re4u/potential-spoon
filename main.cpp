@@ -8,9 +8,8 @@
 
 // Utilities
 #include "mnist/mnist_reader.hpp"
+#include "mnist/mnist_utils.hpp"
 
-// Spiking neurons
-#include "neurons/LIFNeuron.h"
 // Network
 #include "synapses/LIFNetwork.h"
 
@@ -20,13 +19,9 @@ int main(int argc, char const *argv[]) {
 
   std::cout << "Reading in MNIST dataset.." << '\n';
   auto dataset = mnist::read_dataset<std::vector, std::vector, uint8_t, uint8_t>();
-
-  // Initialize network
+  mnist::normalize_dataset(dataset);
   LIFNetwork *network = new LIFNetwork();
   network->load_dataset(dataset.training_images, dataset.training_labels);
-
-  // Test to see if images have loaded
-  // network->show_image(network->data[0]);
 
   std::cout << "Initializing parameters" << '\n';
   network->initialize_params();
@@ -35,7 +30,6 @@ int main(int argc, char const *argv[]) {
   network->showWeightExtrema();
   network->showThetaExtrema();
 
-  // std::chrono::time_point<std::chrono::system_clock> start, end;
   // Run simulation
   while(network->cur_img < network->train_limit) {
     network->cycle();
@@ -46,11 +40,15 @@ int main(int argc, char const *argv[]) {
   }
   std::cout << '\n';
 
-  std::cout << "Outputting training plots" << '\n';
-
+  std::cout << "Outputting training statistics" << '\n';
+  network->plotSpikes();
+  // network->plotWeights();
   network->saveWeights();
   network->showWeightExtrema();
   network->showThetaExtrema();
+
+  // std::cout << "Outputting weight image data" << '\n';
+  // network->plotWeightImage();
 
   if (!eval) {
     return 0;
@@ -63,32 +61,35 @@ int main(int argc, char const *argv[]) {
   std::cout << "Labelling neurons.." << '\n';
   network->labelNeurons();
 
-  // std::cout << "Outputting labelling plots" << '\n';
-  // network->plotSpikes();
-
   std::cout << "Evaluating test set" << '\n';
-  float correct = 0.;
   network->load_dataset(dataset.test_images, dataset.test_labels);
+  float correct = 0.;
 
   // Per image, predict a label and check if it is correct
   int i = 0;
+  int responses[10] = {0};
   while (network->cur_img < network->test_limit) {
-    // start = std::chrono::system_clock::now();
+    network->showWeightExtrema();
     int label = network->getLabelFromSpikes();
-    // end = std::chrono::system_clock::now();
-    // std::chrono::duration<double> dur = end - start;
-    // std::cerr << "Classification time: " << dur.count() << "s\n";
 
-    std::cout << "Index: " << i << " Guessed: " << label << " versus actual: " << int(network->labels[i]) << '\n';
+    std::cout << "Index: " << i << " Guessed: " << label
+              << " versus actual: " << int(network->labels[i]) << '\n';
     if (label == int(network->labels[i])) {
       correct++; // correct guess
     }
+    responses[label]++;
     network->reset_values();
     i++;
     network->cur_img = i;
   }
   std::cout << "Accuracy: " << correct << "/" << network->test_limit
             << " = " << correct / float(network->test_limit) << '\n';
+
+  std::cout << "Guesses: ";
+  for (size_t i = 0; i < 10; i++) {
+    std::cout << responses[i] << ", ";
+  }
+  std::cout << '\n';
 
   return 0;
 }
