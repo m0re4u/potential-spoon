@@ -40,10 +40,10 @@ void LIFNetwork::initialize_params() {
       // input connections, all to all input to exc
       for (j = 0; j < Ne; j++) {
         targets->push_back(j);
-        int d = (rand() % static_cast<int>(101));
+        int d = (rand() % static_cast<int>(max_delay + 1));
         delays->push_back(d);
         float val = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX/0.3));
-        weights->push_back(val*0.02);
+        weights->push_back(val*0.021);
       }
       connectionTrace.push_back(0);
     }
@@ -135,7 +135,6 @@ void LIFNetwork::presentData() {
         cycle_switcher = 0;
         input_intensity++;
       } else {
-        std::cout << " spikes: " << image_spikes << '\n';
         cycle_switcher = 0;
         sleepingCycle = true;
         input_intensity = 0;
@@ -173,12 +172,12 @@ void LIFNetwork::handleSpikes(int i) {
       }
       S(0, i) = v_reset_e;  // reset potential
       refractory[i] = 50;   // set refractory period
-      postTrace[i] += 1;    // update trace for STDP
-      // if (!learning) {
+      postTrace[i] += 500;    // update trace for STDP
+      if (!learning) {
         // Store spike
         int c = int(this->labels[this->cur_img]);
         firings.push_back(std::make_tuple(mstime_, i, c));
-      // }
+      }
 
       image_spikes++;       // count this spike for activation
       previousSpike[i] = t; // set timestamp as latest activation
@@ -198,11 +197,11 @@ void LIFNetwork::handleSpikes(int i) {
       }
       refractory[i] = 20;
       S(0, i) = v_reset_i;  // reset potential
-      // if (!learning) {
+      if (!learning) {
         // Store spike
         int c = int(this->labels[this->cur_img]);
         firings.push_back(std::make_tuple(mstime_, i, c));
-      // }
+      }
       previousSpike[i] = t;
     }
   } else {
@@ -213,17 +212,17 @@ void LIFNetwork::handleSpikes(int i) {
         // check if this spikes right after a exc spike, and weaken the connection if it did
         updateFromInput(i);
       }
-      connectionTrace[i-Nn] += 1;
+      connectionTrace[i-Nn] += 10;
       for (size_t j = 0; j < connectionTargets[i]->size(); j++) {
         // presynaptic spike
         spikeQueue[(mstime_ + (*connectionDelays[i])[j]) % max_delay][(*connectionTargets[i])[j]] += (*connectionWeights[i])[j];
       }
       S(0, i) = -1;  // reset potential
-      // if (!learning) {
+      if (!learning) {
         // Store spike
         int c = int(this->labels[this->cur_img]);
         firings.push_back(std::make_tuple(mstime_, i, c));
-      // }
+      }
       previousSpike[i] = t;
     }
   }
@@ -239,7 +238,7 @@ void LIFNetwork::updateIncomingWeights(int index) {
         // connection j from neuron i to index
         float dv = connectionTrace[i-Nn];
         float dw = (wmax - (*connectionWeights[i])[j]) / wmax;
-        float update = stdp_lr * dv * pow(dw, 2.0);
+        float update = stdp_lr_pre * dv * pow(dw, 2.0);
         // std::cout << "dv: " << dv << " pow: " << pow(dw, 2.0) << '\n';
         if (update > 0) {
           (*connectionWeights[i])[j] += update;
@@ -261,7 +260,7 @@ void LIFNetwork::updateFromInput(int index) {
     float dv = postTrace[(*connectionTargets[index])[i]];
     float dw = wmax - (*connectionWeights[index])[i];
     // std::cout << "neg dv: " << dv << " pow: " << pow(dw, 2.0) << '\n';
-    float update = stdp_lr * dv * pow(dw, 2.0);
+    float update = stdp_lr_post * dv * pow(dw, 1.0);
     if (update > 0) {
       (*connectionWeights[index])[i] -= update;
       if ((*connectionWeights[index])[i] > wmax) {
@@ -450,15 +449,17 @@ void LIFNetwork::plotSpikes() {
 
 void LIFNetwork::plotWeights() {
   int zero_w = 0;
+  int full_w = 0;
   for (size_t i = Nn; i < N; i++) {
     for (size_t j = 0; j < connectionWeights[i]->size(); j++) {
-      if ((*connectionWeights[i])[j] == 0) {
+      if ((*connectionWeights[i])[j] == wmin) {
         zero_w++;
       }
       std::cerr << (*connectionWeights[i])[j] << '\n';
     }
   }
   std::cout << "Number of 0 weights: " << zero_w << '\n';
+  std::cout << "Number of wmax weights: " << full_w << '\n';
 }
 
 void LIFNetwork::saveWeights() {
@@ -531,7 +532,7 @@ void LIFNetwork::plotTrace() {
   }
 }
 void LIFNetwork::plotNeurons() {
-  for (size_t i = 0; i < N; i++) {
+  for (size_t i = 0; i < Ne; i++) {
     std::cerr << mstime_ << ", " << i << ", " << S(0, i) << '\n';
   }
 }
@@ -547,14 +548,6 @@ void LIFNetwork::plotWeightImage() {
       }
     }
   }
-  // for (size_t i = Nn; i < Nd; i++) {
-  //   for (size_t j = 0; j < 28; j++) {
-  //     for (size_t k = 0; k < 28; k++) {
-  //       std::cerr << (*connectionWeights[j])[k] << ',';
-  //     }
-  //     std::cerr << '\n';
-  //   }
-  // }
   for (size_t i = 0; i < Ne; i++) {
     for (size_t k = 0; k < 28; k++) {
       for (size_t j = 0; j < 28; j++) {

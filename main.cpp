@@ -41,8 +41,8 @@ int main(int argc, char const *argv[]) {
   std::cout << '\n';
 
   std::cout << "Outputting training statistics" << '\n';
-  network->plotSpikes();
-  // network->plotWeights();
+  // network->plotSpikes();
+  network->plotWeights();
   network->saveWeights();
   network->showWeightExtrema();
   network->showThetaExtrema();

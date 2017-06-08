@@ -44,7 +44,7 @@ public:
   static constexpr int Nn = Ne+Ni;   // all non-input neurons
   static constexpr int Nd = 784;     // input neurons
   static constexpr int N = Ne+Ni+Nd; // total number of neurons
-  static constexpr int max_delay = 100;
+  static constexpr int max_delay = 10;
   double ms = 0.001;
   double dt = 0.1*ms;
   double t = 0 * ms;
@@ -55,8 +55,8 @@ public:
   float theta_plus = 0.01;
   float tau_theta = 500;
 
-  int train_limit = 100; // number of images processed in the training stage
-  int label_limit = 100; // number of images processed in the labelling stage
+  int train_limit = 300; // number of images processed in the training stage
+  int label_limit = 1000; // number of images processed in the labelling stage
   int test_limit = 100;  // number of images processed in the testing stage
 
   static constexpr double v_rest_e = 0.;
@@ -65,7 +65,8 @@ public:
   static constexpr double v_reset_i = 0.;
   static constexpr double v_thresh_e = 0.013;
   static constexpr double v_thresh_i = 0.025;
-  static constexpr double stdp_lr = 0.001;
+  static constexpr double stdp_lr_pre = 0.01;
+  static constexpr double stdp_lr_post = 0.01;
   static constexpr double wmax = 0.013;
   static constexpr double wmin = 0;
 
