@@ -56,9 +56,9 @@ public:
   float theta_plus = 0.01;
   float tau_theta = 500;
 
-  int train_limit = 1; // number of images processed in the training stage
-  int label_limit = 30000; // number of images processed in the labelling stage
-  int test_limit = 3000;  // number of images processed in the testing stage
+  int train_limit = 100; // number of images processed in the training stage
+  int label_limit = 100; // number of images processed in the labelling stage
+  int test_limit = 200;  // number of images processed in the testing stage
 
   static constexpr double v_rest_e = 0.;
   static constexpr double v_rest_i = 0.;
@@ -201,5 +201,6 @@ public:
 
   void showWeightExtrema();
   void showThetaExtrema();
+  void showNeuronStates();
 
 };

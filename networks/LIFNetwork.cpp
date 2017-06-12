@@ -155,6 +155,7 @@ void LIFNetwork::handleSpikes(int i) {
   if (i < Ne) {
     if (refractory[i] > 0) {
       refractory[i]--;
+      S(0,i) = v_reset_e;
       return;
     }
     if (S(0, i) > (v_thresh_e + thetas[i])) {
@@ -167,6 +168,7 @@ void LIFNetwork::handleSpikes(int i) {
         thetas[i] += theta_plus;
       }
       // Propagate spike, is done only once, since exc has one connection
+#pragma omp parallel for
       for (size_t j = 0; j < connectionTargets[i]->size(); j++) {
         S(0, (*connectionTargets[i])[j]) += (*connectionWeights[i])[j];
       }
@@ -185,6 +187,7 @@ void LIFNetwork::handleSpikes(int i) {
   } else if (i >= Ne && i < Nn) {
     if (refractory[i] > 0) {
       refractory[i]--;
+      S(0,i) = v_reset_i;
       return;
     }
     if (S(0, i) > v_thresh_i) {
@@ -274,11 +277,13 @@ void LIFNetwork::updateFromInput(int index) {
 }
 
 void LIFNetwork::decayTrace() {
+#pragma omp parallel for
   for (size_t i = 0; i < Nd; i++) {
     if (connectionTrace[i] > 0) {
       connectionTrace[i] *= exp(-(t - previousSpike[i+Nn]) / tau_trace_pre);
     }
   }
+#pragma omp parallel for
   for (size_t i = 0; i < Ne; i++) {
     if (postTrace[i] > 0) {
       postTrace[i] *= exp(-(t - previousSpike[i]) / tau_trace_post);
@@ -287,6 +292,7 @@ void LIFNetwork::decayTrace() {
 }
 
 void LIFNetwork::decayNeurons() {
+#pragma omp parallel for
   for (size_t i = 0; i < Nn; i++) {
     float diff = t - previousSpike[i];
     if (i < Ne) {
@@ -300,6 +306,7 @@ void LIFNetwork::decayNeurons() {
   }
 }
 void LIFNetwork::decayTheta() {
+#pragma omp parallel for
   for (size_t i = 0; i < Ne; i++) {
     float diff = t - previousSpike[i];
       thetas[i] *= exp(-diff / tau_theta);
@@ -311,6 +318,7 @@ void LIFNetwork::cycle() {
   presentData();
 
   // Add up spikes from the queue if the spike should be applied now
+#pragma omp parallel for
   for (size_t i = 0; i < Ne; i++) {
     processPreviousSpikes(i);
   }
@@ -318,10 +326,15 @@ void LIFNetwork::cycle() {
   // saveStates();
   // Check whether a spike occurs in a neuron, and put that spike in the queue
   // at the given delay
-  for (size_t i = 0; i < N; i++) {
+  for (size_t i = 0; i < Ne; i++) {
     handleSpikes(i);
   }
-
+  for (size_t i = Ne; i < Nn; i++) {
+    handleSpikes(i);
+  }
+  for (size_t i = Nn; i < N; i++) {
+    handleSpikes(i);
+  }
   // Exponential decay on the neuron state
   decayNeurons();
   // Exponential decay on the weight traces
@@ -572,5 +585,11 @@ void LIFNetwork::plotFiringRates() {
       std::cerr << '\n';
     }
     std::cerr << " " << spikesPerNeuron[i+Nn];
+  }
+}
+
+void LIFNetwork::showNeuronStates() {
+  for (size_t i = 0; i < Ne; i++) {
+    std::cout << "Neuron: " << i << " state: " << S(0,i) << " Refrac: " << refractory[i] << '\n';
   }
 }

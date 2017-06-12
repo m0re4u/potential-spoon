@@ -2,37 +2,26 @@
  * Main function for running an SNN on the MNIST dataset
  * @author Michiel van der Meer <michiel@dutchnaoteam.nl>
  */
+
 #include <iostream>
-// time
+// Time
 #include <chrono>
+// OpenMP functions & variables
+#include <omp.h>
 
 // Utilities
 #include "mnist/mnist_reader.hpp"
-#include "mnist/mnist_utils.hpp"
 
 // Basic network
 #include "networks/LIFNetwork.h"
-
 // Optimized network
 #include "optimizations/opt1.h"
 
-#include <omp.h>
-
-int main(int argc, char const *argv[]) {
-
-  bool eval = false;
-  bool r_t = true;
-
-
-  LIFNetwork *network = new LIFNetwork();
-
-  std::cout << "Reading in MNIST dataset.." << '\n';
-  auto dataset = mnist::read_dataset<std::vector, std::vector, uint8_t, uint8_t>();
-  network->load_dataset(dataset.training_images, dataset.training_labels);
-
+void trainLIF(LIFNetwork* network, int images, bool record) {
   std::cout << "Initializing parameters" << '\n';
   network->initialize_params();
-  network->record_training = r_t;
+  network->record_training = record;
+  network->train_limit = images;
   std::cout << "Finished initializing parameters" << '\n';
 
   network->showWeightExtrema();
@@ -40,17 +29,20 @@ int main(int argc, char const *argv[]) {
 
   // Run simulation
   while(network->cur_img < network->train_limit) {
+  // while(network->cur_img < network->train_limit && network->mstime_ < 10) {
+    // std::cout << "/* =======================CYCLE "<< network->mstime_<< "=================== */" << '\n';
     network->cycle();
     network->t += network->dt;
     network->mstime_++;
-    network->plotNeurons();
+    // network->showNeuronStates();
+
     std::cout << '\r' << "Progress: " << std::setw(8) << std::setfill(' ')
               << (network->cur_img / float(network->train_limit))<< std::flush;
   }
   std::cout << '\n';
 
   std::cout << "Outputting training statistics" << '\n';
-  // network->plotSpikes();
+  network->plotSpikes();
   // network->plotWeights();
   // network->plotFiringRates();
   network->saveWeights();
@@ -59,20 +51,20 @@ int main(int argc, char const *argv[]) {
 
   // std::cout << "Outputting weight image data" << '\n';
   // network->plotWeightImage();
-
-  if (!eval) {
-    return 0;
-  }
-
+}
+void labelLIF(LIFNetwork* network, int labeling) {
   std::cout << "Resetting values" << '\n';
   network->learning = false;
   network->reset_values();
+  network->label_limit = labeling;
 
   std::cout << "Labelling neurons.." << '\n';
   network->labelNeurons();
+}
 
+void testLIF(LIFNetwork* network, int testing) {
   std::cout << "Evaluating test set" << '\n';
-  network->load_dataset(dataset.test_images, dataset.test_labels);
+  network->test_limit = testing;
   float correct = 0.;
 
   // Per image, predict a label and check if it is correct
@@ -100,6 +92,29 @@ int main(int argc, char const *argv[]) {
     std::cout << responses[i] << ", ";
   }
   std::cout << '\n';
+}
+
+
+int main(int argc, char const *argv[]) {
+
+  bool eval = true;
+  bool r_t = false;
+
+  LIFNetwork*   n = new LIFNetwork();
+  Opt1Network* o1 = new Opt1Network();
+
+  std::cout << "Reading in MNIST dataset.." << '\n';
+  auto dataset = mnist::read_dataset<std::vector, std::vector, uint8_t, uint8_t>();
+
+  n->load_dataset(dataset.training_images, dataset.training_labels);
+  trainLIF(n, 10, r_t);
+
+  if (eval) {
+    labelLIF(n, 100);
+    n->load_dataset(dataset.test_images, dataset.test_labels);
+    testLIF(n, 100);
+  }
+
 
   return 0;
 }
