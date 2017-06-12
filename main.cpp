@@ -10,8 +10,11 @@
 #include "mnist/mnist_reader.hpp"
 #include "mnist/mnist_utils.hpp"
 
-// Network
-#include "synapses/LIFNetwork.h"
+// Basic network
+#include "networks/LIFNetwork.h"
+
+// Optimized network
+#include "optimizations/opt1.h"
 
 #include <omp.h>
 
