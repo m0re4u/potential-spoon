@@ -10,10 +10,17 @@ set(CMAKE_CXX_COMPILER_FLAGS "-Wall")
 # X11 for CImg
 message(STATUS "Searching for X11...")
 find_package(X11 REQUIRED)
-IF (X11_FOUND)
+if (X11_FOUND)
       include_directories(${X11_INCLUDE_DIR})
       link_libraries(${X11_LIBRARIES})
-ENDIF (X11_FOUND)
+endif(X11_FOUND)
+
+find_package(OpenMP)
+if (OPENMP_FOUND)
+    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+endif()
+
 # pthread for CImg
 message( STATUS "Searching for pthread..." )
 find_package(Threads REQUIRED)
@@ -30,7 +37,7 @@ add_executable(main main.cpp synapses/LIFNetwork.cpp)
 add_executable(cimg test/CImg_test.cpp)
 # SPNet
 add_executable(spnet synapses/SPNet.cpp)
-add_executable(opt1 optimizations/Network.cpp)
+# add_executable(opt1 optimizations/Network.cpp)
 
 # Fixes pthread errors
 target_link_libraries (cimg ${CMAKE_THREAD_LIBS_INIT})

@@ -13,18 +13,23 @@
 // Network
 #include "synapses/LIFNetwork.h"
 
+#include <omp.h>
+
 int main(int argc, char const *argv[]) {
 
-  bool eval = true;
+  bool eval = false;
+  bool r_t = true;
+
+
+  LIFNetwork *network = new LIFNetwork();
 
   std::cout << "Reading in MNIST dataset.." << '\n';
   auto dataset = mnist::read_dataset<std::vector, std::vector, uint8_t, uint8_t>();
-  mnist::normalize_dataset(dataset);
-  LIFNetwork *network = new LIFNetwork();
   network->load_dataset(dataset.training_images, dataset.training_labels);
 
   std::cout << "Initializing parameters" << '\n';
   network->initialize_params();
+  network->record_training = r_t;
   std::cout << "Finished initializing parameters" << '\n';
 
   network->showWeightExtrema();
@@ -35,6 +40,7 @@ int main(int argc, char const *argv[]) {
     network->cycle();
     network->t += network->dt;
     network->mstime_++;
+    network->plotNeurons();
     std::cout << '\r' << "Progress: " << std::setw(8) << std::setfill(' ')
               << (network->cur_img / float(network->train_limit))<< std::flush;
   }
@@ -42,7 +48,8 @@ int main(int argc, char const *argv[]) {
 
   std::cout << "Outputting training statistics" << '\n';
   // network->plotSpikes();
-  network->plotWeights();
+  // network->plotWeights();
+  // network->plotFiringRates();
   network->saveWeights();
   network->showWeightExtrema();
   network->showThetaExtrema();

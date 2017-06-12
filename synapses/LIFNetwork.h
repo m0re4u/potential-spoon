@@ -32,6 +32,7 @@ public:
   bool sleepingCycle = false;   // whether the input is active or sleeping
   bool learning = true;         // whether the connection weights are being adjusted using STDP
   bool plotting = false;        // output all neuron states per cycle for plotting
+  bool record_training = false; // record the spikes during training
 
   // Constants used for the simulation
   unsigned SLEEP_TIME = 150; // no. of sleeping cycles
@@ -50,14 +51,14 @@ public:
   double t = 0 * ms;
   double taue = 0.01; // 100 cycles
   double taui = 0.002; // 20 cycles
-  double tau_trace_pre = 0.001;
+  double tau_trace_pre = 0.0001;
   double tau_trace_post = 0.02;
   float theta_plus = 0.01;
   float tau_theta = 500;
 
-  int train_limit = 300; // number of images processed in the training stage
-  int label_limit = 1000; // number of images processed in the labelling stage
-  int test_limit = 100;  // number of images processed in the testing stage
+  int train_limit = 1; // number of images processed in the training stage
+  int label_limit = 30000; // number of images processed in the labelling stage
+  int test_limit = 3000;  // number of images processed in the testing stage
 
   static constexpr double v_rest_e = 0.;
   static constexpr double v_rest_i = 0.;
@@ -65,7 +66,7 @@ public:
   static constexpr double v_reset_i = 0.;
   static constexpr double v_thresh_e = 0.013;
   static constexpr double v_thresh_i = 0.025;
-  static constexpr double stdp_lr_pre = 0.01;
+  static constexpr double stdp_lr_pre = 0.001;
   static constexpr double stdp_lr_post = 0.01;
   static constexpr double wmax = 0.013;
   static constexpr double wmin = 0;
@@ -180,7 +181,7 @@ public:
    */
   void plotSpikes();
   /**
-   * output voltage for a given neuron per cycle to cerr
+   * output voltage for all neurons per cycle to cerr
    */
   void plotNeurons();
 
@@ -189,6 +190,8 @@ public:
   void plotWeightImage();
 
   void plotTrace();
+
+  void plotFiringRates();
 
   /**
    * Output the current weight values to a file
