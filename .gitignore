@@ -11,3 +11,6 @@ util/include
 
 # Sample Python code from (Diehl & Cook, 2014)
 util/diehl
+
+# output plots
+images/*
