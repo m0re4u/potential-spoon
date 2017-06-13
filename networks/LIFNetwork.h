@@ -27,6 +27,7 @@ public:
   unsigned mstime_ = 0;         // current millisecond of the simulation
   unsigned cycle_switcher = 0;  // counter between sleeping input/active input
   unsigned cur_img = 0;         // current image being presented
+  unsigned input_spikes = 0;    // number of spikes in the input layer during the presentation of the current image
   unsigned image_spikes = 0;    // number of spikes in the exc layer during the presentation of the current image
   unsigned input_intensity = 0; // input intensity of the current image
   bool sleepingCycle = false;   // whether the input is active or sleeping
@@ -35,7 +36,7 @@ public:
   bool record_training = false; // record the spikes during training
 
   // Constants used for the simulation
-  unsigned SLEEP_TIME = 150; // no. of sleeping cycles
+  unsigned SLEEP_TIME = 100; // no. of sleeping cycles
   unsigned IMG_TIME = 350; // no. of active input cycles
   unsigned BOTH_TIME = SLEEP_TIME + IMG_TIME;
 
@@ -48,13 +49,13 @@ public:
   static constexpr int max_delay = 10;
   double ms = 0.001;
   double dt = 0.1*ms;
-  double t = 0 * ms;
-  double taue = 0.01; // 100 cycles
-  double taui = 0.002; // 20 cycles
-  double tau_trace_pre = 0.0001;
+  double t = 1 * dt;
+  double taue = 0.001; // 100 cycles 0.01
+  double taui = 0.00002; // 20 cycles 0.002
+  double tau_trace_pre = 0.00001;
   double tau_trace_post = 0.02;
-  float theta_plus = 0.01;
-  float tau_theta = 500;
+  float theta_plus = 0.00005;
+  float tau_theta = 1000;
 
   int train_limit = 100; // number of images processed in the training stage
   int label_limit = 100; // number of images processed in the labelling stage
@@ -66,9 +67,10 @@ public:
   static constexpr double v_reset_i = 0.;
   static constexpr double v_thresh_e = 0.013;
   static constexpr double v_thresh_i = 0.025;
+  // static constexpr double stdp_lr_pre = 0.0000001;
   static constexpr double stdp_lr_pre = 0.001;
   static constexpr double stdp_lr_post = 0.01;
-  static constexpr double wmax = 0.013;
+  static constexpr double wmax = 0.010;
   static constexpr double wmin = 0;
 
   Eigen::Matrix<double, 1, N> S;
@@ -77,7 +79,6 @@ public:
   std::vector<std::vector<int>*>   connectionDelays;
   std::vector<std::vector<float>*> connectionWeights;
   std::vector<float> connectionTrace;
-  std::vector<float> postTrace;
   std::vector<float> thetas;
 
   std::vector<std::tuple<int, int, int>> firings;
@@ -162,8 +163,6 @@ public:
    * @param index update weights for connections to index
    */
   void updateIncomingWeights(int index);
-
-  void updateFromInput(int index);
 
   /**
    * label the neurons with the class it presented the highest response on

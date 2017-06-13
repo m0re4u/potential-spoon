@@ -29,20 +29,17 @@ void trainLIF(LIFNetwork* network, int images, bool record) {
 
   // Run simulation
   while(network->cur_img < network->train_limit) {
-  // while(network->cur_img < network->train_limit && network->mstime_ < 10) {
-    // std::cout << "/* =======================CYCLE "<< network->mstime_<< "=================== */" << '\n';
     network->cycle();
     network->t += network->dt;
     network->mstime_++;
-    // network->showNeuronStates();
-
     std::cout << '\r' << "Progress: " << std::setw(8) << std::setfill(' ')
               << (network->cur_img / float(network->train_limit))<< std::flush;
+
   }
   std::cout << '\n';
 
   std::cout << "Outputting training statistics" << '\n';
-  network->plotSpikes();
+  // network->plotSpikes();
   // network->plotWeights();
   // network->plotFiringRates();
   network->saveWeights();
@@ -50,7 +47,7 @@ void trainLIF(LIFNetwork* network, int images, bool record) {
   network->showThetaExtrema();
 
   // std::cout << "Outputting weight image data" << '\n';
-  // network->plotWeightImage();
+  network->plotWeightImage();
 }
 void labelLIF(LIFNetwork* network, int labeling) {
   std::cout << "Resetting values" << '\n';
@@ -97,8 +94,9 @@ void testLIF(LIFNetwork* network, int testing) {
 
 int main(int argc, char const *argv[]) {
 
-  bool eval = true;
   bool r_t = false;
+  bool label = true;
+  bool eval = true;
 
   LIFNetwork*   n = new LIFNetwork();
   Opt1Network* o1 = new Opt1Network();
@@ -107,12 +105,14 @@ int main(int argc, char const *argv[]) {
   auto dataset = mnist::read_dataset<std::vector, std::vector, uint8_t, uint8_t>();
 
   n->load_dataset(dataset.training_images, dataset.training_labels);
-  trainLIF(n, 10, r_t);
+  trainLIF(n, 1000, r_t);
 
+  if (label || eval) {
+    labelLIF(n, 1000);
+  }
   if (eval) {
-    labelLIF(n, 100);
     n->load_dataset(dataset.test_images, dataset.test_labels);
-    testLIF(n, 100);
+    testLIF(n, 200);
   }
 
 
