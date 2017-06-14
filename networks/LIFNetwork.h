@@ -53,10 +53,10 @@ public:
   double dt = 0.1*ms;
   double t = 1 * dt;
   double taue = 0.01;
-  double tau_trace_pre = 0.00002;
+  double tau_trace_pre = 0.00005;
   double trace_plus = 1;
-  float theta_plus = 0.0001;
-  float tau_theta = 0.01;
+  float theta_plus = 0.001;
+  float tau_theta = 0.00001;
 
   int train_limit = 100; // number of images processed in the training stage
   int label_limit = 100; // number of images processed in the labelling stage
@@ -67,9 +67,9 @@ public:
   static constexpr double v_thresh_e = 0.013;
   static constexpr double v_thresh_i = 0.025;
   // static constexpr double stdp_lr_pre = 0.0000001;
-  static constexpr double stdp_lr_pre = 0.0001;
-  static constexpr double stdp_offset = 0.01;
-  static constexpr double wmax = 0.0003;
+  static constexpr double stdp_lr_pre = 0.00001;
+  static constexpr double stdp_offset = 0.1;
+  static constexpr double wmax = 0.0009;
   static constexpr double wmin = 0;
 
   Eigen::Matrix<double, 1, N> S;

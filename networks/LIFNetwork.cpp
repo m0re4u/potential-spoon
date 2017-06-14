@@ -131,7 +131,7 @@ void LIFNetwork::presentData() {
     if (cycle_switcher >= IMG_TIME) {
       if (image_spikes < 5) {
         // not enough activation, present the image again with a higher intensity
-        std::cout << " - Not enough spikes, repeating image" << '\n';
+        // std::cout << " - Not enough spikes, repeating image" << '\n';
         cycle_switcher = 0;
         input_intensity++;
       } else {
@@ -139,7 +139,7 @@ void LIFNetwork::presentData() {
         for (size_t i = Nn; i < N; i++) {
           image_intensity += this->data[this->cur_img][i - Nn];
         }
-        std::cout << " - Image: " << cur_img << " intensity: " << image_intensity / 784.<< " input: " << input_spikes << " exc: " << image_spikes << '\n';
+        // std::cout << " - Image: " << cur_img << " intensity: " << image_intensity / 784.<< " input: " << input_spikes << " exc: " << image_spikes << '\n';
         cycle_switcher = 0;
         sleepingCycle = true;
         input_intensity = 0;
@@ -285,8 +285,15 @@ void LIFNetwork::decayNeurons() {
 void LIFNetwork::decayTheta() {
 #pragma omp parallel for
   for (size_t i = 0; i < Ne; i++) {
-    float diff = t - previousSpike[i];
-    thetas[i] *= exp(-tau_theta / diff);;
+    float diff;
+    // Float rounding error fix
+    if (t <= previousSpike[i]+0.000001) {
+      diff = 0.0001;
+    } else {
+      diff = t - previousSpike[i];
+    }
+    double times = exp(-tau_theta / diff);
+    thetas[i] *= times;
     if (thetas[i] < 0) {
       thetas[i] = 0;
     }
@@ -313,6 +320,7 @@ void LIFNetwork::cycle() {
   for (size_t i = Nn; i < N; i++) {
     handleSpikes(i);
   }
+
   // Exponential decay on the neuron state
   decayNeurons();
   // Exponential decay on the weight traces

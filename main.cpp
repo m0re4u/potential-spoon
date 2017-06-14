@@ -54,7 +54,7 @@ void trainLIF(LIFNetwork* network, int images, bool record, bool show) {
   std::cout << '\n';
 
   std::cout << "Outputting training statistics" << '\n';
-  network->plotSpikes();
+  // network->plotSpikes();
   // network->plotWeights();
   // network->plotFiringRates();
   if (show) {
@@ -112,9 +112,9 @@ void testLIF(LIFNetwork* network, int testing) {
 int main(int argc, char const *argv[]) {
 
   // record training spikes
-  bool r_t = true;
+  bool r_t = false;
   // show weight progression
-  bool s_w = true;
+  bool s_w = false;
   // Label data after training
   bool label = true;
   // Evaluate data after training
@@ -127,14 +127,14 @@ int main(int argc, char const *argv[]) {
   auto dataset = mnist::read_dataset<std::vector, std::vector, uint8_t, uint8_t>();
 
   n->load_dataset(dataset.training_images, dataset.training_labels);
-  trainLIF(n, 50, r_t, s_w);
+  trainLIF(n, 1000, r_t, s_w);
 
   if (label || eval) {
     labelLIF(n, 500);
   }
   if (eval) {
     n->load_dataset(dataset.test_images, dataset.test_labels);
-    testLIF(n, 1);
+    testLIF(n, 100);
   }
 
 
