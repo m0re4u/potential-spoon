@@ -52,25 +52,24 @@ public:
   double ms = 0.001;
   double dt = 0.1*ms;
   double t = 1 * dt;
-  double taue = 0.01; // 100 cycles 0.01
-  double tau_trace_pre = 0.00001;
-  float theta_plus = 0.00005;
+  double taue = 0.01;
+  double tau_trace_pre = 0.00002;
+  double trace_plus = 1;
+  float theta_plus = 0.0001;
   float tau_theta = 0.01;
 
   int train_limit = 100; // number of images processed in the training stage
   int label_limit = 100; // number of images processed in the labelling stage
   int test_limit = 200;  // number of images processed in the testing stage
 
-  static constexpr double v_rest_e = 0.;
-  static constexpr double v_rest_i = 0.;
   static constexpr double v_reset_e = 0.;
   static constexpr double v_reset_i = 0.;
   static constexpr double v_thresh_e = 0.013;
   static constexpr double v_thresh_i = 0.025;
   // static constexpr double stdp_lr_pre = 0.0000001;
   static constexpr double stdp_lr_pre = 0.0001;
-  static constexpr double stdp_offset = 1;
-  static constexpr double wmax = 0.001;
+  static constexpr double stdp_offset = 0.01;
+  static constexpr double wmax = 0.0003;
   static constexpr double wmin = 0;
 
   Eigen::Matrix<double, 1, N> S;
@@ -204,6 +203,7 @@ public:
   void showWeightExtrema();
   void showThetaExtrema();
   void showNeuronStates();
+  void showTraces();
 
   void liveWeightUpdates();
 

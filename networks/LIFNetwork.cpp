@@ -73,7 +73,7 @@ void LIFNetwork::reset_values() {
   }
 
   for (size_t i = 0; i < N; i++) {
-    previousSpike[i] = -0.01;
+    previousSpike[i] = -0.1;
     refractory[i] = 0; // no neuron is has fired, so no refraction
   }
 
@@ -131,7 +131,7 @@ void LIFNetwork::presentData() {
     if (cycle_switcher >= IMG_TIME) {
       if (image_spikes < 5) {
         // not enough activation, present the image again with a higher intensity
-        // std::cout << " - Not enough spikes, repeating image" << '\n';
+        std::cout << " - Not enough spikes, repeating image" << '\n';
         cycle_switcher = 0;
         input_intensity++;
       } else {
@@ -166,7 +166,7 @@ void LIFNetwork::handleSpikes(int i) {
     }
     if (S(0, i) > (v_thresh_e + thetas[i])) {
       // Spike in excitatory neuron
-      // std::cout << "Spike in exc: " << i << '\n';
+      // std::cout << "Spike in exc: " << i << " at: " << t << '\n';
       if (learning) {
         // postsynaptic spike in neuron i -> update weight of incoming connection
         updateIncomingWeights(i);
@@ -217,7 +217,7 @@ void LIFNetwork::handleSpikes(int i) {
     if (S(0, i) > 0) {
       // std::cout << "Spike in input: " << i << '\n';
       input_spikes++;
-      connectionTrace[i-Nn] += 1;
+      connectionTrace[i-Nn] += trace_plus;
       for (size_t j = 0; j < connectionTargets[i]->size(); j++) {
         // presynaptic spike
         spikeQueue[(mstime_ + (*connectionDelays[i])[j]) % max_delay][(*connectionTargets[i])[j]] += (*connectionWeights[i])[j];
@@ -262,7 +262,14 @@ void LIFNetwork::decayTrace() {
 #pragma omp parallel for
   for (size_t i = 0; i < Nd; i++) {
     if (connectionTrace[i] > 0) {
-      connectionTrace[i] *= exp(-(t - previousSpike[i+Nn]) / tau_trace_pre);
+      float diff;
+      // Fix rounding errors
+      if (t <= previousSpike[i+Nn]+0.000001) {
+        diff = 0.0001;
+      } else {
+        diff = t - previousSpike[i+Nn];
+      }
+      connectionTrace[i] *= exp(-tau_trace_pre / diff);
     }
   }
 }
@@ -272,14 +279,17 @@ void LIFNetwork::decayNeurons() {
   for (size_t i = 0; i < Ne; i++) {
     float diff = t - previousSpike[i];
       // exc neuron
-      S(0, i) *= (-(1 / diff) * taue) + 1;
+      S(0, i) *= exp(-taue / diff);
   }
 }
 void LIFNetwork::decayTheta() {
 #pragma omp parallel for
   for (size_t i = 0; i < Ne; i++) {
     float diff = t - previousSpike[i];
-    thetas[i] *= exp(-diff / tau_theta);
+    thetas[i] *= exp(-tau_theta / diff);;
+    if (thetas[i] < 0) {
+      thetas[i] = 0;
+    }
   }
 }
 
@@ -292,7 +302,6 @@ void LIFNetwork::cycle() {
   for (size_t i = 0; i < Ne; i++) {
     processPreviousSpikes(i);
   }
-
   // Check whether a spike occurs in a neuron, and put that spike in the queue
   // at the given delay
   for (size_t i = 0; i < Ne; i++) {
@@ -304,7 +313,6 @@ void LIFNetwork::cycle() {
   for (size_t i = Nn; i < N; i++) {
     handleSpikes(i);
   }
-
   // Exponential decay on the neuron state
   decayNeurons();
   // Exponential decay on the weight traces
@@ -477,7 +485,7 @@ void LIFNetwork::saveStates() {
 void LIFNetwork::showWeightExtrema() {
   float highest = 0;
   float lowest = 1;
-  size_t k,l,m,n;
+  size_t k=0,l=0,m=0,n=0;
   for (size_t i = Nn; i < N; i++) {
     for (size_t j = 0; j < connectionWeights[i]->size(); j++) {
       if ((*connectionWeights[i])[j] > highest) {
@@ -497,7 +505,7 @@ void LIFNetwork::showWeightExtrema() {
 void LIFNetwork::showThetaExtrema() {
   float highest = 0;
   float lowest = 1;
-  size_t k,l;
+  size_t k=0,l=0;
   for (size_t i = 0; i < thetas.size(); i++) {
     if (thetas[i] > highest) {
       highest = thetas[i];
@@ -565,6 +573,13 @@ void LIFNetwork::showNeuronStates() {
     std::cout << "Neuron: " << i << " state: " << S(0,i) << " Refrac: " << refractory[i] << " threshold: " << v_thresh_e + thetas[i]<< '\n';
   }
 }
+
+void LIFNetwork::showTraces() {
+  for (size_t i = 0; i < Nd; i++) {
+    std::cout << "Neuron: " << i << " trace: " << connectionTrace[i] << '\n';
+  }
+}
+
 
 void LIFNetwork::liveWeightUpdates() {
   float weight2im[Ne][28][28];
