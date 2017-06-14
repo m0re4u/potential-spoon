@@ -8,6 +8,8 @@
 #include "Eigen/Dense"
 
 #include <iostream>
+#include "CImg/CImg.h"
+
 #include <vector>
 #include <tuple>
 #include <algorithm>
@@ -46,16 +48,14 @@ public:
   static constexpr int Nn = Ne+Ni;   // all non-input neurons
   static constexpr int Nd = 784;     // input neurons
   static constexpr int N = Ne+Ni+Nd; // total number of neurons
-  static constexpr int max_delay = 10;
+  static constexpr int max_delay = 40;
   double ms = 0.001;
   double dt = 0.1*ms;
   double t = 1 * dt;
-  double taue = 0.001; // 100 cycles 0.01
-  double taui = 0.00002; // 20 cycles 0.002
+  double taue = 0.01; // 100 cycles 0.01
   double tau_trace_pre = 0.00001;
-  double tau_trace_post = 0.02;
   float theta_plus = 0.00005;
-  float tau_theta = 1000;
+  float tau_theta = 0.01;
 
   int train_limit = 100; // number of images processed in the training stage
   int label_limit = 100; // number of images processed in the labelling stage
@@ -68,9 +68,9 @@ public:
   static constexpr double v_thresh_e = 0.013;
   static constexpr double v_thresh_i = 0.025;
   // static constexpr double stdp_lr_pre = 0.0000001;
-  static constexpr double stdp_lr_pre = 0.001;
-  static constexpr double stdp_lr_post = 0.01;
-  static constexpr double wmax = 0.010;
+  static constexpr double stdp_lr_pre = 0.0001;
+  static constexpr double stdp_offset = 1;
+  static constexpr double wmax = 0.001;
   static constexpr double wmin = 0;
 
   Eigen::Matrix<double, 1, N> S;
@@ -80,6 +80,9 @@ public:
   std::vector<std::vector<float>*> connectionWeights;
   std::vector<float> connectionTrace;
   std::vector<float> thetas;
+
+  cimg_library::CImg<unsigned char> im;
+  cimg_library::CImgDisplay dis;
 
   std::vector<std::tuple<int, int, int>> firings;
   int refractory[N];
@@ -201,5 +204,7 @@ public:
   void showWeightExtrema();
   void showThetaExtrema();
   void showNeuronStates();
+
+  void liveWeightUpdates();
 
 };

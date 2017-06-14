@@ -241,7 +241,7 @@ void LIFNetwork::updateIncomingWeights(int index) {
     for (size_t j = 0; j < connectionTargets[i]->size(); j++) {
       if ((*connectionTargets[i])[j] == index) {
         // connection j from neuron i to index
-        float dv = connectionTrace[i-Nn] - 0.1;
+        float dv = connectionTrace[i-Nn] - stdp_offset;
         float dw = (wmax - (*connectionWeights[i])[j]) / wmax;
         float update = stdp_lr_pre * dv * pow(dw, 2.0);
         if (update > 0) {
@@ -269,22 +269,17 @@ void LIFNetwork::decayTrace() {
 
 void LIFNetwork::decayNeurons() {
 #pragma omp parallel for
-  for (size_t i = 0; i < Nn; i++) {
+  for (size_t i = 0; i < Ne; i++) {
     float diff = t - previousSpike[i];
-    if (i < Ne) {
       // exc neuron
       S(0, i) *= (-(1 / diff) * taue) + 1;
-    } else {
-      // inh neuron
-      S(0, i) *= (-(1 / diff) * taui) + 1;
-    }
   }
 }
 void LIFNetwork::decayTheta() {
 #pragma omp parallel for
   for (size_t i = 0; i < Ne; i++) {
     float diff = t - previousSpike[i];
-      thetas[i] *= exp(-diff / tau_theta);
+    thetas[i] *= exp(-diff / tau_theta);
   }
 }
 
@@ -569,4 +564,29 @@ void LIFNetwork::showNeuronStates() {
   for (size_t i = 0; i < Ne; i++) {
     std::cout << "Neuron: " << i << " state: " << S(0,i) << " Refrac: " << refractory[i] << " threshold: " << v_thresh_e + thetas[i]<< '\n';
   }
+}
+
+void LIFNetwork::liveWeightUpdates() {
+  float weight2im[Ne][28][28];
+  for (size_t i = 0; i < Ne; i++) {
+    for (size_t j = Nn; j < N; j++) {
+      for (size_t k = 0; k < connectionTargets[j]->size(); k++) {
+        if ((*connectionTargets[j])[k] == i) {
+          weight2im[i][(j-Nn) / 28][(j-Nn) % 28] = (*connectionWeights[j])[k];
+        }
+      }
+    }
+  }
+  for (size_t i = 0; i < 20; i++) {
+    for (size_t l = 0; l < 20; l++) {
+      for (size_t k = 0; k < 28; k++) {
+        for (size_t j = 0; j < 28; j++) {
+          float x = weight2im[(i*20) + l][k][j];
+          im((i*28) + k,(l*28)+j) = char(ceil((x/wmax)*255));
+        }
+      }
+    }
+  }
+  cimg_library::CImg<unsigned char> newIm(im);
+  dis.display(newIm);
 }

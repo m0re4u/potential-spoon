@@ -17,21 +17,35 @@
 // Optimized network
 #include "optimizations/opt1.h"
 
-void trainLIF(LIFNetwork* network, int images, bool record) {
+void trainLIF(LIFNetwork* network, int images, bool record, bool show) {
   std::cout << "Initializing parameters" << '\n';
   network->initialize_params();
   network->record_training = record;
   network->train_limit = images;
+  if (show) {
+    network->im = cimg_library::CImg<unsigned char>(560,560,1,1,0);
+    network->dis = cimg_library::CImgDisplay(network->im );
+  }
   std::cout << "Finished initializing parameters" << '\n';
 
   network->showWeightExtrema();
   network->showThetaExtrema();
 
   // Run simulation
+  bool showWeight = true;
+  int shown = 0;
   while(network->cur_img < network->train_limit) {
     network->cycle();
     network->t += network->dt;
     network->mstime_++;
+    if (showWeight && show) {
+      network->liveWeightUpdates();
+      showWeight = false;
+      shown = network->cur_img;
+    }
+    if (network->cur_img % 100 == 0 && shown != network->cur_img) {
+      showWeight = true;
+    }
     std::cout << '\r' << "Progress: " << std::setw(8) << std::setfill(' ')
               << (network->cur_img / float(network->train_limit))<< std::flush;
 
@@ -42,6 +56,10 @@ void trainLIF(LIFNetwork* network, int images, bool record) {
   // network->plotSpikes();
   // network->plotWeights();
   // network->plotFiringRates();
+  if (show) {
+    network->liveWeightUpdates();
+  }
+
   network->saveWeights();
   network->showWeightExtrema();
   network->showThetaExtrema();
@@ -94,8 +112,13 @@ void testLIF(LIFNetwork* network, int testing) {
 
 int main(int argc, char const *argv[]) {
 
+  // record training spikes
   bool r_t = false;
+  // show weight progression
+  bool s_w = false;
+  // Label data after training
   bool label = true;
+  // Evaluate data after training
   bool eval = true;
 
   LIFNetwork*   n = new LIFNetwork();
@@ -105,14 +128,14 @@ int main(int argc, char const *argv[]) {
   auto dataset = mnist::read_dataset<std::vector, std::vector, uint8_t, uint8_t>();
 
   n->load_dataset(dataset.training_images, dataset.training_labels);
-  trainLIF(n, 1000, r_t);
+  trainLIF(n, 100, r_t, s_w);
 
   if (label || eval) {
-    labelLIF(n, 1000);
+    labelLIF(n, 100);
   }
   if (eval) {
     n->load_dataset(dataset.test_images, dataset.test_labels);
-    testLIF(n, 200);
+    testLIF(n, 100);
   }
 
 
