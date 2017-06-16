@@ -32,11 +32,9 @@ include_directories(${CMAKE_CURRENT_LIST_DIR})
 # Test a small network of LIF neurons
 add_executable(LIF neurons/LIFNeuron.cpp neurons/LIFNeuron.h)
 # Reading in images and present them as spike train
-add_executable(main main.cpp networks/LIFNetwork.cpp)
+add_executable(main main.cpp networks/LIFNetwork.cpp optimizations/opt1.cpp)
 # CImg tester
 add_executable(cimg test/CImg_test.cpp)
-# First optimizations
-add_executable(opt1 optimizations/opt1.cpp)
 
 # Fixes pthread errors
 target_link_libraries (cimg ${CMAKE_THREAD_LIBS_INIT})

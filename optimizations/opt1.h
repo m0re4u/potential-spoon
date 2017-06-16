@@ -1,13 +1,15 @@
 #pragma once
 /**
  * Models a network of LIF neurons
- * Uses work from Izhikevich(https://www.izhikevich.org/publications/spnet.cpp)
  * @author Michiel van der Meer <michiel@dutchnaoteam.nl>
  */
 
 #include "Eigen/Dense"
 
 #include <iostream>
+#include "CImg/CImg.h"
+#include "networks/Network.h"
+
 #include <vector>
 #include <tuple>
 #include <algorithm>
@@ -19,23 +21,20 @@
 #include <cstdlib>
 #include <ctime>
 
-class Opt1Network {
+class Opt1Network : public Network {
 public:
-  Opt1Network() = default;
+  Opt1Network(int train, int label, int test, bool learn, bool record) : Network(train, label, test, learn, record) {}
 
   // Overall simulation variables
-  unsigned mstime_ = 0;         // current millisecond of the simulation
   unsigned cycle_switcher = 0;  // counter between sleeping input/active input
-  unsigned cur_img = 0;         // current image being presented
+  unsigned input_spikes = 0;    // number of spikes in the input layer during the presentation of the current image
   unsigned image_spikes = 0;    // number of spikes in the exc layer during the presentation of the current image
   unsigned input_intensity = 0; // input intensity of the current image
   bool sleepingCycle = false;   // whether the input is active or sleeping
-  bool learning = true;         // whether the connection weights are being adjusted using STDP
   bool plotting = false;        // output all neuron states per cycle for plotting
-  bool record_training = false; // record the spikes during training
 
   // Constants used for the simulation
-  unsigned SLEEP_TIME = 150; // no. of sleeping cycles
+  unsigned SLEEP_TIME = 100; // no. of sleeping cycles
   unsigned IMG_TIME = 350; // no. of active input cycles
   unsigned BOTH_TIME = SLEEP_TIME + IMG_TIME;
 
@@ -45,30 +44,21 @@ public:
   static constexpr int Nn = Ne+Ni;   // all non-input neurons
   static constexpr int Nd = 784;     // input neurons
   static constexpr int N = Ne+Ni+Nd; // total number of neurons
-  static constexpr int max_delay = 10;
-  double ms = 0.001;
-  double dt = 0.1*ms;
-  double t = 0 * ms;
-  double taue = 0.01; // 100 cycles
-  double taui = 0.002; // 20 cycles
-  double tau_trace_pre = 0.0001;
-  double tau_trace_post = 0.02;
-  float theta_plus = 0.01;
-  float tau_theta = 500;
+  static constexpr int max_delay = 40;
+  double taue = 0.01;
+  double tau_trace_pre = 0.00005;
+  double trace_plus = 1;
+  float theta_plus = 0.001;
+  float tau_theta = 0.00001;
 
-  int train_limit = 1; // number of images processed in the training stage
-  int label_limit = 30000; // number of images processed in the labelling stage
-  int test_limit = 3000;  // number of images processed in the testing stage
-
-  static constexpr double v_rest_e = 0.;
-  static constexpr double v_rest_i = 0.;
   static constexpr double v_reset_e = 0.;
   static constexpr double v_reset_i = 0.;
   static constexpr double v_thresh_e = 0.013;
   static constexpr double v_thresh_i = 0.025;
+  // static constexpr double stdp_lr_pre = 0.0000001;
   static constexpr double stdp_lr_pre = 0.001;
-  static constexpr double stdp_lr_post = 0.01;
-  static constexpr double wmax = 0.013;
+  static constexpr double stdp_offset = 0.1;
+  static constexpr double wmax = 0.0009;
   static constexpr double wmin = 0;
 
   Eigen::Matrix<double, 1, N> S;
@@ -76,8 +66,9 @@ public:
   std::vector<std::vector<int>*>   connectionTargets;
   std::vector<std::vector<int>*>   connectionDelays;
   std::vector<std::vector<float>*> connectionWeights;
+
+  std::vector<std::vector<float*>*> incomingWeights;
   std::vector<float> connectionTrace;
-  std::vector<float> postTrace;
   std::vector<float> thetas;
 
   std::vector<std::tuple<int, int, int>> firings;
@@ -85,10 +76,6 @@ public:
   int neuronClass[N];
   float previousSpike[N]; // store the timestamp of the previous spike
   double spikeQueue[max_delay][Ne];
-
-  // Dataset used as input
-  std::vector<std::vector<unsigned char, std::allocator<unsigned char>>> data;
-  std::vector<unsigned char> labels;
 
   /**
    * Initializes the paramters for the network. Derived from the Izhikevich
@@ -154,7 +141,9 @@ public:
    * Handle a spike based on the neuron index
    * @param index
    */
-  void handleSpikes(int index);
+  void handleExcSpikes(int index);
+  void handleInhSpikes(int index);
+  void handleInputSpikes(int index);
 
   /**
    * Update the weight values for the connections that are coming in to the
@@ -162,8 +151,6 @@ public:
    * @param index update weights for connections to index
    */
   void updateIncomingWeights(int index);
-
-  void updateFromInput(int index);
 
   /**
    * label the neurons with the class it presented the highest response on
@@ -201,5 +188,9 @@ public:
 
   void showWeightExtrema();
   void showThetaExtrema();
+  void showNeuronStates();
+  void showTraces();
+
+  void liveWeightUpdates();
 
 };

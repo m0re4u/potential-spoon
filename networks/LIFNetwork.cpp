@@ -103,7 +103,8 @@ bool LIFNetwork::generateSpike(unsigned value) {
 }
 
 void LIFNetwork::inputSpikes() {
-  for (int i = Nn; i != N; ++i) {
+#pragma omp parallel for
+  for (int i = Nn; i < N; ++i) {
     assert(i - Nn >= 0);
     bool spike = generateSpike(this->data[this->cur_img][i - Nn]);
     if (spike) {
@@ -139,7 +140,7 @@ void LIFNetwork::presentData() {
         for (size_t i = Nn; i < N; i++) {
           image_intensity += this->data[this->cur_img][i - Nn];
         }
-        // std::cout << " - Image: " << cur_img << " intensity: " << image_intensity / 784.<< " input: " << input_spikes << " exc: " << image_spikes << '\n';
+        std::cout << " - Image: " << cur_img << " intensity: " << image_intensity / 784.<< " input: " << input_spikes << " exc: " << image_spikes << '\n';
         cycle_switcher = 0;
         sleepingCycle = true;
         input_intensity = 0;
@@ -215,7 +216,6 @@ void LIFNetwork::handleSpikes(int i) {
   } else {
     // Since the input is rate based, use an arbitrary threshold
     if (S(0, i) > 0) {
-      // std::cout << "Spike in input: " << i << '\n';
       input_spikes++;
       connectionTrace[i-Nn] += trace_plus;
       for (size_t j = 0; j < connectionTargets[i]->size(); j++) {
@@ -244,14 +244,12 @@ void LIFNetwork::updateIncomingWeights(int index) {
         float dv = connectionTrace[i-Nn] - stdp_offset;
         float dw = (wmax - (*connectionWeights[i])[j]) / wmax;
         float update = stdp_lr_pre * dv * pow(dw, 2.0);
-        if (update > 0) {
-          (*connectionWeights[i])[j] += update;
-          if ((*connectionWeights[i])[j] > wmax) {
-            (*connectionWeights[i])[j] = wmax;
-          } else if ((*connectionWeights[i])[j] < wmin) {
-            (*connectionWeights[i])[j] = wmin;
-            // remove connection?
-          }
+        (*connectionWeights[i])[j] += update;
+        if ((*connectionWeights[i])[j] > wmax) {
+          (*connectionWeights[i])[j] = wmax;
+        } else if ((*connectionWeights[i])[j] < wmin) {
+          (*connectionWeights[i])[j] = wmin;
+          // remove connection?
         }
       }
     }
@@ -278,15 +276,21 @@ void LIFNetwork::decayNeurons() {
 #pragma omp parallel for
   for (size_t i = 0; i < Ne; i++) {
     float diff = t - previousSpike[i];
-      // exc neuron
       S(0, i) *= exp(-taue / diff);
+    // Fix rounding errors
+    // if (t <= previousSpike[i]+0.000001) {
+    //   diff = 0.0001;
+    // } else {
+    //   diff = t - previousSpike[i];
+    // }
+    // exc neuron
   }
 }
 void LIFNetwork::decayTheta() {
 #pragma omp parallel for
   for (size_t i = 0; i < Ne; i++) {
     float diff;
-    // Float rounding error fix
+    // Fix rounding errors
     if (t <= previousSpike[i]+0.000001) {
       diff = 0.0001;
     } else {
@@ -605,11 +609,11 @@ void LIFNetwork::liveWeightUpdates() {
       for (size_t k = 0; k < 28; k++) {
         for (size_t j = 0; j < 28; j++) {
           float x = weight2im[(i*20) + l][k][j];
-          im((i*28) + k,(l*28)+j) = char(ceil((x/wmax)*255));
+          Network::im((i*28) + k,(l*28)+j) = char(ceil((x/wmax)*255));
         }
       }
     }
   }
-  cimg_library::CImg<unsigned char> newIm(im);
-  dis.display(newIm);
+  cimg_library::CImg<unsigned char> newIm(Network::im);
+  Network::dis.display(newIm);
 }

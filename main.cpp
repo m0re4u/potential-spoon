@@ -12,20 +12,19 @@
 // Utilities
 #include "mnist/mnist_reader.hpp"
 
+#include "networks/Network.h"
 // Basic network
 #include "networks/LIFNetwork.h"
 // Optimized network
 #include "optimizations/opt1.h"
 
-void trainLIF(LIFNetwork* network, int images, bool record, bool show) {
+void trainLIF(Network* network, bool show) {
   std::cout << "Initializing parameters" << '\n';
   network->initialize_params();
-  network->record_training = record;
-  network->train_limit = images;
 
   if (show) {
     network->im = cimg_library::CImg<unsigned char>(560,560,1,1,0);
-    network->dis = cimg_library::CImgDisplay(network->im );
+    network->dis = cimg_library::CImgDisplay(network->im);
   }
   std::cout << "Finished initializing parameters" << '\n';
 
@@ -44,7 +43,7 @@ void trainLIF(LIFNetwork* network, int images, bool record, bool show) {
       showWeight = false;
       shown = network->cur_img;
     }
-    if (network->cur_img % 10 == 0 && shown != network->cur_img) {
+    if (network->cur_img % 1 == 0 && shown != network->cur_img) {
       showWeight = true;
     }
     std::cout << '\r' << "Progress: " << std::setw(8) << std::setfill(' ')
@@ -57,37 +56,33 @@ void trainLIF(LIFNetwork* network, int images, bool record, bool show) {
   // network->plotSpikes();
   // network->plotWeights();
   // network->plotFiringRates();
-  if (show) {
-    network->liveWeightUpdates();
-  }
   // network->plotWeightImage();
-
   network->showWeightExtrema();
   network->showThetaExtrema();
 
+  if (show) {
+    network->liveWeightUpdates();
+  }
+
 }
-void labelLIF(LIFNetwork* network, int labeling) {
+void labelLIF(Network* network) {
   std::cout << "Resetting values" << '\n';
   network->learning = false;
   network->reset_values();
-  network->label_limit = labeling;
 
   std::cout << "Labelling neurons.." << '\n';
   network->labelNeurons();
 }
 
-void testLIF(LIFNetwork* network, int testing) {
+void testLIF(Network* network) {
   std::cout << "Evaluating test set" << '\n';
-  network->test_limit = testing;
   float correct = 0.;
 
   // Per image, predict a label and check if it is correct
   int i = 0;
   int responses[10] = {0};
   while (network->cur_img < network->test_limit) {
-    network->showWeightExtrema();
     int label = network->getLabelFromSpikes();
-
     std::cout << "Index: " << i << " Guessed: " << label
               << " versus actual: " << int(network->labels[i]) << '\n';
     if (label == int(network->labels[i])) {
@@ -98,6 +93,9 @@ void testLIF(LIFNetwork* network, int testing) {
     i++;
     network->cur_img = i;
   }
+  std::cout << "==== Results ====" << '\n';
+  network->showWeightExtrema();
+
   std::cout << "Accuracy: " << correct << "/" << network->test_limit
             << " = " << correct / float(network->test_limit) << '\n';
 
@@ -111,32 +109,34 @@ void testLIF(LIFNetwork* network, int testing) {
 
 int main(int argc, char const *argv[]) {
 
+  std::cout << "OpenMP version: " << _OPENMP << '\n';
   // record training spikes
   bool r_t = false;
   // show weight progression
-  bool s_w = false;
+  bool s_w = true;
   // Label data after training
-  bool label = true;
+  bool label = false;
   // Evaluate data after training
-  bool eval = true;
+  bool eval = false;
 
-  LIFNetwork*   n = new LIFNetwork();
-  Opt1Network* o1 = new Opt1Network();
+  LIFNetwork* n2 = new LIFNetwork(10, 100, 50, true, r_t);
+  Opt1Network* n1 = new Opt1Network(100, 100, 20, true, r_t);
 
   std::cout << "Reading in MNIST dataset.." << '\n';
   auto dataset = mnist::read_dataset<std::vector, std::vector, uint8_t, uint8_t>();
 
-  n->load_dataset(dataset.training_images, dataset.training_labels);
-  trainLIF(n, 1000, r_t, s_w);
+  n1->load_dataset(dataset.training_images, dataset.training_labels);
+  trainLIF(n1, s_w);
 
   if (label || eval) {
-    labelLIF(n, 500);
+    labelLIF(n1);
   }
   if (eval) {
-    n->load_dataset(dataset.test_images, dataset.test_labels);
-    testLIF(n, 100);
+    n1->load_dataset(dataset.test_images, dataset.test_labels);
+    testLIF(n1);
   }
 
+  n1->im.display();
 
   return 0;
 }
