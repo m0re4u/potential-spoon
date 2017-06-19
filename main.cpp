@@ -138,17 +138,17 @@ int main(int argc, char const *argv[]) {
   n1->load_dataset(dataset.training_images, dataset.training_labels);
 
   std::cout << "Initializing parameters" << '\n';
-  network->initialize_params();
+  n1->initialize_params();
   std::cout << "Finished initializing parameters" << '\n';
-  network->showWeightExtrema();
-  network->showThetaExtrema();
+  n1->showWeightExtrema();
+  n1->showThetaExtrema();
 
   auto begin = std::chrono::high_resolution_clock::now();
 
   if (train) {
     trainLIF(n1, s_w);
   } else {
-    network->loadWeights("weights.csv");
+    n1->loadWeights("weights.csv");
   }
 
   if (label || eval) {

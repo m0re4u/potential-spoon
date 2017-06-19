@@ -305,13 +305,14 @@ void Opt1Network::cycle() {
   }
   // Check whether a spike occurs in a neuron, and put that spike in the queue
   // at the given delay
-
   for (i = 0; i < Ne; i++) {
     handleExcSpikes(i);
   }
+  // Check if spikes in the exc layer have made inh neurons spike
   for (i = Ne; i < Nn; i++) {
     handleInhSpikes(i);
   }
+  // Lastly, handle the spikes created by input image
   for (i = Nn; i < N; i++) {
     handleInputSpikes(i);
   }
@@ -336,7 +337,17 @@ void Opt1Network::labelNeurons() {
   }
 
   // Iterate through dataset once
+  int last_img = 0;
   while (cur_img < label_limit) {
+    if (cur_img != last_img) {
+      // When we're done with this image, count the firings that occurred
+      // per neuron per class
+      for (size_t i = 0; i < firings.size(); i++) {
+        classSpikes[std::get<1>(firings[i])][std::get<2>(firings[i])]++;
+      }
+      firings.clear();
+      last_img = cur_img;
+    }
     cycle();
     t += dt;
     mstime_++;
@@ -345,11 +356,6 @@ void Opt1Network::labelNeurons() {
   }
   std::cout << '\n';
   std::cout << "No. of labeling spikes: " << firings.size() << '\n';
-
-  for (size_t i = 0; i < firings.size(); i++) {
-    classSpikes[std::get<1>(firings[i])][std::get<2>(firings[i])]++;
-  }
-
   // For each neuron, if its response in this cycle was higher than the
   // previous highest, update the class associated with this neuron
 
