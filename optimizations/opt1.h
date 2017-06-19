@@ -3,9 +3,6 @@
  * Models a network of LIF neurons
  * @author Michiel van der Meer <michiel@dutchnaoteam.nl>
  */
-
-#include "Eigen/Dense"
-
 #include <iostream>
 #include "CImg/CImg.h"
 #include "networks/Network.h"
@@ -55,24 +52,33 @@ public:
   static constexpr double v_reset_i = 0.;
   static constexpr double v_thresh_e = 0.013;
   static constexpr double v_thresh_i = 0.025;
+  // static constexpr double stdp_lr_pre = 0.0000001;
   static constexpr double stdp_lr_pre = 0.0003;
   static constexpr double stdp_offset = 0.1;
   static constexpr double wmax = 0.0009;
   static constexpr double wmin = 0;
 
-  Eigen::Matrix<double, 1, N> S;
+  // Eigen::Matrix<double, 1, N> S;
+  double S[N];
 
-  std::vector<std::vector<int>*>   connectionTargets;
-  std::vector<std::vector<int>*>   connectionDelays;
-  float excWeights[Ne][1];
+  // exc neuron variables
+  float excWeights[Ne][1]; // outgoing connection weights
+  int excTargets[Ne][1];   // outgoing connection targets
+  float thetas[Ne];        // threshold addition
+
+  // inh neuron variables
   float inhWeights[Ni][Ne-1];
+  int inhTargets[Ni][Ne-1];
+
+  // input neuron variables
   float inputWeights[Nd][Ne];
+  int inputTargets[Nd][Ne];
+  int inputDelays[Nd][Ne];
+  float connectionTrace[Nd];
+
   float* incomingWeights[Ne][Nd];
 
-  std::vector<float> connectionTrace;
-  std::vector<float> thetas;
-
-  int refractory[N];
+  int refractory[N]; // nonzero if in refractory state
   int neuronClass[N];
   float previousSpike[N]; // store the timestamp of the previous spike
   double spikeQueue[max_delay][Ne];

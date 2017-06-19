@@ -12,9 +12,6 @@ void Opt1Network::initialize_params() {
   // Indexing variables
   int i, j;
 
-  // state matrix
-  S = Eigen::MatrixXd::Constant(1, N, 0);
-
   // Reset the values used as states, spike queue, and refractory counters
   reset_values();
   for (i = 0; i < Ne; i++) {
@@ -25,40 +22,39 @@ void Opt1Network::initialize_params() {
 
   // Create connections between neurons
   for (i = 0; i < N; i++) {
-    auto targets = new std::vector<int>();
-    auto delays = new std::vector<int>();
+    S[i]= 0; // initial state
     if (i < Ne) {
       // exc neuron connection to inhibitory: one on one
-      targets->push_back(i+Ne);
+      excTargets[i][0] = i+Ne;
       excWeights[i][0] = 0.026;
     } else if (i >= Ne && i < Nn) {
       // inh neuron connection to all exc except incoming
+      int k = 0;
       for (j = 0; j < Ne; j++) {
         if (!(i - Ne == j)) {
-          targets->push_back(j);
-          inhWeights[i-Ne][j] = -0.03;
+          inhTargets[i-Ne][k] = j;
+          inhWeights[i-Ne][k] = -0.03;
+          k++;
         }
       }
     } else {
       // input connections, all to all input to exc
       for (j = 0; j < Ne; j++) {
-        targets->push_back(j);
+        inputTargets[i-Nn][j] = j;
         int d = (rand() % static_cast<int>(max_delay + 1));
-        delays->push_back(d);
+        inputDelays[i-Nn][j] = d;
         // was 0.0001
         float val = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 0.0001));
         inputWeights[i-Nn][j] = val;
       }
-      connectionTrace.push_back(0);
+      connectionTrace[i] = 0.;
     }
-    connectionTargets.push_back(targets);
-    connectionDelays.push_back(delays);
   }
   for (i = 0; i < Ne; i++) {
-    thetas.push_back(0.0);
+    thetas[i] = 0.;
     for (size_t j = 0; j < Nd; j++) {
       for (size_t k = 0; k < Ne; k++) {
-        if ((*connectionTargets[j+Nn])[k] == i) {
+        if ( inputTargets[j][k] == i) {
           incomingWeights[i][j] = &(inputWeights[j][k]);
         }
       }
@@ -69,17 +65,17 @@ void Opt1Network::initialize_params() {
 void Opt1Network::reset_values() {
   // Starting voltages
   for (size_t i = 0; i < Ne; i++) {
-    S(0,i) = 0;
+    S[i] = 0;
     // Spike delays only occur in input to exc connections - reset them
     for (size_t j = 0; j < max_delay; j++) {
       spikeQueue[j][i] = 0; // very cache inefficient :/
     }
   }
   for (size_t i = Ne; i < Nn; i++) {
-    S(0,i) = 0;
+    S[i] = 0;
   }
   for (size_t i = Nn; i < N; i++) {
-    S(0,i) = -1; // does not matter, rate based
+    S[i] = -1; // does not matter, rate based
   }
 
   for (size_t i = 0; i < N; i++) {
@@ -118,9 +114,9 @@ void Opt1Network::inputSpikes() {
     assert(i - Nn >= 0);
     bool spike = generateSpike(this->data[this->cur_img][i - Nn]);
     if (spike) {
-      S(0, i) = 0.005;
+      S[i] = 0.005;
     } else {
-      S(0, i) = -1;
+      S[i] = -1;
     }
   }
 }
@@ -163,17 +159,17 @@ void Opt1Network::presentData() {
 void Opt1Network::processPreviousSpikes(int i) {
   // Add up any delayed spikes
   if (spikeQueue[mstime_% max_delay][i] > 0) {
-    S(0, i) += spikeQueue[mstime_ % max_delay][i];
+    S[i] += spikeQueue[mstime_ % max_delay][i];
     spikeQueue[mstime_ % max_delay][i] = 0;
   }
 }
 void Opt1Network::handleExcSpikes(int i) {
   if (refractory[i] > 0) {
     refractory[i]--;
-    S(0,i) = v_reset_e;
+    S[i] = v_reset_e;
     return;
   }
-  if (S(0, i) > (v_thresh_e + thetas[i])) {
+  if (S[i] > (v_thresh_e + thetas[i])) {
     if (learning) {
       // postsynaptic spike in neuron i -> update weight of incoming connection
       updateIncomingWeights(i);
@@ -181,8 +177,8 @@ void Opt1Network::handleExcSpikes(int i) {
       thetas[i] += theta_plus;
     }
     // Propagate spike, is done only once, since exc has one connection
-    S(0, (*connectionTargets[i])[0]) += excWeights[i][0];
-    S(0, i) = v_reset_e;  // reset potential
+    S[excTargets[i][0]] += excWeights[i][0];
+    S[i] = v_reset_e;  // reset potential
     refractory[i] = 50;   // set refractory period
     if (!learning || record_training) {
       // Store spike
@@ -197,19 +193,19 @@ void Opt1Network::handleExcSpikes(int i) {
 void Opt1Network::handleInhSpikes(int i) {
   if (refractory[i] > 0) {
     refractory[i]--;
-    S(0,i) = v_reset_i;
+    S[i] = v_reset_i;
     return;
   }
-  if (S(0, i) > v_thresh_i) {
+  if (S[i] > v_thresh_i) {
 #pragma omp parallel for
-    for (size_t j = 0; j < connectionTargets[i]->size(); j++) {
-      S(0, (*connectionTargets[i])[j]) += inhWeights[i-Ne][j];
-      if (S(0, (*connectionTargets[i])[j]) < 0) {
-        S(0, (*connectionTargets[i])[j]) = 0;
+    for (size_t j = 0; j < Ne-1; j++) {
+      S[inhTargets[i-Ne][j]] += inhWeights[i][j];
+      if (S[inhTargets[i-Ne][j]] < 0) {
+        S[inhTargets[i-Ne][j]] = 0;
       }
     }
     refractory[i] = 20;
-    S(0, i) = v_reset_i;  // reset potential
+    S[i] = v_reset_i;  // reset potential
     if (!learning || record_training) {
       // Store spike
       int c = int(this->labels[this->cur_img]);
@@ -221,14 +217,14 @@ void Opt1Network::handleInhSpikes(int i) {
 
 void Opt1Network::handleInputSpikes(int i) {
   // Since the input is rate based, use an arbitrary threshold
-  if (S(0, i) > 0) {
+  if (S[i] > 0) {
     input_spikes++;
     connectionTrace[i-Nn] += trace_plus;
-    for (size_t j = 0; j < connectionTargets[i]->size(); j++) {
+    for (size_t j = 0; j < Ne; j++) {
       // presynaptic spike
-      spikeQueue[(mstime_ + (*connectionDelays[i])[j]) % max_delay][(*connectionTargets[i])[j]] += inputWeights[i-Nn][j];
+      spikeQueue[(mstime_ + inputDelays[i-Nn][j]) % max_delay][inputTargets[i-Nn][j]] += inputWeights[i-Nn][j];
     }
-    S(0, i) = -1;  // reset potential
+    S[i] = -1;  // reset potential
     if (!learning || record_training) {
       // Store spike
       int c = int(this->labels[this->cur_img]);
@@ -278,7 +274,7 @@ void Opt1Network::decayNeurons() {
     } else {
       diff = t - previousSpike[i];
     }
-    S(0, i) *= exp(-taue / diff);
+    S[i] *= exp(-taue / diff);
   }
 }
 void Opt1Network::decayTheta() {
@@ -324,9 +320,10 @@ void Opt1Network::cycle() {
 
   // Exponential decay on the neuron state
   decayNeurons();
-  // Exponential decay on the weight traces
   if (learning) {
+    // Exponential decay on the weight traces
     decayTrace();
+    // Exponential decay on the theshold thetas
     decayTheta();
   }
 }
@@ -491,8 +488,8 @@ void Opt1Network::saveStates() {
   if (outfile.is_open()) {
     outfile << "Time: " << t;
     for (size_t i = 0; i < Ne; i++) {
-      if (S(0,i) > 0.013) {
-        outfile << " Neuron " << i << " state: " << S(0, i);
+      if (S[i] > 0.013) {
+        outfile << " Neuron " << i << " state: " << S[i];
       }
     }
     outfile << "\n";
@@ -517,14 +514,14 @@ void Opt1Network::showWeightExtrema() {
       }
     }
   }
-  std::cout << "Highest weight is " << k << " to " << (*connectionTargets[k])[l] << " with weight: " << highest << '\n';
-  std::cout << "Lowest weight is " << m << " to " << (*connectionTargets[m])[n] << " with weight: " << lowest << '\n';
+  std::cout << "Highest weight is " << k << " to " << inputTargets[m][n] << " with weight: " << highest << '\n';
+  std::cout << "Lowest weight is " << m << " to " << inputTargets[m][n] << " with weight: " << lowest << '\n';
 }
 void Opt1Network::showThetaExtrema() {
   float highest = 0;
   float lowest = 1;
   size_t k=0,l=0;
-  for (size_t i = 0; i < thetas.size(); i++) {
+  for (size_t i = 0; i < Ne; i++) {
     if (thetas[i] > highest) {
       highest = thetas[i];
       k = i;
@@ -544,7 +541,7 @@ void Opt1Network::plotTrace() {
 }
 void Opt1Network::plotNeurons() {
   for (size_t i = 0; i < Ne; i++) {
-    std::cerr << mstime_ << ", " << i << ", " << S(0, i) << '\n';
+    std::cerr << mstime_ << ", " << i << ", " << S[i] << '\n';
   }
 }
 
@@ -553,7 +550,7 @@ void Opt1Network::plotWeightImage() {
   for (size_t i = 0; i < Ne; i++) {
     for (size_t j = 0; j < Nd; j++) {
       for (size_t k = 0; k < Ne; k++) {
-        if ((*connectionTargets[j])[k] == i) {
+        if ( inputTargets[j][k] == i) {
           weight2im[i][(j-Nn) / 28][(j-Nn) % 28] = inputWeights[j][k];
         }
       }
@@ -588,7 +585,7 @@ void Opt1Network::plotFiringRates() {
 
 void Opt1Network::showNeuronStates() {
   for (size_t i = 0; i < Ne; i++) {
-    std::cout << "Neuron: " << i << " state: " << S(0,i) << " Refrac: " << refractory[i] << " threshold: " << v_thresh_e + thetas[i]<< '\n';
+    std::cout << "Neuron: " << i << " state: " << S[i] << " Refrac: " << refractory[i] << " threshold: " << v_thresh_e + thetas[i]<< '\n';
   }
 }
 
