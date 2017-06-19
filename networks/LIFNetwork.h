@@ -4,8 +4,6 @@
  * @author Michiel van der Meer <michiel@dutchnaoteam.nl>
  */
 
-#include "Eigen/Dense"
-
 #include <iostream>
 #include "CImg/CImg.h"
 #include "Network.h"
@@ -46,22 +44,22 @@ public:
   static constexpr int N = Ne+Ni+Nd; // total number of neurons
   static constexpr int max_delay = 40;
   double taue = 0.01;
-  double tau_trace_pre = 0.00005;
   double trace_plus = 1;
-  float theta_plus = 0.001;
-  float tau_theta = 0.00001;
+  double tau_trace_pre = 0.00005;
+  float theta_plus = 0.02;
+  float tau_theta = 0.0000001;
 
   static constexpr double v_reset_e = 0.;
   static constexpr double v_reset_i = 0.;
   static constexpr double v_thresh_e = 0.013;
   static constexpr double v_thresh_i = 0.025;
   // static constexpr double stdp_lr_pre = 0.0000001;
-  static constexpr double stdp_lr_pre = 0.001;
+  static constexpr double stdp_lr_pre = 0.0003;
   static constexpr double stdp_offset = 0.1;
   static constexpr double wmax = 0.0009;
   static constexpr double wmin = 0;
 
-  Eigen::Matrix<double, 1, N> S;
+  double S[N];
 
   std::vector<std::vector<int>*>   connectionTargets;
   std::vector<std::vector<int>*>   connectionDelays;
