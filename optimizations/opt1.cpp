@@ -22,7 +22,7 @@ void Opt1Network::initialize_params() {
 
   // Create connections between neurons
   for (i = 0; i < N; i++) {
-    S[i]= 0; // initial state
+    S[i]= 0.0; // initial state
     if (i < Ne) {
       // exc neuron connection to inhibitory: one on one
       excTargets[i][0] = i+Ne;
@@ -47,15 +47,15 @@ void Opt1Network::initialize_params() {
         float val = static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / 0.0001));
         inputWeights[i-Nn][j] = val;
       }
-      connectionTrace[i] = 0.;
+      connectionTrace[i-Nn] = 0.;
     }
   }
   for (i = 0; i < Ne; i++) {
-    thetas[i] = 0.;
+    thetas[i] = 0.0;
     for (size_t j = 0; j < Nd; j++) {
       for (size_t k = 0; k < Ne; k++) {
         if ( inputTargets[j][k] == i) {
-          incomingWeights[i][j] = &(inputWeights[j][k]);
+          incomingWeights[i][j] = &(inputWeights[j][i]);
         }
       }
     }
@@ -109,7 +109,6 @@ bool Opt1Network::generateSpike(unsigned value) {
 }
 
 void Opt1Network::inputSpikes() {
-#pragma omp parallel for
   for (int i = Nn; i < N; ++i) {
     assert(i - Nn >= 0);
     bool spike = generateSpike(this->data[this->cur_img][i - Nn]);
@@ -197,9 +196,8 @@ void Opt1Network::handleInhSpikes(int i) {
     return;
   }
   if (S[i] > v_thresh_i) {
-#pragma omp parallel for
     for (size_t j = 0; j < Ne-1; j++) {
-      S[inhTargets[i-Ne][j]] += inhWeights[i][j];
+      S[inhTargets[i-Ne][j]] += inhWeights[i-Ne][j];
       if (S[inhTargets[i-Ne][j]] < 0) {
         S[inhTargets[i-Ne][j]] = 0;
       }

@@ -58,7 +58,6 @@ public:
   static constexpr double wmax = 0.0009;
   static constexpr double wmin = 0;
 
-  // Eigen::Matrix<double, 1, N> S;
   double S[N];
 
   // exc neuron variables
