@@ -13,7 +13,7 @@ void LIFNetwork::initialize_params() {
   int i, j;
 
   // state matrix
-  
+
   S = Eigen::MatrixXd::Constant(1, N, 0);
 
   // Reset the values used as states, spike queue, and refractory counters
@@ -104,7 +104,6 @@ bool LIFNetwork::generateSpike(unsigned value) {
 }
 
 void LIFNetwork::inputSpikes() {
-#pragma omp parallel for
   for (int i = Nn; i < N; ++i) {
     assert(i - Nn >= 0);
     bool spike = generateSpike(this->data[this->cur_img][i - Nn]);
@@ -258,7 +257,6 @@ void LIFNetwork::updateIncomingWeights(int index) {
 }
 
 void LIFNetwork::decayTrace() {
-#pragma omp parallel for
   for (size_t i = 0; i < Nd; i++) {
     if (connectionTrace[i] > 0) {
       float diff;
@@ -274,7 +272,6 @@ void LIFNetwork::decayTrace() {
 }
 
 void LIFNetwork::decayNeurons() {
-#pragma omp parallel for
   for (size_t i = 0; i < Ne; i++) {
     float diff = t - previousSpike[i];
       S(0, i) *= exp(-taue / diff);
@@ -288,7 +285,6 @@ void LIFNetwork::decayNeurons() {
   }
 }
 void LIFNetwork::decayTheta() {
-#pragma omp parallel for
   for (size_t i = 0; i < Ne; i++) {
     float diff;
     // Fix rounding errors
@@ -310,7 +306,6 @@ void LIFNetwork::cycle() {
   presentData();
 
   // Add up spikes from the queue if the spike should be applied now
-#pragma omp parallel for
   for (size_t i = 0; i < Ne; i++) {
     processPreviousSpikes(i);
   }
