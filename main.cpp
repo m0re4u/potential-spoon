@@ -43,7 +43,7 @@ void trainLIF(Network* network, bool show) {
       showWeight = false;
       shown = network->cur_img;
     }
-    if (network->cur_img % 1 == 0 && shown != network->cur_img) {
+    if (network->cur_img % 50 == 0 && shown != network->cur_img) {
       showWeight = true;
     }
     std::cout << '\r' << "Progress: " << std::setw(8) << std::setfill(' ')
@@ -74,7 +74,7 @@ void labelLIF(Network* network) {
   network->labelNeurons();
 }
 
-void testLIF(Network* network) {
+void testLIF(Network* network, bool timing) {
   std::cout << "Evaluating test set" << '\n';
   float correct = 0.;
 
@@ -82,7 +82,18 @@ void testLIF(Network* network) {
   int i = 0;
   int responses[10] = {0};
   while (network->cur_img < network->test_limit) {
+    auto begin = std::chrono::high_resolution_clock::now();
     int label = network->getLabelFromSpikes();
+    if (timing) {
+      auto end = std::chrono::high_resolution_clock::now();
+      std::cout << " - Obtaining answer took: "
+                << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count()
+                << "ms with firings: " << network->firings.size()
+                << '\n';
+      std::cerr << network->firings.size() << ", "
+                << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count()
+                << '\n';
+    }
     std::cout << "Index: " << i << " Guessed: " << label
               << " versus actual: " << int(network->labels[i]) << '\n';
     if (label == int(network->labels[i])) {
@@ -95,6 +106,7 @@ void testLIF(Network* network) {
   }
   std::cout << "==== Results ====" << '\n';
   network->showWeightExtrema();
+  network->showThetaExtrema();
 
   std::cout << "Accuracy: " << correct << "/" << network->test_limit
             << " = " << correct / float(network->test_limit) << '\n';
@@ -110,17 +122,19 @@ void testLIF(Network* network) {
 int main(int argc, char const *argv[]) {
 
   std::cout << "OpenMP version: " << _OPENMP << '\n';
-  // record training spikes
+  // Record training spikes
   bool r_t = false;
-  // show weight progression
+  // Show weight progression
   bool s_w = true;
   // Label data after training
-  bool label = false;
+  bool label = true;
   // Evaluate data after training
-  bool eval = false;
+  bool eval = true;
+  // Output cycle timings
+  bool timings = true;
 
-  LIFNetwork* n2 = new LIFNetwork(10, 100, 50, true, r_t);
-  Opt1Network* n1 = new Opt1Network(100, 100, 20, true, r_t);
+  // LIFNetwork* n1 = new LIFNetwork(1000, 1000, 50, true, r_t);
+  Opt1Network* n1 = new Opt1Network(10000, 10000, 1000, true, r_t);
 
   std::cout << "Reading in MNIST dataset.." << '\n';
   auto dataset = mnist::read_dataset<std::vector, std::vector, uint8_t, uint8_t>();
@@ -133,10 +147,10 @@ int main(int argc, char const *argv[]) {
   }
   if (eval) {
     n1->load_dataset(dataset.test_images, dataset.test_labels);
-    testLIF(n1);
+    testLIF(n1, timings);
   }
 
-  n1->im.display();
+  // n1->im.display();
 
   return 0;
 }

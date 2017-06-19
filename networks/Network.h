@@ -39,7 +39,10 @@ public:
 
   // Dataset used as input
   std::vector<std::vector<unsigned char, std::allocator<unsigned char>>> data;
+  // Labels corresponding to the input
   std::vector<unsigned char> labels;
+  // The timestamp, index and label of spikes stored
+  std::vector<std::tuple<int, int, int>> firings;
 
   cimg_library::CImg<unsigned char> im;
   cimg_library::CImgDisplay dis;

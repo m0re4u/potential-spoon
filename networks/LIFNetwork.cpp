@@ -13,6 +13,7 @@ void LIFNetwork::initialize_params() {
   int i, j;
 
   // state matrix
+  
   S = Eigen::MatrixXd::Constant(1, N, 0);
 
   // Reset the values used as states, spike queue, and refractory counters
@@ -140,7 +141,7 @@ void LIFNetwork::presentData() {
         for (size_t i = Nn; i < N; i++) {
           image_intensity += this->data[this->cur_img][i - Nn];
         }
-        std::cout << " - Image: " << cur_img << " intensity: " << image_intensity / 784.<< " input: " << input_spikes << " exc: " << image_spikes << '\n';
+        // std::cout << " - Image: " << cur_img << " intensity: " << image_intensity / 784.<< " input: " << input_spikes << " exc: " << image_spikes << '\n';
         cycle_switcher = 0;
         sleepingCycle = true;
         input_intensity = 0;

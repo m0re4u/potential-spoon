@@ -1,3 +1,6 @@
 # potential-spoon
 
-24m17s for 10000 train & label
+| run thingy      | normal  | opt1   |
+| ----------------|:-------:| ------:|
+| 1000/1000/50    |   7m53s |  4m46s |
+| 10000/10000/200 |       ? | 48m19s |
