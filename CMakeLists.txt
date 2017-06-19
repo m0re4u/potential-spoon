@@ -2,7 +2,12 @@ cmake_minimum_required(VERSION 2.8)
 
 project(potential_spoon C CXX)
 
-set(CMAKE_CXX_STANDARD 14)
+if (CMAKE_VERSION VERSION_LESS "3.1")
+  set(CMAKE_CXX_FLAGS "--std=gnu++11 ${CMAKE_CXX_FLAGS}")
+else ()
+  set(CMAKE_CXX_STANDARD 11)
+  set(CMAKE_CXX_STANDARD_REQUIRED "ON")
+endif ()
 set(CMAKE_C_COMPILER clang)
 set(CMAKE_CXX_COMPILER clang++)
 set(CMAKE_BUILD_TYPE Release)
