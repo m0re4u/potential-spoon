@@ -455,30 +455,57 @@ void Opt1Network::plotWeights() {
   std::cout << "Number of 0 weights: " << zero_w << '\n';
 }
 
-void Opt1Network::saveWeights() {
+void Opt1Network::saveWeights(std::string filename) {
   std::ofstream weightFile;
-  weightFile.open ("weights.bin");
+  weightFile.open(filename);
 
   for (size_t j = 0; j < Ne; j++) {
-    weightFile << "Neuron: " << j << " weights: ";
-    weightFile << excWeights[j][0] << ", ";
-    weightFile << '\n';
+    weightFile << excWeights[j][0] << "," << '\n';
   }
   for (size_t j = 0; j < Ni; j++) {
-    weightFile << "Neuron: " << j << " weights: ";
     for (size_t i = 0; i < Ne-1; i++) {
-      weightFile << inhWeights[j][i] << ", ";
+      weightFile << inhWeights[j][i] << ",";
     }
     weightFile << '\n';
   }
   for (size_t j = 0; j < Nd; j++) {
-    weightFile << "Neuron: " << j << " weights: ";
     for (size_t i = 0; i < Ne; i++) {
-      weightFile << inputWeights[j][i] << ", ";
+      weightFile << inputWeights[j][i] << ",";
     }
     weightFile << '\n';
   }
   weightFile.close();
+  std::cout << "---- Saved weights" << '\n';
+}
+
+void Opt1Network::loadWeights(std::string filename) {
+  std::ifstream weightFile;
+  weightFile.open(filename);
+  std::string line;
+  int index = 0;
+  while (std::getline(weightFile,line)) {
+    std::stringstream lineStream(line);
+    std::string cell;
+    int j = 0;
+    while(std::getline(lineStream,cell, ',')) {
+      if (!lineStream && cell.empty()) {
+        // If there was a trailing comma then add an empty element.
+        // This checks for a trailing comma with no data after it.
+        break;
+      }
+      float w = std::stof(cell);
+      if (index < Ne) {
+        excWeights[index][j] = w;
+      } else if (index >= Ne && index < Nn) {
+        inhWeights[index-Ne][j] = w;
+      } else {
+        inputWeights[index-Nn][j] = w;
+      }
+      j++;
+    }
+    index++;
+  }
+  std::cout << "---- Loaded weights" << '\n';
 }
 
 void Opt1Network::saveStates() {

@@ -26,6 +26,8 @@ public:
   virtual void reset_values() = 0;
   virtual void labelNeurons() = 0;
   virtual int getLabelFromSpikes() = 0;
+  virtual void saveWeights(std::string filename) = 0;
+  virtual void loadWeights(std::string filename) = 0;
 
   bool record_training = false;
   bool learning = true;

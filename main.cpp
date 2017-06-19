@@ -19,18 +19,10 @@
 #include "optimizations/opt1.h"
 
 void trainLIF(Network* network, bool show) {
-  std::cout << "Initializing parameters" << '\n';
-  network->initialize_params();
-
   if (show) {
     network->im = cimg_library::CImg<unsigned char>(560,560,1,1,0);
     network->dis = cimg_library::CImgDisplay(network->im);
   }
-  std::cout << "Finished initializing parameters" << '\n';
-
-  network->showWeightExtrema();
-  network->showThetaExtrema();
-
   // Run simulation
   bool showWeight = true;
   int shown = 0;
@@ -57,6 +49,7 @@ void trainLIF(Network* network, bool show) {
   // network->plotWeights();
   // network->plotFiringRates();
   // network->plotWeightImage();
+  network->saveWeights("weights.csv");
   network->showWeightExtrema();
   network->showThetaExtrema();
 
@@ -128,6 +121,8 @@ int main(int argc, char const *argv[]) {
   bool r_t = false;
   // Show weight progression
   bool s_w = false;
+  // Perform training
+  bool train = true;
   // Label data after training
   bool label = true;
   // Evaluate data after training
@@ -140,14 +135,26 @@ int main(int argc, char const *argv[]) {
 
   std::cout << "Reading in MNIST dataset.." << '\n';
   auto dataset = mnist::read_dataset<std::vector, std::vector, uint8_t, uint8_t>();
-
   n1->load_dataset(dataset.training_images, dataset.training_labels);
+
+  std::cout << "Initializing parameters" << '\n';
+  network->initialize_params();
+  std::cout << "Finished initializing parameters" << '\n';
+  network->showWeightExtrema();
+  network->showThetaExtrema();
+
   auto begin = std::chrono::high_resolution_clock::now();
-  trainLIF(n1, s_w);
+
+  if (train) {
+    trainLIF(n1, s_w);
+  } else {
+    network->loadWeights("weights.csv");
+  }
 
   if (label || eval) {
     labelLIF(n1);
   }
+
   if (eval) {
     n1->load_dataset(dataset.test_images, dataset.test_labels);
     testLIF(n1, timings);

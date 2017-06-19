@@ -18,6 +18,7 @@
 #include <math.h>
 #include <cstdlib>
 #include <ctime>
+#include <sstream>
 
 class LIFNetwork : public Network {
 public:
@@ -179,7 +180,8 @@ public:
   /**
    * Output the current weight values to a file
    */
-  void saveWeights();
+  void saveWeights(std::string filename);
+  void loadWeights(std::string filename);
   void saveStates();
 
   void showWeightExtrema();

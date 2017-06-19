@@ -459,17 +459,41 @@ void LIFNetwork::plotWeights() {
   std::cout << "Number of wmax weights: " << full_w << '\n';
 }
 
-void LIFNetwork::saveWeights() {
+void LIFNetwork::saveWeights(std::string filename) {
   std::ofstream weightFile;
-  weightFile.open ("weights.bin");
+  weightFile.open(filename);
   for (size_t i = 0; i < N; i++) {
-    weightFile << "Neuron: " << i << " weights: ";
     for (auto x : (*connectionWeights[i]) ) {
-      weightFile << x << ", ";
+      weightFile << x << ",";
     }
     weightFile << '\n';
   }
   weightFile.close();
+
+  std::cout << "---- Saved weights" << '\n';
+}
+void LIFNetwork::loadWeights(std::string filename) {
+  std::ifstream weightFile;
+  weightFile.open(filename);
+  std::string line;
+  int index = 0;
+  while (std::getline(weightFile,line)) {
+    std::stringstream lineStream(line);
+    std::string cell;
+    int j = 0;
+    while(std::getline(lineStream,cell, ',')) {
+      if (!lineStream && cell.empty()) {
+        // If there was a trailing comma then add an empty element.
+        // This checks for a trailing comma with no data after it.
+        break;
+      }
+      float w = std::stof(cell);
+      (*connectionWeights[index])[j] = w;
+      j++;
+    }
+    index++;
+  }
+  std::cout << "---- Loaded weights" << '\n';
 }
 
 void LIFNetwork::saveStates() {
