@@ -84,18 +84,20 @@ void testLIF(Network* network, bool timing) {
   while (network->cur_img < network->test_limit) {
     auto begin = std::chrono::high_resolution_clock::now();
     int label = network->getLabelFromSpikes();
+    std::cout << "Index: " << i << " Guessed: " << label
+              << " versus actual: " << int(network->labels[i]);
     if (timing) {
       auto end = std::chrono::high_resolution_clock::now();
       std::cout << " - Obtaining answer took: "
-                << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count()
-                << "ms with firings: " << network->firings.size()
-                << '\n';
+      << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count()
+      << "ms with firings: " << network->firings.size()
+      << '\n';
       std::cerr << network->firings.size() << ", "
-                << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count()
-                << '\n';
+      << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count()
+      << '\n';
+    } else {
+      std::cout << '\n';
     }
-    std::cout << "Index: " << i << " Guessed: " << label
-              << " versus actual: " << int(network->labels[i]) << '\n';
     if (label == int(network->labels[i])) {
       correct++; // correct guess
     }
@@ -121,11 +123,11 @@ void testLIF(Network* network, bool timing) {
 
 int main(int argc, char const *argv[]) {
 
-  std::cout << "OpenMP version: " << _OPENMP << '\n';
+  std::cout << "OpenMP version: " << _OPENMP  << " - max threads: " << omp_get_max_threads() << '\n';
   // Record training spikes
   bool r_t = false;
   // Show weight progression
-  bool s_w = false;
+  bool s_w = true;
   // Label data after training
   bool label = true;
   // Evaluate data after training
@@ -133,13 +135,14 @@ int main(int argc, char const *argv[]) {
   // Output cycle timings
   bool timings = true;
 
-  // LIFNetwork* n1 = new LIFNetwork(1000, 1000, 50, true, r_t);
-  Opt1Network* n1 = new Opt1Network(10000, 10000, 1000, true, r_t);
+  // LIFNetwork* n1 = new LIFNetwork(5000, 5000, 500, true, r_t);
+  Opt1Network* n1 = new Opt1Network(5000, 5000, 500, true, r_t);
 
   std::cout << "Reading in MNIST dataset.." << '\n';
   auto dataset = mnist::read_dataset<std::vector, std::vector, uint8_t, uint8_t>();
 
   n1->load_dataset(dataset.training_images, dataset.training_labels);
+  auto begin = std::chrono::high_resolution_clock::now();
   trainLIF(n1, s_w);
 
   if (label || eval) {
@@ -150,7 +153,12 @@ int main(int argc, char const *argv[]) {
     testLIF(n1, timings);
   }
 
-  // n1->im.display();
+  auto end = std::chrono::high_resolution_clock::now();
+  std::cout << "Duration: "
+            << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count()
+            << "ms" << '\n';
+
+  n1->im.display();
 
   return 0;
 }
