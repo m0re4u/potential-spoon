@@ -127,7 +127,7 @@ int main(int argc, char const *argv[]) {
   // Record training spikes
   bool r_t = false;
   // Show weight progression
-  bool s_w = true;
+  bool s_w = false;
   // Label data after training
   bool label = true;
   // Evaluate data after training
