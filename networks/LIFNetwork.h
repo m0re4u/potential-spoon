@@ -70,7 +70,6 @@ public:
   std::vector<float> connectionTrace;
   std::vector<float> thetas;
 
-  std::vector<std::tuple<int, int, int>> firings;
   int refractory[N];
   int neuronClass[N];
   float previousSpike[N]; // store the timestamp of the previous spike
