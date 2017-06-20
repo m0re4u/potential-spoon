@@ -1,3 +1,0 @@
-/home/m0re/projects/uni/potential-spoon/atom/build/CMakeFiles/rebuild_cache.dir
-/home/m0re/projects/uni/potential-spoon/atom/build/CMakeFiles/edit_cache.dir
-/home/m0re/projects/uni/potential-spoon/atom/build/CMakeFiles/atom.dir
