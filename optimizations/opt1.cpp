@@ -126,6 +126,7 @@ void Opt1Network::presentData() {
     cycle_switcher++;
     if (cycle_switcher >= SLEEP_TIME) {
       cur_img++;
+      cur_img %= 60000; // keep going through the images
       cycle_switcher = 0;
       sleepingCycle = false;
       image_spikes = 0;
