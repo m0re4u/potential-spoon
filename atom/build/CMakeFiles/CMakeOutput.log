@@ -1,0 +1,598 @@
+The target system is: Linux -  - 
+The host system is: Linux - 4.4.0-79-generic - x86_64
+Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+Compiler: /usr/bin/clang -nostdlib
+Build flags: ;-Wall;-Wall
+Id flags: 
+
+The output was:
+0
+/usr/bin/ld: warning: cannot find entry symbol _start; defaulting to 0000000000400180
+
+
+Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "a.out"
+
+The C compiler identification is Clang, found in "/home/m0re/projects/uni/potential-spoon/atom/build/CMakeFiles/3.5.0/CompilerIdC/a.out"
+
+Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+Compiler: /usr/bin/clang++ -nostdlib
+Build flags: ;-Wall;-Wall
+Id flags: 
+
+The output was:
+0
+/usr/bin/ld: warning: cannot find entry symbol _start; defaulting to 0000000000400180
+
+
+Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "a.out"
+
+The CXX compiler identification is Clang, found in "/home/m0re/projects/uni/potential-spoon/atom/build/CMakeFiles/3.5.0/CompilerIdCXX/a.out"
+
+Determining if the C compiler works passed with the following output:
+Change Dir: /home/m0re/projects/uni/potential-spoon/atom/build/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_61128/fast"
+/usr/bin/make -f CMakeFiles/cmTC_61128.dir/build.make CMakeFiles/cmTC_61128.dir/build
+make[1]: Entering directory '/home/m0re/projects/uni/potential-spoon/atom/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_61128.dir/testCCompiler.c.o
+/usr/bin/clang -nostdlib --target=i686-pc-linux-gnu  -I/home/m0re/projects/uni/potential-spoon/atom/gcc/include -I/home/m0re/projects/uni/potential-spoon/atom/gcc/include/c++/5.2.0 -I/home/m0re/projects/uni/potential-spoon/atom/gcc/include/c++/5.2.0/i686-pc-linux-gnu -I/home/m0re/projects/uni/potential-spoon/atom/clang/include   -o CMakeFiles/cmTC_61128.dir/testCCompiler.c.o   -c /home/m0re/projects/uni/potential-spoon/atom/build/CMakeFiles/CMakeTmp/testCCompiler.c
+Linking C executable cmTC_61128
+/home/m0re/Downloads/installers/cmake-3.5.0-Linux-x86_64/bin/cmake -E cmake_link_script CMakeFiles/cmTC_61128.dir/link.txt --verbose=1
+/usr/bin/clang -nostdlib --target=i686-pc-linux-gnu      CMakeFiles/cmTC_61128.dir/testCCompiler.c.o  -o cmTC_61128 
+/usr/bin/ld: warning: cannot find entry symbol _start; defaulting to 00000000080480c0
+make[1]: Leaving directory '/home/m0re/projects/uni/potential-spoon/atom/build/CMakeFiles/CMakeTmp'
+
+
+Detecting C compiler ABI info compiled with the following output:
+Change Dir: /home/m0re/projects/uni/potential-spoon/atom/build/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_8ae98/fast"
+/usr/bin/make -f CMakeFiles/cmTC_8ae98.dir/build.make CMakeFiles/cmTC_8ae98.dir/build
+make[1]: Entering directory '/home/m0re/projects/uni/potential-spoon/atom/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_8ae98.dir/CMakeCCompilerABI.c.o
+/usr/bin/clang -nostdlib --target=i686-pc-linux-gnu  -I/home/m0re/projects/uni/potential-spoon/atom/gcc/include -I/home/m0re/projects/uni/potential-spoon/atom/gcc/include/c++/5.2.0 -I/home/m0re/projects/uni/potential-spoon/atom/gcc/include/c++/5.2.0/i686-pc-linux-gnu -I/home/m0re/projects/uni/potential-spoon/atom/clang/include   -o CMakeFiles/cmTC_8ae98.dir/CMakeCCompilerABI.c.o   -c /home/m0re/Downloads/installers/cmake-3.5.0-Linux-x86_64/share/cmake-3.5/Modules/CMakeCCompilerABI.c
+Linking C executable cmTC_8ae98
+/home/m0re/Downloads/installers/cmake-3.5.0-Linux-x86_64/bin/cmake -E cmake_link_script CMakeFiles/cmTC_8ae98.dir/link.txt --verbose=1
+/usr/bin/clang -nostdlib --target=i686-pc-linux-gnu     -v CMakeFiles/cmTC_8ae98.dir/CMakeCCompilerABI.c.o  -o cmTC_8ae98  
+clang version 3.8.0-2ubuntu4 (tags/RELEASE_380/final)
+Target: i686-pc-linux-gnu
+Thread model: posix
+InstalledDir: /usr/bin
+Found candidate GCC installation: /usr/bin/../lib/gcc/i686-linux-gnu/6.0.0
+Found candidate GCC installation: /usr/bin/../lib/gcc/x86_64-linux-gnu/4.8
+Found candidate GCC installation: /usr/bin/../lib/gcc/x86_64-linux-gnu/4.8.5
+Found candidate GCC installation: /usr/bin/../lib/gcc/x86_64-linux-gnu/4.9
+Found candidate GCC installation: /usr/bin/../lib/gcc/x86_64-linux-gnu/4.9.3
+Found candidate GCC installation: /usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0
+Found candidate GCC installation: /usr/bin/../lib/gcc/x86_64-linux-gnu/6.0.0
+Found candidate GCC installation: /usr/lib/gcc/i686-linux-gnu/6.0.0
+Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/4.8
+Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/4.8.5
+Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/4.9
+Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/4.9.3
+Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/5.4.0
+Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/6.0.0
+Selected GCC installation: /usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0
+Candidate multilib: .;@m64
+Candidate multilib: 32;@m32
+Candidate multilib: x32;@mx32
+Selected multilib: 32;@m32
+ "/usr/bin/ld" -z relro --hash-style=gnu --build-id --eh-frame-hdr -m elf_i386 -dynamic-linker /lib/ld-linux.so.2 -o cmTC_8ae98 -L/usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0/32 -L/usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0/../../../i386-linux-gnu -L/usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0/../../../../lib32 -L/lib/i386-linux-gnu -L/lib/../lib32 -L/usr/lib/i386-linux-gnu -L/usr/lib/../lib32 -L/usr/lib/x86_64-linux-gnu/../../lib32 -L/usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0 -L/usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0/../../.. -L/usr/lib/llvm-3.8/bin/../lib -L/lib -L/usr/lib CMakeFiles/cmTC_8ae98.dir/CMakeCCompilerABI.c.o
+/usr/bin/ld: warning: cannot find entry symbol _start; defaulting to 00000000080480c0
+make[1]: Leaving directory '/home/m0re/projects/uni/potential-spoon/atom/build/CMakeFiles/CMakeTmp'
+
+
+Parsed C implicit link information from above output:
+  link line regex: [^( *|.*[/\])(CMAKE_LINKER-NOTFOUND|([^/\]+-)?ld|collect2)[^/\]*( |$)]
+  ignore line: [Change Dir: /home/m0re/projects/uni/potential-spoon/atom/build/CMakeFiles/CMakeTmp]
+  ignore line: []
+  ignore line: [Run Build Command:"/usr/bin/make" "cmTC_8ae98/fast"]
+  ignore line: [/usr/bin/make -f CMakeFiles/cmTC_8ae98.dir/build.make CMakeFiles/cmTC_8ae98.dir/build]
+  ignore line: [make[1]: Entering directory '/home/m0re/projects/uni/potential-spoon/atom/build/CMakeFiles/CMakeTmp']
+  ignore line: [Building C object CMakeFiles/cmTC_8ae98.dir/CMakeCCompilerABI.c.o]
+  ignore line: [/usr/bin/clang -nostdlib --target=i686-pc-linux-gnu  -I/home/m0re/projects/uni/potential-spoon/atom/gcc/include -I/home/m0re/projects/uni/potential-spoon/atom/gcc/include/c++/5.2.0 -I/home/m0re/projects/uni/potential-spoon/atom/gcc/include/c++/5.2.0/i686-pc-linux-gnu -I/home/m0re/projects/uni/potential-spoon/atom/clang/include   -o CMakeFiles/cmTC_8ae98.dir/CMakeCCompilerABI.c.o   -c /home/m0re/Downloads/installers/cmake-3.5.0-Linux-x86_64/share/cmake-3.5/Modules/CMakeCCompilerABI.c]
+  ignore line: [Linking C executable cmTC_8ae98]
+  ignore line: [/home/m0re/Downloads/installers/cmake-3.5.0-Linux-x86_64/bin/cmake -E cmake_link_script CMakeFiles/cmTC_8ae98.dir/link.txt --verbose=1]
+  ignore line: [/usr/bin/clang -nostdlib --target=i686-pc-linux-gnu     -v CMakeFiles/cmTC_8ae98.dir/CMakeCCompilerABI.c.o  -o cmTC_8ae98  ]
+  ignore line: [clang version 3.8.0-2ubuntu4 (tags/RELEASE_380/final)]
+  ignore line: [Target: i686-pc-linux-gnu]
+  ignore line: [Thread model: posix]
+  ignore line: [InstalledDir: /usr/bin]
+  ignore line: [Found candidate GCC installation: /usr/bin/../lib/gcc/i686-linux-gnu/6.0.0]
+  ignore line: [Found candidate GCC installation: /usr/bin/../lib/gcc/x86_64-linux-gnu/4.8]
+  ignore line: [Found candidate GCC installation: /usr/bin/../lib/gcc/x86_64-linux-gnu/4.8.5]
+  ignore line: [Found candidate GCC installation: /usr/bin/../lib/gcc/x86_64-linux-gnu/4.9]
+  ignore line: [Found candidate GCC installation: /usr/bin/../lib/gcc/x86_64-linux-gnu/4.9.3]
+  ignore line: [Found candidate GCC installation: /usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0]
+  ignore line: [Found candidate GCC installation: /usr/bin/../lib/gcc/x86_64-linux-gnu/6.0.0]
+  ignore line: [Found candidate GCC installation: /usr/lib/gcc/i686-linux-gnu/6.0.0]
+  ignore line: [Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/4.8]
+  ignore line: [Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/4.8.5]
+  ignore line: [Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/4.9]
+  ignore line: [Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/4.9.3]
+  ignore line: [Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/5.4.0]
+  ignore line: [Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/6.0.0]
+  ignore line: [Selected GCC installation: /usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0]
+  ignore line: [Candidate multilib: .]
+  ignore line: [@m64]
+  ignore line: [Candidate multilib: 32]
+  ignore line: [@m32]
+  ignore line: [Candidate multilib: x32]
+  ignore line: [@mx32]
+  ignore line: [Selected multilib: 32]
+  ignore line: [@m32]
+  link line: [ "/usr/bin/ld" -z relro --hash-style=gnu --build-id --eh-frame-hdr -m elf_i386 -dynamic-linker /lib/ld-linux.so.2 -o cmTC_8ae98 -L/usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0/32 -L/usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0/../../../i386-linux-gnu -L/usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0/../../../../lib32 -L/lib/i386-linux-gnu -L/lib/../lib32 -L/usr/lib/i386-linux-gnu -L/usr/lib/../lib32 -L/usr/lib/x86_64-linux-gnu/../../lib32 -L/usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0 -L/usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0/../../.. -L/usr/lib/llvm-3.8/bin/../lib -L/lib -L/usr/lib CMakeFiles/cmTC_8ae98.dir/CMakeCCompilerABI.c.o]
+    arg [/usr/bin/ld] ==> ignore
+    arg [-zrelro] ==> ignore
+    arg [--hash-style=gnu] ==> ignore
+    arg [--build-id] ==> ignore
+    arg [--eh-frame-hdr] ==> ignore
+    arg [-m] ==> ignore
+    arg [elf_i386] ==> ignore
+    arg [-dynamic-linker] ==> ignore
+    arg [/lib/ld-linux.so.2] ==> ignore
+    arg [-o] ==> ignore
+    arg [cmTC_8ae98] ==> ignore
+    arg [-L/usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0/32] ==> dir [/usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0/32]
+    arg [-L/usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0/../../../i386-linux-gnu] ==> dir [/usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0/../../../i386-linux-gnu]
+    arg [-L/usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0/../../../../lib32] ==> dir [/usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0/../../../../lib32]
+    arg [-L/lib/i386-linux-gnu] ==> dir [/lib/i386-linux-gnu]
+    arg [-L/lib/../lib32] ==> dir [/lib/../lib32]
+    arg [-L/usr/lib/i386-linux-gnu] ==> dir [/usr/lib/i386-linux-gnu]
+    arg [-L/usr/lib/../lib32] ==> dir [/usr/lib/../lib32]
+    arg [-L/usr/lib/x86_64-linux-gnu/../../lib32] ==> dir [/usr/lib/x86_64-linux-gnu/../../lib32]
+    arg [-L/usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0] ==> dir [/usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0]
+    arg [-L/usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0/../../..] ==> dir [/usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0/../../..]
+    arg [-L/usr/lib/llvm-3.8/bin/../lib] ==> dir [/usr/lib/llvm-3.8/bin/../lib]
+    arg [-L/lib] ==> dir [/lib]
+    arg [-L/usr/lib] ==> dir [/usr/lib]
+    arg [CMakeFiles/cmTC_8ae98.dir/CMakeCCompilerABI.c.o] ==> ignore
+  collapse library dir [/usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0/32] ==> [/usr/lib/gcc/x86_64-linux-gnu/5.4.0/32]
+  collapse library dir [/usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0/../../../i386-linux-gnu] ==> [/usr/lib/i386-linux-gnu]
+  collapse library dir [/usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0/../../../../lib32] ==> [/usr/lib32]
+  collapse library dir [/lib/i386-linux-gnu] ==> [/lib/i386-linux-gnu]
+  collapse library dir [/lib/../lib32] ==> [/lib32]
+  collapse library dir [/usr/lib/i386-linux-gnu] ==> [/usr/lib/i386-linux-gnu]
+  collapse library dir [/usr/lib/../lib32] ==> [/usr/lib32]
+  collapse library dir [/usr/lib/x86_64-linux-gnu/../../lib32] ==> [/usr/lib32]
+  collapse library dir [/usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0] ==> [/usr/lib/gcc/x86_64-linux-gnu/5.4.0]
+  collapse library dir [/usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0/../../..] ==> [/usr/lib]
+  collapse library dir [/usr/lib/llvm-3.8/bin/../lib] ==> [/usr/lib/llvm-3.8/lib]
+  collapse library dir [/lib] ==> [/lib]
+  collapse library dir [/usr/lib] ==> [/usr/lib]
+  implicit libs: []
+  implicit dirs: [/usr/lib/gcc/x86_64-linux-gnu/5.4.0/32;/usr/lib/i386-linux-gnu;/usr/lib32;/lib/i386-linux-gnu;/lib32;/usr/lib/gcc/x86_64-linux-gnu/5.4.0;/usr/lib;/usr/lib/llvm-3.8/lib;/lib]
+  implicit fwks: []
+
+
+
+
+Detecting C [-std=c11] compiler features compiled with the following output:
+Change Dir: /home/m0re/projects/uni/potential-spoon/atom/build/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_b2771/fast"
+/usr/bin/make -f CMakeFiles/cmTC_b2771.dir/build.make CMakeFiles/cmTC_b2771.dir/build
+make[1]: Entering directory '/home/m0re/projects/uni/potential-spoon/atom/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_b2771.dir/feature_tests.c.o
+/usr/bin/clang -nostdlib --target=i686-pc-linux-gnu  -I/home/m0re/projects/uni/potential-spoon/atom/gcc/include -I/home/m0re/projects/uni/potential-spoon/atom/gcc/include/c++/5.2.0 -I/home/m0re/projects/uni/potential-spoon/atom/gcc/include/c++/5.2.0/i686-pc-linux-gnu -I/home/m0re/projects/uni/potential-spoon/atom/clang/include  -std=c11 -o CMakeFiles/cmTC_b2771.dir/feature_tests.c.o   -c /home/m0re/projects/uni/potential-spoon/atom/build/CMakeFiles/feature_tests.c
+Linking C executable cmTC_b2771
+/home/m0re/Downloads/installers/cmake-3.5.0-Linux-x86_64/bin/cmake -E cmake_link_script CMakeFiles/cmTC_b2771.dir/link.txt --verbose=1
+/usr/bin/clang -nostdlib --target=i686-pc-linux-gnu      CMakeFiles/cmTC_b2771.dir/feature_tests.c.o  -o cmTC_b2771 
+/usr/bin/ld: warning: cannot find entry symbol _start; defaulting to 00000000080480c0
+make[1]: Leaving directory '/home/m0re/projects/uni/potential-spoon/atom/build/CMakeFiles/CMakeTmp'
+
+
+    Feature record: C_FEATURE:1c_function_prototypes
+    Feature record: C_FEATURE:1c_restrict
+    Feature record: C_FEATURE:1c_static_assert
+    Feature record: C_FEATURE:1c_variadic_macros
+
+
+Detecting C [-std=c99] compiler features compiled with the following output:
+Change Dir: /home/m0re/projects/uni/potential-spoon/atom/build/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_5c6ba/fast"
+/usr/bin/make -f CMakeFiles/cmTC_5c6ba.dir/build.make CMakeFiles/cmTC_5c6ba.dir/build
+make[1]: Entering directory '/home/m0re/projects/uni/potential-spoon/atom/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_5c6ba.dir/feature_tests.c.o
+/usr/bin/clang -nostdlib --target=i686-pc-linux-gnu  -I/home/m0re/projects/uni/potential-spoon/atom/gcc/include -I/home/m0re/projects/uni/potential-spoon/atom/gcc/include/c++/5.2.0 -I/home/m0re/projects/uni/potential-spoon/atom/gcc/include/c++/5.2.0/i686-pc-linux-gnu -I/home/m0re/projects/uni/potential-spoon/atom/clang/include  -std=c99 -o CMakeFiles/cmTC_5c6ba.dir/feature_tests.c.o   -c /home/m0re/projects/uni/potential-spoon/atom/build/CMakeFiles/feature_tests.c
+Linking C executable cmTC_5c6ba
+/home/m0re/Downloads/installers/cmake-3.5.0-Linux-x86_64/bin/cmake -E cmake_link_script CMakeFiles/cmTC_5c6ba.dir/link.txt --verbose=1
+/usr/bin/clang -nostdlib --target=i686-pc-linux-gnu      CMakeFiles/cmTC_5c6ba.dir/feature_tests.c.o  -o cmTC_5c6ba 
+/usr/bin/ld: warning: cannot find entry symbol _start; defaulting to 00000000080480c0
+make[1]: Leaving directory '/home/m0re/projects/uni/potential-spoon/atom/build/CMakeFiles/CMakeTmp'
+
+
+    Feature record: C_FEATURE:1c_function_prototypes
+    Feature record: C_FEATURE:1c_restrict
+    Feature record: C_FEATURE:0c_static_assert
+    Feature record: C_FEATURE:1c_variadic_macros
+
+
+Detecting C [-std=c90] compiler features compiled with the following output:
+Change Dir: /home/m0re/projects/uni/potential-spoon/atom/build/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_a7dce/fast"
+/usr/bin/make -f CMakeFiles/cmTC_a7dce.dir/build.make CMakeFiles/cmTC_a7dce.dir/build
+make[1]: Entering directory '/home/m0re/projects/uni/potential-spoon/atom/build/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_a7dce.dir/feature_tests.c.o
+/usr/bin/clang -nostdlib --target=i686-pc-linux-gnu  -I/home/m0re/projects/uni/potential-spoon/atom/gcc/include -I/home/m0re/projects/uni/potential-spoon/atom/gcc/include/c++/5.2.0 -I/home/m0re/projects/uni/potential-spoon/atom/gcc/include/c++/5.2.0/i686-pc-linux-gnu -I/home/m0re/projects/uni/potential-spoon/atom/clang/include  -std=c90 -o CMakeFiles/cmTC_a7dce.dir/feature_tests.c.o   -c /home/m0re/projects/uni/potential-spoon/atom/build/CMakeFiles/feature_tests.c
+Linking C executable cmTC_a7dce
+/home/m0re/Downloads/installers/cmake-3.5.0-Linux-x86_64/bin/cmake -E cmake_link_script CMakeFiles/cmTC_a7dce.dir/link.txt --verbose=1
+/usr/bin/clang -nostdlib --target=i686-pc-linux-gnu      CMakeFiles/cmTC_a7dce.dir/feature_tests.c.o  -o cmTC_a7dce 
+/usr/bin/ld: warning: cannot find entry symbol _start; defaulting to 00000000080480c0
+make[1]: Leaving directory '/home/m0re/projects/uni/potential-spoon/atom/build/CMakeFiles/CMakeTmp'
+
+
+    Feature record: C_FEATURE:1c_function_prototypes
+    Feature record: C_FEATURE:0c_restrict
+    Feature record: C_FEATURE:0c_static_assert
+    Feature record: C_FEATURE:0c_variadic_macros
+Determining if the CXX compiler works passed with the following output:
+Change Dir: /home/m0re/projects/uni/potential-spoon/atom/build/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_dea7a/fast"
+/usr/bin/make -f CMakeFiles/cmTC_dea7a.dir/build.make CMakeFiles/cmTC_dea7a.dir/build
+make[1]: Entering directory '/home/m0re/projects/uni/potential-spoon/atom/build/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_dea7a.dir/testCXXCompiler.cxx.o
+/usr/bin/clang++ -nostdlib --target=i686-pc-linux-gnu   -I/home/m0re/projects/uni/potential-spoon/atom/gcc/include -I/home/m0re/projects/uni/potential-spoon/atom/gcc/include/c++/5.2.0 -I/home/m0re/projects/uni/potential-spoon/atom/gcc/include/c++/5.2.0/i686-pc-linux-gnu -I/home/m0re/projects/uni/potential-spoon/atom/clang/include   -o CMakeFiles/cmTC_dea7a.dir/testCXXCompiler.cxx.o -c /home/m0re/projects/uni/potential-spoon/atom/build/CMakeFiles/CMakeTmp/testCXXCompiler.cxx
+Linking CXX executable cmTC_dea7a
+/home/m0re/Downloads/installers/cmake-3.5.0-Linux-x86_64/bin/cmake -E cmake_link_script CMakeFiles/cmTC_dea7a.dir/link.txt --verbose=1
+/usr/bin/clang++ -nostdlib --target=i686-pc-linux-gnu       CMakeFiles/cmTC_dea7a.dir/testCXXCompiler.cxx.o  -o cmTC_dea7a    /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/crt1.o    /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/crti.o    /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/crtbeginS.o    /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libstdc++.so.6.0.21   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libm-2.13.so   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libgcc_s.so.1   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libc-2.13.so   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libc_nonshared.a   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libgcc_s.so.1   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libpthread-2.13.so   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/librt-2.13.so   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/ld-2.13.so   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/crtendS.o   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/crtn.o  
+make[1]: Leaving directory '/home/m0re/projects/uni/potential-spoon/atom/build/CMakeFiles/CMakeTmp'
+
+
+Detecting CXX compiler ABI info compiled with the following output:
+Change Dir: /home/m0re/projects/uni/potential-spoon/atom/build/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_a4ee8/fast"
+/usr/bin/make -f CMakeFiles/cmTC_a4ee8.dir/build.make CMakeFiles/cmTC_a4ee8.dir/build
+make[1]: Entering directory '/home/m0re/projects/uni/potential-spoon/atom/build/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_a4ee8.dir/CMakeCXXCompilerABI.cpp.o
+/usr/bin/clang++ -nostdlib --target=i686-pc-linux-gnu   -I/home/m0re/projects/uni/potential-spoon/atom/gcc/include -I/home/m0re/projects/uni/potential-spoon/atom/gcc/include/c++/5.2.0 -I/home/m0re/projects/uni/potential-spoon/atom/gcc/include/c++/5.2.0/i686-pc-linux-gnu -I/home/m0re/projects/uni/potential-spoon/atom/clang/include   -o CMakeFiles/cmTC_a4ee8.dir/CMakeCXXCompilerABI.cpp.o -c /home/m0re/Downloads/installers/cmake-3.5.0-Linux-x86_64/share/cmake-3.5/Modules/CMakeCXXCompilerABI.cpp
+Linking CXX executable cmTC_a4ee8
+/home/m0re/Downloads/installers/cmake-3.5.0-Linux-x86_64/bin/cmake -E cmake_link_script CMakeFiles/cmTC_a4ee8.dir/link.txt --verbose=1
+/usr/bin/clang++ -nostdlib --target=i686-pc-linux-gnu      -v CMakeFiles/cmTC_a4ee8.dir/CMakeCXXCompilerABI.cpp.o  -o cmTC_a4ee8    /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/crt1.o    /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/crti.o    /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/crtbeginS.o    /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libstdc++.so.6.0.21   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libm-2.13.so   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libgcc_s.so.1   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libc-2.13.so   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libc_nonshared.a   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libgcc_s.so.1   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libpthread-2.13.so   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/librt-2.13.so   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/ld-2.13.so   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/crtendS.o   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/crtn.o  
+clang version 3.8.0-2ubuntu4 (tags/RELEASE_380/final)
+Target: i686-pc-linux-gnu
+Thread model: posix
+InstalledDir: /usr/bin
+Found candidate GCC installation: /usr/bin/../lib/gcc/i686-linux-gnu/6.0.0
+Found candidate GCC installation: /usr/bin/../lib/gcc/x86_64-linux-gnu/4.8
+Found candidate GCC installation: /usr/bin/../lib/gcc/x86_64-linux-gnu/4.8.5
+Found candidate GCC installation: /usr/bin/../lib/gcc/x86_64-linux-gnu/4.9
+Found candidate GCC installation: /usr/bin/../lib/gcc/x86_64-linux-gnu/4.9.3
+Found candidate GCC installation: /usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0
+Found candidate GCC installation: /usr/bin/../lib/gcc/x86_64-linux-gnu/6.0.0
+Found candidate GCC installation: /usr/lib/gcc/i686-linux-gnu/6.0.0
+Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/4.8
+Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/4.8.5
+Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/4.9
+Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/4.9.3
+Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/5.4.0
+Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/6.0.0
+Selected GCC installation: /usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0
+Candidate multilib: .;@m64
+Candidate multilib: 32;@m32
+Candidate multilib: x32;@mx32
+Selected multilib: 32;@m32
+ "/usr/bin/ld" -z relro --hash-style=gnu --build-id --eh-frame-hdr -m elf_i386 -dynamic-linker /lib/ld-linux.so.2 -o cmTC_a4ee8 -L/usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0/32 -L/usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0/../../../i386-linux-gnu -L/usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0/../../../../lib32 -L/lib/i386-linux-gnu -L/lib/../lib32 -L/usr/lib/i386-linux-gnu -L/usr/lib/../lib32 -L/usr/lib/x86_64-linux-gnu/../../lib32 -L/usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0 -L/usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0/../../.. -L/usr/lib/llvm-3.8/bin/../lib -L/lib -L/usr/lib CMakeFiles/cmTC_a4ee8.dir/CMakeCXXCompilerABI.cpp.o /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/crt1.o /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/crti.o /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/crtbeginS.o /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libstdc++.so.6.0.21 /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libm-2.13.so /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libgcc_s.so.1 /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libc-2.13.so /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libc_nonshared.a /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libgcc_s.so.1 /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libpthread-2.13.so /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/librt-2.13.so /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/ld-2.13.so /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/crtendS.o /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/crtn.o
+make[1]: Leaving directory '/home/m0re/projects/uni/potential-spoon/atom/build/CMakeFiles/CMakeTmp'
+
+
+Parsed CXX implicit link information from above output:
+  link line regex: [^( *|.*[/\])(CMAKE_LINKER-NOTFOUND|([^/\]+-)?ld|collect2)[^/\]*( |$)]
+  ignore line: [Change Dir: /home/m0re/projects/uni/potential-spoon/atom/build/CMakeFiles/CMakeTmp]
+  ignore line: []
+  ignore line: [Run Build Command:"/usr/bin/make" "cmTC_a4ee8/fast"]
+  ignore line: [/usr/bin/make -f CMakeFiles/cmTC_a4ee8.dir/build.make CMakeFiles/cmTC_a4ee8.dir/build]
+  ignore line: [make[1]: Entering directory '/home/m0re/projects/uni/potential-spoon/atom/build/CMakeFiles/CMakeTmp']
+  ignore line: [Building CXX object CMakeFiles/cmTC_a4ee8.dir/CMakeCXXCompilerABI.cpp.o]
+  ignore line: [/usr/bin/clang++ -nostdlib --target=i686-pc-linux-gnu   -I/home/m0re/projects/uni/potential-spoon/atom/gcc/include -I/home/m0re/projects/uni/potential-spoon/atom/gcc/include/c++/5.2.0 -I/home/m0re/projects/uni/potential-spoon/atom/gcc/include/c++/5.2.0/i686-pc-linux-gnu -I/home/m0re/projects/uni/potential-spoon/atom/clang/include   -o CMakeFiles/cmTC_a4ee8.dir/CMakeCXXCompilerABI.cpp.o -c /home/m0re/Downloads/installers/cmake-3.5.0-Linux-x86_64/share/cmake-3.5/Modules/CMakeCXXCompilerABI.cpp]
+  ignore line: [Linking CXX executable cmTC_a4ee8]
+  ignore line: [/home/m0re/Downloads/installers/cmake-3.5.0-Linux-x86_64/bin/cmake -E cmake_link_script CMakeFiles/cmTC_a4ee8.dir/link.txt --verbose=1]
+  ignore line: [/usr/bin/clang++ -nostdlib --target=i686-pc-linux-gnu      -v CMakeFiles/cmTC_a4ee8.dir/CMakeCXXCompilerABI.cpp.o  -o cmTC_a4ee8    /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/crt1.o    /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/crti.o    /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/crtbeginS.o    /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libstdc++.so.6.0.21   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libm-2.13.so   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libgcc_s.so.1   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libc-2.13.so   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libc_nonshared.a   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libgcc_s.so.1   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libpthread-2.13.so   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/librt-2.13.so   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/ld-2.13.so   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/crtendS.o   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/crtn.o  ]
+  ignore line: [clang version 3.8.0-2ubuntu4 (tags/RELEASE_380/final)]
+  ignore line: [Target: i686-pc-linux-gnu]
+  ignore line: [Thread model: posix]
+  ignore line: [InstalledDir: /usr/bin]
+  ignore line: [Found candidate GCC installation: /usr/bin/../lib/gcc/i686-linux-gnu/6.0.0]
+  ignore line: [Found candidate GCC installation: /usr/bin/../lib/gcc/x86_64-linux-gnu/4.8]
+  ignore line: [Found candidate GCC installation: /usr/bin/../lib/gcc/x86_64-linux-gnu/4.8.5]
+  ignore line: [Found candidate GCC installation: /usr/bin/../lib/gcc/x86_64-linux-gnu/4.9]
+  ignore line: [Found candidate GCC installation: /usr/bin/../lib/gcc/x86_64-linux-gnu/4.9.3]
+  ignore line: [Found candidate GCC installation: /usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0]
+  ignore line: [Found candidate GCC installation: /usr/bin/../lib/gcc/x86_64-linux-gnu/6.0.0]
+  ignore line: [Found candidate GCC installation: /usr/lib/gcc/i686-linux-gnu/6.0.0]
+  ignore line: [Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/4.8]
+  ignore line: [Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/4.8.5]
+  ignore line: [Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/4.9]
+  ignore line: [Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/4.9.3]
+  ignore line: [Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/5.4.0]
+  ignore line: [Found candidate GCC installation: /usr/lib/gcc/x86_64-linux-gnu/6.0.0]
+  ignore line: [Selected GCC installation: /usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0]
+  ignore line: [Candidate multilib: .]
+  ignore line: [@m64]
+  ignore line: [Candidate multilib: 32]
+  ignore line: [@m32]
+  ignore line: [Candidate multilib: x32]
+  ignore line: [@mx32]
+  ignore line: [Selected multilib: 32]
+  ignore line: [@m32]
+  link line: [ "/usr/bin/ld" -z relro --hash-style=gnu --build-id --eh-frame-hdr -m elf_i386 -dynamic-linker /lib/ld-linux.so.2 -o cmTC_a4ee8 -L/usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0/32 -L/usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0/../../../i386-linux-gnu -L/usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0/../../../../lib32 -L/lib/i386-linux-gnu -L/lib/../lib32 -L/usr/lib/i386-linux-gnu -L/usr/lib/../lib32 -L/usr/lib/x86_64-linux-gnu/../../lib32 -L/usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0 -L/usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0/../../.. -L/usr/lib/llvm-3.8/bin/../lib -L/lib -L/usr/lib CMakeFiles/cmTC_a4ee8.dir/CMakeCXXCompilerABI.cpp.o /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/crt1.o /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/crti.o /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/crtbeginS.o /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libstdc++.so.6.0.21 /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libm-2.13.so /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libgcc_s.so.1 /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libc-2.13.so /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libc_nonshared.a /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libgcc_s.so.1 /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libpthread-2.13.so /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/librt-2.13.so /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/ld-2.13.so /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/crtendS.o /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/crtn.o]
+    arg [/usr/bin/ld] ==> ignore
+    arg [-zrelro] ==> ignore
+    arg [--hash-style=gnu] ==> ignore
+    arg [--build-id] ==> ignore
+    arg [--eh-frame-hdr] ==> ignore
+    arg [-m] ==> ignore
+    arg [elf_i386] ==> ignore
+    arg [-dynamic-linker] ==> ignore
+    arg [/lib/ld-linux.so.2] ==> ignore
+    arg [-o] ==> ignore
+    arg [cmTC_a4ee8] ==> ignore
+    arg [-L/usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0/32] ==> dir [/usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0/32]
+    arg [-L/usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0/../../../i386-linux-gnu] ==> dir [/usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0/../../../i386-linux-gnu]
+    arg [-L/usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0/../../../../lib32] ==> dir [/usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0/../../../../lib32]
+    arg [-L/lib/i386-linux-gnu] ==> dir [/lib/i386-linux-gnu]
+    arg [-L/lib/../lib32] ==> dir [/lib/../lib32]
+    arg [-L/usr/lib/i386-linux-gnu] ==> dir [/usr/lib/i386-linux-gnu]
+    arg [-L/usr/lib/../lib32] ==> dir [/usr/lib/../lib32]
+    arg [-L/usr/lib/x86_64-linux-gnu/../../lib32] ==> dir [/usr/lib/x86_64-linux-gnu/../../lib32]
+    arg [-L/usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0] ==> dir [/usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0]
+    arg [-L/usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0/../../..] ==> dir [/usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0/../../..]
+    arg [-L/usr/lib/llvm-3.8/bin/../lib] ==> dir [/usr/lib/llvm-3.8/bin/../lib]
+    arg [-L/lib] ==> dir [/lib]
+    arg [-L/usr/lib] ==> dir [/usr/lib]
+    arg [CMakeFiles/cmTC_a4ee8.dir/CMakeCXXCompilerABI.cpp.o] ==> ignore
+    arg [/home/m0re/projects/uni/potential-spoon/atom/gcc/lib/crt1.o] ==> ignore
+    arg [/home/m0re/projects/uni/potential-spoon/atom/gcc/lib/crti.o] ==> ignore
+    arg [/home/m0re/projects/uni/potential-spoon/atom/gcc/lib/crtbeginS.o] ==> ignore
+    arg [/home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libstdc++.so.6.0.21] ==> ignore
+    arg [/home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libm-2.13.so] ==> ignore
+    arg [/home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libgcc_s.so.1] ==> ignore
+    arg [/home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libc-2.13.so] ==> ignore
+    arg [/home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libc_nonshared.a] ==> lib [/home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libc_nonshared.a]
+    arg [/home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libgcc_s.so.1] ==> ignore
+    arg [/home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libpthread-2.13.so] ==> ignore
+    arg [/home/m0re/projects/uni/potential-spoon/atom/gcc/lib/librt-2.13.so] ==> ignore
+    arg [/home/m0re/projects/uni/potential-spoon/atom/gcc/lib/ld-2.13.so] ==> ignore
+    arg [/home/m0re/projects/uni/potential-spoon/atom/gcc/lib/crtendS.o] ==> ignore
+    arg [/home/m0re/projects/uni/potential-spoon/atom/gcc/lib/crtn.o] ==> ignore
+  collapse library dir [/usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0/32] ==> [/usr/lib/gcc/x86_64-linux-gnu/5.4.0/32]
+  collapse library dir [/usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0/../../../i386-linux-gnu] ==> [/usr/lib/i386-linux-gnu]
+  collapse library dir [/usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0/../../../../lib32] ==> [/usr/lib32]
+  collapse library dir [/lib/i386-linux-gnu] ==> [/lib/i386-linux-gnu]
+  collapse library dir [/lib/../lib32] ==> [/lib32]
+  collapse library dir [/usr/lib/i386-linux-gnu] ==> [/usr/lib/i386-linux-gnu]
+  collapse library dir [/usr/lib/../lib32] ==> [/usr/lib32]
+  collapse library dir [/usr/lib/x86_64-linux-gnu/../../lib32] ==> [/usr/lib32]
+  collapse library dir [/usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0] ==> [/usr/lib/gcc/x86_64-linux-gnu/5.4.0]
+  collapse library dir [/usr/bin/../lib/gcc/x86_64-linux-gnu/5.4.0/../../..] ==> [/usr/lib]
+  collapse library dir [/usr/lib/llvm-3.8/bin/../lib] ==> [/usr/lib/llvm-3.8/lib]
+  collapse library dir [/lib] ==> [/lib]
+  collapse library dir [/usr/lib] ==> [/usr/lib]
+  implicit libs: [/home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libc_nonshared.a]
+  implicit dirs: [/usr/lib/gcc/x86_64-linux-gnu/5.4.0/32;/usr/lib/i386-linux-gnu;/usr/lib32;/lib/i386-linux-gnu;/lib32;/usr/lib/gcc/x86_64-linux-gnu/5.4.0;/usr/lib;/usr/lib/llvm-3.8/lib;/lib]
+  implicit fwks: []
+
+
+
+
+Detecting CXX [-std=c++14] compiler features compiled with the following output:
+Change Dir: /home/m0re/projects/uni/potential-spoon/atom/build/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_27658/fast"
+/usr/bin/make -f CMakeFiles/cmTC_27658.dir/build.make CMakeFiles/cmTC_27658.dir/build
+make[1]: Entering directory '/home/m0re/projects/uni/potential-spoon/atom/build/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_27658.dir/feature_tests.cxx.o
+/usr/bin/clang++ -nostdlib --target=i686-pc-linux-gnu   -I/home/m0re/projects/uni/potential-spoon/atom/gcc/include -I/home/m0re/projects/uni/potential-spoon/atom/gcc/include/c++/5.2.0 -I/home/m0re/projects/uni/potential-spoon/atom/gcc/include/c++/5.2.0/i686-pc-linux-gnu -I/home/m0re/projects/uni/potential-spoon/atom/clang/include  -std=c++14 -o CMakeFiles/cmTC_27658.dir/feature_tests.cxx.o -c /home/m0re/projects/uni/potential-spoon/atom/build/CMakeFiles/feature_tests.cxx
+Linking CXX executable cmTC_27658
+/home/m0re/Downloads/installers/cmake-3.5.0-Linux-x86_64/bin/cmake -E cmake_link_script CMakeFiles/cmTC_27658.dir/link.txt --verbose=1
+/usr/bin/clang++ -nostdlib --target=i686-pc-linux-gnu       CMakeFiles/cmTC_27658.dir/feature_tests.cxx.o  -o cmTC_27658    /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/crt1.o    /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/crti.o    /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/crtbeginS.o    /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libstdc++.so.6.0.21   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libm-2.13.so   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libgcc_s.so.1   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libc-2.13.so   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libc_nonshared.a   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libgcc_s.so.1   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libpthread-2.13.so   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/librt-2.13.so   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/ld-2.13.so   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/crtendS.o   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/crtn.o  
+make[1]: Leaving directory '/home/m0re/projects/uni/potential-spoon/atom/build/CMakeFiles/CMakeTmp'
+
+
+    Feature record: CXX_FEATURE:1cxx_aggregate_default_initializers
+    Feature record: CXX_FEATURE:1cxx_alias_templates
+    Feature record: CXX_FEATURE:1cxx_alignas
+    Feature record: CXX_FEATURE:1cxx_alignof
+    Feature record: CXX_FEATURE:1cxx_attributes
+    Feature record: CXX_FEATURE:1cxx_attribute_deprecated
+    Feature record: CXX_FEATURE:1cxx_auto_type
+    Feature record: CXX_FEATURE:1cxx_binary_literals
+    Feature record: CXX_FEATURE:1cxx_constexpr
+    Feature record: CXX_FEATURE:1cxx_contextual_conversions
+    Feature record: CXX_FEATURE:1cxx_decltype
+    Feature record: CXX_FEATURE:1cxx_decltype_auto
+    Feature record: CXX_FEATURE:1cxx_decltype_incomplete_return_types
+    Feature record: CXX_FEATURE:1cxx_default_function_template_args
+    Feature record: CXX_FEATURE:1cxx_defaulted_functions
+    Feature record: CXX_FEATURE:1cxx_defaulted_move_initializers
+    Feature record: CXX_FEATURE:1cxx_delegating_constructors
+    Feature record: CXX_FEATURE:1cxx_deleted_functions
+    Feature record: CXX_FEATURE:1cxx_digit_separators
+    Feature record: CXX_FEATURE:1cxx_enum_forward_declarations
+    Feature record: CXX_FEATURE:1cxx_explicit_conversions
+    Feature record: CXX_FEATURE:1cxx_extended_friend_declarations
+    Feature record: CXX_FEATURE:1cxx_extern_templates
+    Feature record: CXX_FEATURE:1cxx_final
+    Feature record: CXX_FEATURE:1cxx_func_identifier
+    Feature record: CXX_FEATURE:1cxx_generalized_initializers
+    Feature record: CXX_FEATURE:1cxx_generic_lambdas
+    Feature record: CXX_FEATURE:1cxx_inheriting_constructors
+    Feature record: CXX_FEATURE:1cxx_inline_namespaces
+    Feature record: CXX_FEATURE:1cxx_lambdas
+    Feature record: CXX_FEATURE:1cxx_lambda_init_captures
+    Feature record: CXX_FEATURE:1cxx_local_type_template_args
+    Feature record: CXX_FEATURE:1cxx_long_long_type
+    Feature record: CXX_FEATURE:1cxx_noexcept
+    Feature record: CXX_FEATURE:1cxx_nonstatic_member_init
+    Feature record: CXX_FEATURE:1cxx_nullptr
+    Feature record: CXX_FEATURE:1cxx_override
+    Feature record: CXX_FEATURE:1cxx_range_for
+    Feature record: CXX_FEATURE:1cxx_raw_string_literals
+    Feature record: CXX_FEATURE:1cxx_reference_qualified_functions
+    Feature record: CXX_FEATURE:1cxx_relaxed_constexpr
+    Feature record: CXX_FEATURE:1cxx_return_type_deduction
+    Feature record: CXX_FEATURE:1cxx_right_angle_brackets
+    Feature record: CXX_FEATURE:1cxx_rvalue_references
+    Feature record: CXX_FEATURE:1cxx_sizeof_member
+    Feature record: CXX_FEATURE:1cxx_static_assert
+    Feature record: CXX_FEATURE:1cxx_strong_enums
+    Feature record: CXX_FEATURE:1cxx_template_template_parameters
+    Feature record: CXX_FEATURE:1cxx_thread_local
+    Feature record: CXX_FEATURE:1cxx_trailing_return_types
+    Feature record: CXX_FEATURE:1cxx_unicode_literals
+    Feature record: CXX_FEATURE:1cxx_uniform_initialization
+    Feature record: CXX_FEATURE:1cxx_unrestricted_unions
+    Feature record: CXX_FEATURE:1cxx_user_literals
+    Feature record: CXX_FEATURE:1cxx_variable_templates
+    Feature record: CXX_FEATURE:1cxx_variadic_macros
+    Feature record: CXX_FEATURE:1cxx_variadic_templates
+
+
+Detecting CXX [-std=c++11] compiler features compiled with the following output:
+Change Dir: /home/m0re/projects/uni/potential-spoon/atom/build/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_56f53/fast"
+/usr/bin/make -f CMakeFiles/cmTC_56f53.dir/build.make CMakeFiles/cmTC_56f53.dir/build
+make[1]: Entering directory '/home/m0re/projects/uni/potential-spoon/atom/build/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_56f53.dir/feature_tests.cxx.o
+/usr/bin/clang++ -nostdlib --target=i686-pc-linux-gnu   -I/home/m0re/projects/uni/potential-spoon/atom/gcc/include -I/home/m0re/projects/uni/potential-spoon/atom/gcc/include/c++/5.2.0 -I/home/m0re/projects/uni/potential-spoon/atom/gcc/include/c++/5.2.0/i686-pc-linux-gnu -I/home/m0re/projects/uni/potential-spoon/atom/clang/include  -std=c++11 -o CMakeFiles/cmTC_56f53.dir/feature_tests.cxx.o -c /home/m0re/projects/uni/potential-spoon/atom/build/CMakeFiles/feature_tests.cxx
+Linking CXX executable cmTC_56f53
+/home/m0re/Downloads/installers/cmake-3.5.0-Linux-x86_64/bin/cmake -E cmake_link_script CMakeFiles/cmTC_56f53.dir/link.txt --verbose=1
+/usr/bin/clang++ -nostdlib --target=i686-pc-linux-gnu       CMakeFiles/cmTC_56f53.dir/feature_tests.cxx.o  -o cmTC_56f53    /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/crt1.o    /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/crti.o    /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/crtbeginS.o    /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libstdc++.so.6.0.21   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libm-2.13.so   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libgcc_s.so.1   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libc-2.13.so   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libc_nonshared.a   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libgcc_s.so.1   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libpthread-2.13.so   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/librt-2.13.so   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/ld-2.13.so   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/crtendS.o   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/crtn.o  
+make[1]: Leaving directory '/home/m0re/projects/uni/potential-spoon/atom/build/CMakeFiles/CMakeTmp'
+
+
+    Feature record: CXX_FEATURE:0cxx_aggregate_default_initializers
+    Feature record: CXX_FEATURE:1cxx_alias_templates
+    Feature record: CXX_FEATURE:1cxx_alignas
+    Feature record: CXX_FEATURE:1cxx_alignof
+    Feature record: CXX_FEATURE:1cxx_attributes
+    Feature record: CXX_FEATURE:0cxx_attribute_deprecated
+    Feature record: CXX_FEATURE:1cxx_auto_type
+    Feature record: CXX_FEATURE:0cxx_binary_literals
+    Feature record: CXX_FEATURE:1cxx_constexpr
+    Feature record: CXX_FEATURE:0cxx_contextual_conversions
+    Feature record: CXX_FEATURE:1cxx_decltype
+    Feature record: CXX_FEATURE:0cxx_decltype_auto
+    Feature record: CXX_FEATURE:1cxx_decltype_incomplete_return_types
+    Feature record: CXX_FEATURE:1cxx_default_function_template_args
+    Feature record: CXX_FEATURE:1cxx_defaulted_functions
+    Feature record: CXX_FEATURE:1cxx_defaulted_move_initializers
+    Feature record: CXX_FEATURE:1cxx_delegating_constructors
+    Feature record: CXX_FEATURE:1cxx_deleted_functions
+    Feature record: CXX_FEATURE:0cxx_digit_separators
+    Feature record: CXX_FEATURE:1cxx_enum_forward_declarations
+    Feature record: CXX_FEATURE:1cxx_explicit_conversions
+    Feature record: CXX_FEATURE:1cxx_extended_friend_declarations
+    Feature record: CXX_FEATURE:1cxx_extern_templates
+    Feature record: CXX_FEATURE:1cxx_final
+    Feature record: CXX_FEATURE:1cxx_func_identifier
+    Feature record: CXX_FEATURE:1cxx_generalized_initializers
+    Feature record: CXX_FEATURE:0cxx_generic_lambdas
+    Feature record: CXX_FEATURE:1cxx_inheriting_constructors
+    Feature record: CXX_FEATURE:1cxx_inline_namespaces
+    Feature record: CXX_FEATURE:1cxx_lambdas
+    Feature record: CXX_FEATURE:0cxx_lambda_init_captures
+    Feature record: CXX_FEATURE:1cxx_local_type_template_args
+    Feature record: CXX_FEATURE:1cxx_long_long_type
+    Feature record: CXX_FEATURE:1cxx_noexcept
+    Feature record: CXX_FEATURE:1cxx_nonstatic_member_init
+    Feature record: CXX_FEATURE:1cxx_nullptr
+    Feature record: CXX_FEATURE:1cxx_override
+    Feature record: CXX_FEATURE:1cxx_range_for
+    Feature record: CXX_FEATURE:1cxx_raw_string_literals
+    Feature record: CXX_FEATURE:1cxx_reference_qualified_functions
+    Feature record: CXX_FEATURE:0cxx_relaxed_constexpr
+    Feature record: CXX_FEATURE:0cxx_return_type_deduction
+    Feature record: CXX_FEATURE:1cxx_right_angle_brackets
+    Feature record: CXX_FEATURE:1cxx_rvalue_references
+    Feature record: CXX_FEATURE:1cxx_sizeof_member
+    Feature record: CXX_FEATURE:1cxx_static_assert
+    Feature record: CXX_FEATURE:1cxx_strong_enums
+    Feature record: CXX_FEATURE:1cxx_template_template_parameters
+    Feature record: CXX_FEATURE:1cxx_thread_local
+    Feature record: CXX_FEATURE:1cxx_trailing_return_types
+    Feature record: CXX_FEATURE:1cxx_unicode_literals
+    Feature record: CXX_FEATURE:1cxx_uniform_initialization
+    Feature record: CXX_FEATURE:1cxx_unrestricted_unions
+    Feature record: CXX_FEATURE:1cxx_user_literals
+    Feature record: CXX_FEATURE:0cxx_variable_templates
+    Feature record: CXX_FEATURE:1cxx_variadic_macros
+    Feature record: CXX_FEATURE:1cxx_variadic_templates
+
+
+Detecting CXX [-std=c++98] compiler features compiled with the following output:
+Change Dir: /home/m0re/projects/uni/potential-spoon/atom/build/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_ba2bc/fast"
+/usr/bin/make -f CMakeFiles/cmTC_ba2bc.dir/build.make CMakeFiles/cmTC_ba2bc.dir/build
+make[1]: Entering directory '/home/m0re/projects/uni/potential-spoon/atom/build/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_ba2bc.dir/feature_tests.cxx.o
+/usr/bin/clang++ -nostdlib --target=i686-pc-linux-gnu   -I/home/m0re/projects/uni/potential-spoon/atom/gcc/include -I/home/m0re/projects/uni/potential-spoon/atom/gcc/include/c++/5.2.0 -I/home/m0re/projects/uni/potential-spoon/atom/gcc/include/c++/5.2.0/i686-pc-linux-gnu -I/home/m0re/projects/uni/potential-spoon/atom/clang/include  -std=c++98 -o CMakeFiles/cmTC_ba2bc.dir/feature_tests.cxx.o -c /home/m0re/projects/uni/potential-spoon/atom/build/CMakeFiles/feature_tests.cxx
+Linking CXX executable cmTC_ba2bc
+/home/m0re/Downloads/installers/cmake-3.5.0-Linux-x86_64/bin/cmake -E cmake_link_script CMakeFiles/cmTC_ba2bc.dir/link.txt --verbose=1
+/usr/bin/clang++ -nostdlib --target=i686-pc-linux-gnu       CMakeFiles/cmTC_ba2bc.dir/feature_tests.cxx.o  -o cmTC_ba2bc    /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/crt1.o    /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/crti.o    /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/crtbeginS.o    /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libstdc++.so.6.0.21   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libm-2.13.so   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libgcc_s.so.1   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libc-2.13.so   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libc_nonshared.a   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libgcc_s.so.1   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/libpthread-2.13.so   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/librt-2.13.so   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/ld-2.13.so   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/crtendS.o   /home/m0re/projects/uni/potential-spoon/atom/gcc/lib/crtn.o  
+make[1]: Leaving directory '/home/m0re/projects/uni/potential-spoon/atom/build/CMakeFiles/CMakeTmp'
+
+
+    Feature record: CXX_FEATURE:0cxx_aggregate_default_initializers
+    Feature record: CXX_FEATURE:0cxx_alias_templates
+    Feature record: CXX_FEATURE:0cxx_alignas
+    Feature record: CXX_FEATURE:0cxx_alignof
+    Feature record: CXX_FEATURE:0cxx_attributes
+    Feature record: CXX_FEATURE:0cxx_attribute_deprecated
+    Feature record: CXX_FEATURE:0cxx_auto_type
+    Feature record: CXX_FEATURE:0cxx_binary_literals
+    Feature record: CXX_FEATURE:0cxx_constexpr
+    Feature record: CXX_FEATURE:0cxx_contextual_conversions
+    Feature record: CXX_FEATURE:0cxx_decltype
+    Feature record: CXX_FEATURE:0cxx_decltype_auto
+    Feature record: CXX_FEATURE:0cxx_decltype_incomplete_return_types
+    Feature record: CXX_FEATURE:0cxx_default_function_template_args
+    Feature record: CXX_FEATURE:0cxx_defaulted_functions
+    Feature record: CXX_FEATURE:0cxx_defaulted_move_initializers
+    Feature record: CXX_FEATURE:0cxx_delegating_constructors
+    Feature record: CXX_FEATURE:0cxx_deleted_functions
+    Feature record: CXX_FEATURE:0cxx_digit_separators
+    Feature record: CXX_FEATURE:0cxx_enum_forward_declarations
+    Feature record: CXX_FEATURE:0cxx_explicit_conversions
+    Feature record: CXX_FEATURE:0cxx_extended_friend_declarations
+    Feature record: CXX_FEATURE:0cxx_extern_templates
+    Feature record: CXX_FEATURE:0cxx_final
+    Feature record: CXX_FEATURE:0cxx_func_identifier
+    Feature record: CXX_FEATURE:0cxx_generalized_initializers
+    Feature record: CXX_FEATURE:0cxx_generic_lambdas
+    Feature record: CXX_FEATURE:0cxx_inheriting_constructors
+    Feature record: CXX_FEATURE:0cxx_inline_namespaces
+    Feature record: CXX_FEATURE:0cxx_lambdas
+    Feature record: CXX_FEATURE:0cxx_lambda_init_captures
+    Feature record: CXX_FEATURE:0cxx_local_type_template_args
+    Feature record: CXX_FEATURE:0cxx_long_long_type
+    Feature record: CXX_FEATURE:0cxx_noexcept
+    Feature record: CXX_FEATURE:0cxx_nonstatic_member_init
+    Feature record: CXX_FEATURE:0cxx_nullptr
+    Feature record: CXX_FEATURE:0cxx_override
+    Feature record: CXX_FEATURE:0cxx_range_for
+    Feature record: CXX_FEATURE:0cxx_raw_string_literals
+    Feature record: CXX_FEATURE:0cxx_reference_qualified_functions
+    Feature record: CXX_FEATURE:0cxx_relaxed_constexpr
+    Feature record: CXX_FEATURE:0cxx_return_type_deduction
+    Feature record: CXX_FEATURE:0cxx_right_angle_brackets
+    Feature record: CXX_FEATURE:0cxx_rvalue_references
+    Feature record: CXX_FEATURE:0cxx_sizeof_member
+    Feature record: CXX_FEATURE:0cxx_static_assert
+    Feature record: CXX_FEATURE:0cxx_strong_enums
+    Feature record: CXX_FEATURE:1cxx_template_template_parameters
+    Feature record: CXX_FEATURE:0cxx_thread_local
+    Feature record: CXX_FEATURE:0cxx_trailing_return_types
+    Feature record: CXX_FEATURE:0cxx_unicode_literals
+    Feature record: CXX_FEATURE:0cxx_uniform_initialization
+    Feature record: CXX_FEATURE:0cxx_unrestricted_unions
+    Feature record: CXX_FEATURE:0cxx_user_literals
+    Feature record: CXX_FEATURE:0cxx_variable_templates
+    Feature record: CXX_FEATURE:0cxx_variadic_macros
+    Feature record: CXX_FEATURE:0cxx_variadic_templates

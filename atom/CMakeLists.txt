@@ -1,0 +1,12 @@
+# Version cmake
+cmake_minimum_required (VERSION 3.5.0)
+
+# Set nao toolchain
+set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_LIST_DIR}/toolchain.cmake)
+
+# Project name
+project(potential-spoon)
+
+set(CMAKE_CXX_STANDARD 11)
+
+add_executable(atom RobotNetwork.cpp)
