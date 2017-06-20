@@ -28,6 +28,8 @@ public:
   virtual int getLabelFromSpikes() = 0;
   virtual void saveWeights(std::string filename) = 0;
   virtual void loadWeights(std::string filename) = 0;
+  virtual void saveThetas(std::string filename) = 0;
+  virtual void loadThetas(std::string filename) = 0;
 
   bool record_training = false;
   bool learning = true;

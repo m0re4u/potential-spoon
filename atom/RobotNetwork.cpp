@@ -498,6 +498,29 @@ void RobotNetwork::loadWeights(std::string filename) {
   std::cout << "---- Loaded weights" << '\n';
 }
 
+void RobotNetwork::saveThetas(std::string filename) {
+  std::ofstream thetaFile;
+  thetaFile.open(filename);
+
+  for (size_t j = 0; j < Ne; j++) {
+    thetaFile << thetas[j] << '\n';
+  }
+  thetaFile.close();
+  std::cout << "---- Saved thetas" << '\n';
+}
+void RobotNetwork::loadThetas(std::string filename) {
+  std::ifstream thetaFile;
+  thetaFile.open(filename);
+  std::string line;
+  int index = 0;
+  while (std::getline(thetaFile,line)) {
+    float w = std::stof(line);
+    thetas[index] = w;
+    index++;
+  }
+  std::cout << "---- Loaded thetas" << '\n';
+}
+
 void RobotNetwork::saveStates() {
   std::ofstream outfile("states.bin", std::ios_base::app);
   if (outfile.is_open()) {
@@ -636,7 +659,6 @@ void trainLIF(Network* network, bool show) {
   // network->plotWeights();
   // network->plotFiringRates();
   // network->plotWeightImage();
-  network->saveWeights("weights.csv");
   network->showWeightExtrema();
   network->showThetaExtrema();
 
@@ -702,7 +724,7 @@ int main(int argc, char const *argv[]) {
   // Show weight progression
   bool s_w = false;
   // Perform training
-  bool train = true;
+  bool train = false;
   // Label data after training
   bool label = true;
   // Evaluate data after training
@@ -710,7 +732,7 @@ int main(int argc, char const *argv[]) {
   // Output cycle timings
   bool timings = true;
 
-  RobotNetwork* n1 = new RobotNetwork(10, 10, 100, true, r_t);
+  RobotNetwork* n1 = new RobotNetwork(1, 100, 200, true, r_t);
 
   std::cout << "Reading in MNIST dataset.." << '\n';
   auto dataset = mnist::read_dataset<std::vector, std::vector, uint8_t, uint8_t>();

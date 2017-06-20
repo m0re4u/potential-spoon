@@ -515,6 +515,29 @@ void Opt1Network::loadWeights(std::string filename) {
   std::cout << "---- Loaded weights" << '\n';
 }
 
+void Opt1Network::saveThetas(std::string filename) {
+  std::ofstream thetaFile;
+  thetaFile.open(filename);
+
+  for (size_t j = 0; j < Ne; j++) {
+    thetaFile << thetas[j] << '\n';
+  }
+  thetaFile.close();
+  std::cout << "---- Saved thetas" << '\n';
+}
+void Opt1Network::loadThetas(std::string filename) {
+  std::ifstream thetaFile;
+  thetaFile.open(filename);
+  std::string line;
+  int index = 0;
+  while (std::getline(thetaFile,line)) {
+    float w = std::stof(line);
+    thetas[index] = w;
+    index++;
+  }
+  std::cout << "---- Loaded thetas" << '\n';
+}
+
 void Opt1Network::saveStates() {
   std::ofstream outfile("states.bin", std::ios_base::app);
   if (outfile.is_open()) {

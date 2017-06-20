@@ -19,10 +19,6 @@
 #include "optimizations/opt1.h"
 
 void trainLIF(Network* network, bool show) {
-  if (show) {
-    network->im = cimg_library::CImg<unsigned char>(560,560,1,1,0);
-    network->dis = cimg_library::CImgDisplay(network->im);
-  }
   // Run simulation
   bool showWeight = true;
   int shown = 0;
@@ -49,7 +45,8 @@ void trainLIF(Network* network, bool show) {
   // network->plotWeights();
   // network->plotFiringRates();
   // network->plotWeightImage();
-  network->saveWeights("weights.csv");
+  // network->saveWeights("../weights/weights.csv");
+  // network->saveThetas("../weights/thetas.csv");
   network->showWeightExtrema();
   network->showThetaExtrema();
 
@@ -145,10 +142,21 @@ int main(int argc, char const *argv[]) {
 
   auto begin = std::chrono::high_resolution_clock::now();
 
+  if (s_w) {
+    n1->im = cimg_library::CImg<unsigned char>(560,560,1,1,0);
+    n1->dis = cimg_library::CImgDisplay(n1->im);
+  }
+
   if (train) {
     trainLIF(n1, s_w);
   } else {
-    n1->loadWeights("weights.csv");
+    n1->loadWeights("../weights/weights.csv");
+    n1->loadThetas("../weights/thetas.csv");
+    n1->showWeightExtrema();
+    n1->showThetaExtrema();
+    if (s_w) {
+      n1->liveWeightUpdates();
+    }
   }
 
   if (label || eval) {
@@ -165,7 +173,9 @@ int main(int argc, char const *argv[]) {
             << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count()
             << "ms" << '\n';
 
-  n1->im.display();
+  if (s_w) {
+    n1->im.display();
+  }
 
   return 0;
 }

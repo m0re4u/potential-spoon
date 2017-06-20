@@ -46,7 +46,7 @@ public:
   double taue = 0.01;
   double trace_plus = 1;
   double tau_trace_pre = 0.00005;
-  float theta_plus = 0.02;
+  float theta_plus = 0.004;
   float tau_theta = 0.0000001;
 
   static constexpr double v_reset_e = 0.;
@@ -191,6 +191,8 @@ public:
    */
   void saveWeights(std::string filename);
   void loadWeights(std::string filename);
+  void saveThetas(std::string filename);
+  void loadThetas(std::string filename);
   void saveStates();
 
   void showWeightExtrema();

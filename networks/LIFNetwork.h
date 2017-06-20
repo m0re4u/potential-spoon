@@ -181,6 +181,8 @@ public:
    */
   void saveWeights(std::string filename);
   void loadWeights(std::string filename);
+  void saveThetas(std::string filename);
+  void loadThetas(std::string filename);
   void saveStates();
 
   void showWeightExtrema();

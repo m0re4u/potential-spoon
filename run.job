@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --time=01:00:00
+#SBATCH --time=08:00:00
 #SBATCH -N 2
 
 APP=build/main

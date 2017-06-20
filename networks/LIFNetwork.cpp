@@ -496,6 +496,30 @@ void LIFNetwork::loadWeights(std::string filename) {
   std::cout << "---- Loaded weights" << '\n';
 }
 
+void LIFNetwork::saveThetas(std::string filename) {
+  std::ofstream thetaFile;
+  thetaFile.open(filename);
+
+  for (size_t j = 0; j < Ne; j++) {
+    thetaFile << thetas[j] << '\n';
+  }
+  thetaFile.close();
+  std::cout << "---- Saved thetas" << '\n';
+}
+void LIFNetwork::loadThetas(std::string filename) {
+  std::ifstream thetaFile;
+  thetaFile.open(filename);
+  std::string line;
+  int index = 0;
+  while (std::getline(thetaFile,line)) {
+    float w = std::stof(line);
+    thetas[index] = w;
+    index++;
+  }
+  std::cout << "---- Loaded thetas" << '\n';
+}
+
+
 void LIFNetwork::saveStates() {
   std::ofstream outfile("states.bin", std::ios_base::app);
   if (outfile.is_open()) {

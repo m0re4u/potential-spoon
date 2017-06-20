@@ -3,14 +3,15 @@
 # build folder
 build/*
 
-# data folder for MNIST/CIFAR
+# data folder for MNIST
 data/*
 
 # Include libraries: MNIST-reader, CImg
 util/include
-
 # Sample Python code from (Diehl & Cook, 2014)
 util/diehl
+# another folder for MNIST
+util/mnist
 
 # output plots
 images/*
