@@ -352,10 +352,13 @@ void Opt1Network::labelNeurons() {
     cycle();
     t += dt;
     mstime_++;
-    std::cout << '\r' << "Progress: " << std::setw(8) << std::setfill(' ')
-              << (cur_img / float(label_limit))<< std::flush;
+    if (cur_img % 1000 == 0) {
+      std::cout << std::to_string(cur_img) << '\n';
+    }
+    // std::cout << '\r' << "Progress: " << std::setw(8) << std::setfill(' ')
+    //           << (cur_img / float(label_limit))<< std::flush;
   }
-  std::cout << '\n';
+  // std::cout << '\n';
   std::cout << "No. of labeling spikes: " << firings.size() << '\n';
   // For each neuron, if its response in this cycle was higher than the
   // previous highest, update the class associated with this neuron

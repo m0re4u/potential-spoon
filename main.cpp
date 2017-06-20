@@ -34,8 +34,11 @@ void trainLIF(Network* network, bool show) {
     if (network->cur_img % 50 == 0 && shown != network->cur_img) {
       showWeight = true;
     }
-    std::cout << '\r' << "Progress: " << std::setw(8) << std::setfill(' ')
-              << (network->cur_img / float(network->train_limit))<< std::flush;
+    if (network->cur_img % 1000 == 0) {
+      std::cout << std::to_string(network->cur_img) << '\n';
+    }
+    // std::cout << '\r' << "Progress: " << std::setw(8) << std::setfill(' ')
+    //           << (network->cur_img / float(network->train_limit))<< std::flush;
 
   }
   std::cout << '\n';

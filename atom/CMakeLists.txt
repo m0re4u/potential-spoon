@@ -6,6 +6,7 @@ set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_LIST_DIR}/toolchain.cmake)
 
 # Project name
 project(potential-spoon)
+set(CMAKE_BUILD_TYPE Release)
 
 set(CMAKE_CXX_STANDARD 11)
 

@@ -750,6 +750,9 @@ int main(int argc, char const *argv[]) {
     trainLIF(n1, s_w);
   } else {
     n1->loadWeights("weights.csv");
+    n1->loadThetas("thetas.csv");
+    n1->showWeightExtrema();
+    n1->showThetaExtrema();
   }
 
   if (label || eval) {
