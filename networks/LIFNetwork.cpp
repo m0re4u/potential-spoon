@@ -433,7 +433,6 @@ int LIFNetwork::getLabelFromSpikes() {
         answer = i;
     }
   }
-  firings.clear();
   return answer;
 }
 /*
