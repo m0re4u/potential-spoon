@@ -237,7 +237,7 @@ void Opt1Network::updateIncomingWeights(int index) {
   for (size_t i = 0; i < Nd; i++) {
     float dv = connectionTrace[i] - stdp_offset;
     float dw = (wmax - (*incomingWeights[index][i])) / wmax;
-    float update = stdp_lr_pre * dv * pow(dw, 2.0);
+    float update = stdp_lr_pre * dv * pow(dw, 4);
     (*incomingWeights[index][i]) += update;
     if ( (*incomingWeights[index][i]) > wmax) {
       (*incomingWeights[index][i]) = wmax;
@@ -409,8 +409,9 @@ int Opt1Network::getLabelFromSpikes() {
   for (size_t i = 0; i < N; i++) {
     neuronSpikes[i] = 0;
   }
+
   // Active presentation of the image
-  while (mstime_ < 500 || firings.size() < 5) {
+  while (mstime_ < 500 || image_spikes < 5) {
     cycle();
     t += dt;
     mstime_++;
