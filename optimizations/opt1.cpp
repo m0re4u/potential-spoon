@@ -109,7 +109,6 @@ bool Opt1Network::generateSpike(unsigned value) {
 }
 
 void Opt1Network::inputSpikes() {
-#pragma omp parallel for
   for (int i = Nn; i < N; ++i) {
     assert(i - Nn >= 0);
     bool spike = generateSpike(this->data[this->cur_img][i - Nn]);
@@ -411,7 +410,7 @@ int Opt1Network::getLabelFromSpikes() {
     neuronSpikes[i] = 0;
   }
   // Active presentation of the image
-  while (mstime_ < 1000) {
+  while (mstime_ < 500 || firings.size() < 5) {
     cycle();
     t += dt;
     mstime_++;

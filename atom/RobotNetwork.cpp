@@ -403,12 +403,11 @@ int RobotNetwork::getLabelFromSpikes() {
     neuronSpikes[i] = 0;
   }
   // Active presentation of the image
-  while (mstime_ < 1000) {
+  while (mstime_ < 500 || firings.size() < 5) {
     cycle();
     t += dt;
     mstime_++;
   }
-  std::cout << firings.size() << " firings" << '\n';
   for (size_t i = 0; i < firings.size(); i++) {
     neuronSpikes[std::get<1>(firings[i])]++;
   }
