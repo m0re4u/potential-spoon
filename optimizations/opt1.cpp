@@ -109,6 +109,7 @@ bool Opt1Network::generateSpike(unsigned value) {
 }
 
 void Opt1Network::inputSpikes() {
+#pragma omp parallel for
   for (int i = Nn; i < N; ++i) {
     assert(i - Nn >= 0);
     bool spike = generateSpike(this->data[this->cur_img][i - Nn]);
