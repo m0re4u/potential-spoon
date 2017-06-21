@@ -10,12 +10,12 @@ include_directories(
 set(triple i686-pc-linux-gnu)
 
 # TODO: move -nostdlib to some cmake flag
-set(CMAKE_C_COMPILER gcc -nostdlib)
+set(CMAKE_C_COMPILER clang -nostdlib)
 set(CMAKE_C_COMPILER_TARGET ${triple})
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
 
 # TODO: move -nostdlib to some cmake flag
-set(CMAKE_CXX_COMPILER g++ -nostdlib)
+set(CMAKE_CXX_COMPILER clang++ -nostdlib)
 set(CMAKE_CXX_COMPILER_TARGET ${triple})
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
