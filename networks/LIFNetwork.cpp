@@ -79,6 +79,7 @@ void LIFNetwork::reset_values() {
   t = 0;
   cycle_switcher = 0;
   cur_img = 0;
+  image_spikes = 0;
   sleepingCycle = false;
   firings.clear();
 }
@@ -240,7 +241,7 @@ void LIFNetwork::updateIncomingWeights(int index) {
         // connection j from neuron i to index
         float dv = connectionTrace[i-Nn] - stdp_offset;
         float dw = (wmax - (*connectionWeights[i])[j]) / wmax;
-        float update = stdp_lr_pre * dv * pow(dw, 2.0);
+        float update = stdp_lr_pre * dv * pow(dw, 4);
         (*connectionWeights[i])[j] += update;
         if ((*connectionWeights[i])[j] > wmax) {
           (*connectionWeights[i])[j] = wmax;
@@ -337,7 +338,17 @@ void LIFNetwork::labelNeurons() {
   }
 
   // Iterate through dataset once
+  int last_img = 0;
   while (cur_img < label_limit) {
+    if (cur_img != last_img) {
+      // When we're done with this image, count the firings that occurred
+      // per neuron per class
+      for (size_t i = 0; i < firings.size(); i++) {
+        classSpikes[std::get<1>(firings[i])][std::get<2>(firings[i])]++;
+      }
+      firings.clear();
+      last_img = cur_img;
+    }
     cycle();
     t += dt;
     mstime_++;
@@ -346,15 +357,10 @@ void LIFNetwork::labelNeurons() {
   }
   std::cout << '\n';
   std::cout << "No. of labeling spikes: " << firings.size() << '\n';
-
-  for (size_t i = 0; i < firings.size(); i++) {
-    classSpikes[std::get<1>(firings[i])][std::get<2>(firings[i])]++;
-  }
-
   // For each neuron, if its response in this cycle was higher than the
   // previous highest, update the class associated with this neuron
 
-  for (size_t i = 0; i < N; i++) {
+  for (size_t i = 0; i < Ne; i++) {
     // std::cout << "Spike count neuron: " << std::setw(3) << i << ": { ";
     // std::cout << std::setw(3) << classSpikes[i][0] << ", ";
     // std::cout << std::setw(3) << classSpikes[i][1] << ", ";
@@ -401,7 +407,11 @@ int LIFNetwork::getLabelFromSpikes() {
     neuronSpikes[i] = 0;
   }
   // Active presentation of the image
-  while (mstime_ < 500 || firings.size() < 5) {
+  int last_img = cur_img;
+  while (true) {
+    if (cur_img != last_img) {
+      break;
+    }
     cycle();
     t += dt;
     mstime_++;
@@ -410,7 +420,7 @@ int LIFNetwork::getLabelFromSpikes() {
     neuronSpikes[std::get<1>(firings[i])]++;
   }
 
-  for (size_t i = 0; i < N; i++) {
+  for (size_t i = 0; i < Ne; i++) {
     // label associated with this neuron
     int label = neuronClass[i];
     if (label == -1) {

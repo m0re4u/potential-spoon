@@ -46,7 +46,7 @@ public:
   double taue = 0.01;
   double trace_plus = 1;
   double tau_trace_pre = 0.00005;
-  float theta_plus = 0.02;
+  float theta_plus = 0.002;
   float tau_theta = 0.0000001;
 
   static constexpr double v_reset_e = 0.;
