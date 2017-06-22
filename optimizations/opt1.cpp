@@ -87,6 +87,7 @@ void Opt1Network::reset_values() {
   t = 0;
   cycle_switcher = 0;
   cur_img = 0;
+  image_spikes = 0;
   sleepingCycle = false;
   firings.clear();
 }
@@ -363,7 +364,7 @@ void Opt1Network::labelNeurons() {
   // For each neuron, if its response in this cycle was higher than the
   // previous highest, update the class associated with this neuron
 
-  for (size_t i = 0; i < N; i++) {
+  for (size_t i = 0; i < Ne; i++) {
     // std::cout << "Spike count neuron: " << std::setw(3) << i << ": { ";
     // std::cout << std::setw(3) << classSpikes[i][0] << ", ";
     // std::cout << std::setw(3) << classSpikes[i][1] << ", ";
@@ -375,8 +376,6 @@ void Opt1Network::labelNeurons() {
     // std::cout << std::setw(3) << classSpikes[i][7] << ", ";
     // std::cout << std::setw(3) << classSpikes[i][8] << ", ";
     // std::cout << std::setw(3) << classSpikes[i][9] << " } | Highest class: ";
-    // std::cout << std::max_element(classSpikes[i], classSpikes[i]+10) - classSpikes[i] << '\n';
-    // neuronClass[i] = std::max_element(classSpikes[i], classSpikes[i]+10) - classSpikes[i];
     int highest = 0;
     int c = 0;
     for (size_t j = 0; j < 10; j++) {
@@ -411,7 +410,11 @@ int Opt1Network::getLabelFromSpikes() {
   }
 
   // Active presentation of the image
-  while (mstime_ < 500 || image_spikes < 5) {
+  int last_img = cur_img;
+  while (true) {
+    if (cur_img != last_img) {
+      break;
+    }
     cycle();
     t += dt;
     mstime_++;
@@ -420,7 +423,7 @@ int Opt1Network::getLabelFromSpikes() {
     neuronSpikes[std::get<1>(firings[i])]++;
   }
 
-  for (size_t i = 0; i < N; i++) {
+  for (size_t i = 0; i < Ne; i++) {
     // label associated with this neuron
     int label = neuronClass[i];
     if (label == -1) {
