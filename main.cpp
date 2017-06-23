@@ -18,24 +18,32 @@
 // Optimized network
 #include "optimizations/opt1.h"
 
-void trainLIF(Network* network, bool show) {
+void trainLIF(Network* network, bool show, bool save) {
   // Run simulation
   bool showWeight = true;
   int shown = 0;
-  while(network->cur_img < network->train_limit) {
+  int im = 0;
+  while(im < network->train_limit) {
     network->cycle();
     network->t += network->dt;
     network->mstime_++;
-    if (showWeight && show) {
-      network->liveWeightUpdates();
+    im++;
+    if (showWeight) {
+      if (show) {
+        network->liveWeightUpdates();
+      }
+      if (save) {
+        network->saveWeights("../weights/weights"+std::to_string(im)+".csv");
+        network->saveThetas("../weights/thetas"+std::to_string(im)+".csv");
+      }
       showWeight = false;
-      shown = network->cur_img;
+      shown = im;
     }
-    if (network->cur_img % 50 == 0 && shown != network->cur_img) {
+    if (im % 50 == 0 && shown != im) {
       showWeight = true;
     }
-    if (network->cur_img % 1000 == 0) {
-      std::cout << std::to_string(network->cur_img) << '\n';
+    if (im % 1000 == 0) {
+      std::cout << std::to_string(im) << '\n';
     }
     // std::cout << '\r' << "Progress: " << std::setw(8) << std::setfill(' ')
     //           << (network->cur_img / float(network->train_limit))<< std::flush;
@@ -48,8 +56,8 @@ void trainLIF(Network* network, bool show) {
   // network->plotWeights();
   // network->plotFiringRates();
   // network->plotWeightImage();
-  // network->saveWeights("../weights/weights.csv");
-  // network->saveThetas("../weights/thetas.csv");
+  network->saveWeights("../weights/weights"+std::to_string(im)+".csv");
+  network->saveThetas("../weights/thetas"+std::to_string(im)+".csv");
   network->showWeightExtrema();
   network->showThetaExtrema();
 
@@ -121,6 +129,8 @@ int main(int argc, char const *argv[]) {
   bool r_t = false;
   // Show weight progression
   bool s_w = false;
+  // Save weight every x iterations
+  bool save = false;
   // Perform training
   bool train = true;
   // Label data after training
@@ -151,7 +161,7 @@ int main(int argc, char const *argv[]) {
   }
 
   if (train) {
-    trainLIF(n1, s_w);
+    trainLIF(n1, s_w, save);
   } else {
     n1->loadWeights("../weights/weights.csv");
     n1->loadThetas("../weights/thetas.csv");
