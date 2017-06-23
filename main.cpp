@@ -143,7 +143,7 @@ int main(int argc, char const *argv[]) {
   // Label data after training
   bool label = true;
   // Save labels given to exc neurons
-  bool save_labels = true;
+  bool save_labels = false;
   // Evaluate data after training
   bool eval = true;
   // Output cycle timings
