@@ -23,27 +23,29 @@ void trainLIF(Network* network, bool show, bool save) {
   bool showWeight = true;
   int shown = 0;
   int im = 0;
+  int last_img = 0;
   while(im < network->train_limit) {
+    if (last_img != network->cur_img) {
+      im++;
+      last_img = network->cur_img;
+    }
     network->cycle();
     network->t += network->dt;
     network->mstime_++;
-    im++;
     if (showWeight) {
       if (show) {
         network->liveWeightUpdates();
       }
       if (save) {
+        std::cout << std::to_string(im) << '\n';
         network->saveWeights("../weights/weights"+std::to_string(im)+".csv");
         network->saveThetas("../weights/thetas"+std::to_string(im)+".csv");
       }
       showWeight = false;
       shown = im;
     }
-    if (im % 50 == 0 && shown != im) {
+    if (im % 500 == 0 && shown != im) {
       showWeight = true;
-    }
-    if (im % 1000 == 0) {
-      std::cout << std::to_string(im) << '\n';
     }
     // std::cout << '\r' << "Progress: " << std::setw(8) << std::setfill(' ')
     //           << (network->cur_img / float(network->train_limit))<< std::flush;
