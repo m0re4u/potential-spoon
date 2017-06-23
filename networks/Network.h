@@ -30,6 +30,8 @@ public:
   virtual void loadWeights(std::string filename) = 0;
   virtual void saveThetas(std::string filename) = 0;
   virtual void loadThetas(std::string filename) = 0;
+  virtual void saveNeuronClasses(std::string filename) = 0;
+  virtual void loadNeuronClasses(std::string filename) = 0;
 
   bool record_training = false;
   bool learning = true;

@@ -544,6 +544,29 @@ void Opt1Network::loadThetas(std::string filename) {
   }
   std::cout << "---- Loaded thetas" << '\n';
 }
+void Opt1Network::saveNeuronClasses(std::string filename) {
+  std::ofstream neuronClassFile;
+  neuronClassFile.open(filename);
+
+  for (size_t j = 0; j < Ne; j++) {
+    neuronClassFile << neuronClass[j] << '\n';
+  }
+  neuronClassFile.close();
+  std::cout << "---- Saved neuron classes" << '\n';
+}
+
+void Opt1Network::loadNeuronClasses(std::string filename) {
+  std::ifstream neuronClassFile;
+  neuronClassFile.open(filename);
+  std::string line;
+  int index = 0;
+  while (std::getline(neuronClassFile,line)) {
+    int w = std::stoi(line);
+    neuronClass[index] = w;
+    index++;
+  }
+  std::cout << "---- Loaded neuron classes" << '\n';
+}
 
 void Opt1Network::saveStates() {
   std::ofstream outfile("states.bin", std::ios_base::app);
@@ -665,11 +688,11 @@ void Opt1Network::liveWeightUpdates() {
       weight2im[i][j % 28][j / 28] = (*incomingWeights[i][j]);
     }
   }
-  for (size_t i = 0; i < 20; i++) {
-    for (size_t l = 0; l < 20; l++) {
+  for (size_t i = 0; i < int(sqrt(Ne)); i++) {
+    for (size_t l = 0; l < int(sqrt(Ne)); l++) {
       for (size_t k = 0; k < 28; k++) {
         for (size_t j = 0; j < 28; j++) {
-          float x = weight2im[(i*20) + l][k][j];
+          float x = weight2im[(i*int(sqrt(Ne))) + l][k][j];
           im((i*28) + k,(l*28)+j) = char(ceil((x/wmax)*255));
         }
       }

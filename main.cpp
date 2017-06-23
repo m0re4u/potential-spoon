@@ -58,8 +58,10 @@ void trainLIF(Network* network, bool show, bool save) {
   // network->plotWeights();
   // network->plotFiringRates();
   // network->plotWeightImage();
-  network->saveWeights("../weights/weights"+std::to_string(im)+".csv");
-  network->saveThetas("../weights/thetas"+std::to_string(im)+".csv");
+  if (save) {
+    network->saveWeights("../weights/weights"+std::to_string(im)+".csv");
+    network->saveThetas("../weights/thetas"+std::to_string(im)+".csv");
+  }
   network->showWeightExtrema();
   network->showThetaExtrema();
 
@@ -68,13 +70,16 @@ void trainLIF(Network* network, bool show, bool save) {
   }
 
 }
-void labelLIF(Network* network) {
+void labelLIF(Network* network, bool save) {
   std::cout << "Resetting values" << '\n';
   network->learning = false;
   network->reset_values();
 
   std::cout << "Labelling neurons.." << '\n';
   network->labelNeurons();
+  if (save) {
+    network->saveNeuronClasses("../weights/classes.csv");
+  }
 }
 
 void testLIF(Network* network, bool timing) {
@@ -137,6 +142,8 @@ int main(int argc, char const *argv[]) {
   bool train = true;
   // Label data after training
   bool label = true;
+  // Save labels given to exc neurons
+  bool save_labels = true;
   // Evaluate data after training
   bool eval = true;
   // Output cycle timings
@@ -174,8 +181,10 @@ int main(int argc, char const *argv[]) {
     }
   }
 
-  if (label || eval) {
-    labelLIF(n1);
+  if (label) {
+    labelLIF(n1, save_labels);
+  } else {
+    n1->loadNeuronClasses("../weights/classes.csv");
   }
 
   if (eval) {

@@ -528,6 +528,30 @@ void LIFNetwork::loadThetas(std::string filename) {
   std::cout << "---- Loaded thetas" << '\n';
 }
 
+void LIFNetwork::saveNeuronClasses(std::string filename) {
+  std::ofstream neuronClassFile;
+  neuronClassFile.open(filename);
+
+  for (size_t j = 0; j < Ne; j++) {
+    neuronClassFile << neuronClass[j] << '\n';
+  }
+  neuronClassFile.close();
+  std::cout << "---- Saved neuron classes" << '\n';
+}
+
+void LIFNetwork::loadNeuronClasses(std::string filename) {
+  std::ifstream neuronClassFile;
+  neuronClassFile.open(filename);
+  std::string line;
+  int index = 0;
+  while (std::getline(neuronClassFile,line)) {
+    int w = std::stoi(line);
+    neuronClass[index] = w;
+    index++;
+  }
+  std::cout << "---- Loaded neuron classes" << '\n';
+}
+
 
 void LIFNetwork::saveStates() {
   std::ofstream outfile("states.bin", std::ios_base::app);
