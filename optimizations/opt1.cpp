@@ -413,10 +413,7 @@ int Opt1Network::getLabelFromSpikes() {
 
   // Active presentation of the image
   int last_img = cur_img;
-  while (true) {
-    if (cur_img != last_img) {
-      break;
-    }
+  while (image_spikes < 5 || mstime_ < IMG_TIME) {
     cycle();
     t += dt;
     mstime_++;
