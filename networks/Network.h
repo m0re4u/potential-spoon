@@ -38,10 +38,13 @@ public:
   int train_limit = 100;
   int label_limit = 100;
   int test_limit  = 100;
-  double t = 0;
-  double dt = 0.0001;
-  unsigned mstime_ = 0;
-  unsigned cur_img = 0;
+  double t = 0;               // time counter as in Brian(python framework)
+  double dt = 0.0001;         // time addition on every step
+  unsigned mstime_ = 0;       // current time stamp in natural numbers
+  unsigned cur_img = 0;       // index of the current image
+  float lastIntensity = 0;    // average intensity of the current image
+  unsigned image_spikes = 0;  // number of spikes in the exc layer during the presentation of the current image
+
 
   // Dataset used as input
   std::vector<std::vector<unsigned char, std::allocator<unsigned char>>> data;

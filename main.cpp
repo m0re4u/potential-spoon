@@ -44,7 +44,7 @@ void trainLIF(Network* network, bool show, bool save) {
       showWeight = false;
       shown = im;
     }
-    if (im % 500 == 0 && shown != im) {
+    if (im % 1000 == 0 && shown != im) {
       showWeight = true;
     }
     // std::cout << '\r' << "Progress: " << std::setw(8) << std::setfill(' ')
@@ -71,10 +71,6 @@ void trainLIF(Network* network, bool show, bool save) {
 
 }
 void labelLIF(Network* network, bool save) {
-  std::cout << "Resetting values" << '\n';
-  network->learning = false;
-  network->reset_values();
-
   std::cout << "Labelling neurons.." << '\n';
   network->labelNeurons();
   if (save) {
@@ -102,6 +98,7 @@ void testLIF(Network* network, bool timing) {
       << '\n';
       std::cerr << network->firings.size() << ", "
       << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count()
+      << ", " << network->lastIntensity
       << '\n';
     } else {
       std::cout << '\n';
@@ -139,9 +136,9 @@ int main(int argc, char const *argv[]) {
   // Save weight every x iterations
   bool save = false;
   // Perform training
-  bool train = true;
+  bool train = false;
   // Label data after training
-  bool label = true;
+  bool label = false;
   // Save labels given to exc neurons
   bool save_labels = false;
   // Evaluate data after training
@@ -149,8 +146,8 @@ int main(int argc, char const *argv[]) {
   // Output cycle timings
   bool timings = true;
 
-  // LIFNetwork* n1 = new LIFNetwork(5000, 5000, 500, true, r_t);
-  Opt1Network* n1 = new Opt1Network(5000, 5000, 500, true, r_t);
+  LIFNetwork* n1 = new LIFNetwork(1, 1, 9999, true, r_t);
+  // Opt1Network* n1 = new Opt1Network(1, 1, 9999, true, r_t);
 
   std::cout << "Reading in MNIST dataset.." << '\n';
   auto dataset = mnist::read_dataset<std::vector, std::vector, uint8_t, uint8_t>();
@@ -165,6 +162,7 @@ int main(int argc, char const *argv[]) {
   auto begin = std::chrono::high_resolution_clock::now();
 
   if (s_w) {
+    // width, height = sqrt(Ne) * 28
     n1->im = cimg_library::CImg<unsigned char>(560,560,1,1,0);
     n1->dis = cimg_library::CImgDisplay(n1->im);
   }
@@ -180,6 +178,10 @@ int main(int argc, char const *argv[]) {
       n1->liveWeightUpdates();
     }
   }
+
+  std::cout << "Resetting values" << '\n';
+  n1->learning = false;
+  n1->reset_values();
 
   if (label) {
     labelLIF(n1, save_labels);

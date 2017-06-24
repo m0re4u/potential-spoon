@@ -123,6 +123,11 @@ void LIFNetwork::presentData() {
       cycle_switcher = 0;
       sleepingCycle = false;
       image_spikes = 0;
+      int image_intensity = 0;
+      for (size_t i = 0; i < Nd; i++) {
+        image_intensity += this->data[this->cur_img][i];
+      }
+      lastIntensity = image_intensity / float(Nd);
     }
   } else {
     inputSpikes();
@@ -135,10 +140,6 @@ void LIFNetwork::presentData() {
         cycle_switcher = 0;
         input_intensity++;
       } else {
-        int image_intensity = 0;
-        for (size_t i = Nn; i < N; i++) {
-          image_intensity += this->data[this->cur_img][i - Nn];
-        }
         // std::cout << " - Image: " << cur_img << " intensity: " << image_intensity / 784.<< " input: " << input_spikes << " exc: " << image_spikes << '\n';
         cycle_switcher = 0;
         sleepingCycle = true;
