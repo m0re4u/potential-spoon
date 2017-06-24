@@ -131,11 +131,6 @@ void Opt1Network::presentData() {
       cycle_switcher = 0;
       sleepingCycle = false;
       image_spikes = 0;
-      int image_intensity = 0;
-      for (size_t i = 0; i < Nd; i++) {
-        image_intensity += this->data[this->cur_img][i];
-      }
-      lastIntensity = image_intensity / float(Nd);
     }
   } else {
     inputSpikes();
@@ -413,6 +408,10 @@ int Opt1Network::getLabelFromSpikes() {
 
   // Active presentation of the image
   int last_img = cur_img;
+  // store the average intensity of the image s.t. the evaluation loop can read
+  // it out
+  getImageAvgIntensity();
+
   while (image_spikes < 5 || mstime_ < IMG_TIME) {
     cycle();
     t += dt;
@@ -449,6 +448,14 @@ int Opt1Network::getLabelFromSpikes() {
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 *                             PLOTTING & OUTPUT                              *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+ void Opt1Network::getImageAvgIntensity() {
+   int image_intensity = 0;
+   for (size_t i = 0; i < Nd; i++) {
+     image_intensity += this->data[this->cur_img][i];
+   }
+   lastIntensity = image_intensity / float(Nd);
+ }
+
 void Opt1Network::plotSpikes() {
   for (auto spike : firings) {
     std::cerr << std::get<0>(spike) << ", " << std::get<1>(spike) << '\n';

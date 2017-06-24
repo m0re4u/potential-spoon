@@ -411,6 +411,9 @@ int RobotNetwork::getLabelFromSpikes() {
   }
   // Active presentation of the image
   int last_img = cur_img;
+  // store the average intensity of the image s.t. the evaluation loop can read
+  // it out
+  getImageAvgIntensity();
   while (image_spikes < 5 || mstime_ < IMG_TIME) {
     cycle();
     t += dt;
@@ -800,4 +803,12 @@ int main(int argc, char const *argv[]) {
             << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count()
             << "ms" << '\n';
   return 0;
+}
+
+void RobotNetwork::getImageAvgIntensity() {
+  int image_intensity = 0;
+  for (size_t i = 0; i < Nd; i++) {
+    image_intensity += this->data[this->cur_img][i];
+  }
+  lastIntensity = image_intensity / float(Nd);
 }

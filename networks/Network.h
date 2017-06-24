@@ -32,6 +32,7 @@ public:
   virtual void loadThetas(std::string filename) = 0;
   virtual void saveNeuronClasses(std::string filename) = 0;
   virtual void loadNeuronClasses(std::string filename) = 0;
+  virtual void getImageAvgIntensity() = 0;
 
   bool record_training = false;
   bool learning = true;

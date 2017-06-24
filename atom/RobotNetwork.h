@@ -184,6 +184,7 @@ public:
   void loadThetas(std::string filename);
   void saveNeuronClasses(std::string filename);
   void loadNeuronClasses(std::string filename);
+  void getImageAvgIntensity();
   void saveStates();
 
   void showWeightExtrema();
