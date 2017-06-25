@@ -153,10 +153,12 @@ void LIFNetwork::presentData() {
   }
 }
 void LIFNetwork::processPreviousSpikes(int i) {
-  // Add up any delayed spikes
-  if (spikeQueue[mstime_% max_delay][i] > 0) {
-    S[i] += spikeQueue[mstime_ % max_delay][i];
-    spikeQueue[mstime_ % max_delay][i] = 0;
+  if (i < Ne) {
+    // Add up any delayed spikes
+    if (spikeQueue[mstime_% max_delay][i] > 0) {
+      S[i] += spikeQueue[mstime_ % max_delay][i];
+      spikeQueue[mstime_ % max_delay][i] = 0;
+    }
   }
 }
 
@@ -276,14 +278,14 @@ void LIFNetwork::decayTrace() {
 
 void LIFNetwork::decayNeurons() {
   for (size_t i = 0; i < Ne; i++) {
-    float diff = t - previousSpike[i];
-      S[i] *= exp(-taue / diff);
+    float diff;
     // Fix rounding errors
-    // if (t <= previousSpike[i]+0.000001) {
-    //   diff = 0.0001;
-    // } else {
-    //   diff = t - previousSpike[i];
-    // }
+    if (t <= previousSpike[i]+0.000001) {
+      diff = 0.0001;
+    } else {
+      diff = t - previousSpike[i];
+    }
+    S[i] *= exp(-taue / diff);
     // exc neuron
   }
 }
@@ -309,19 +311,13 @@ void LIFNetwork::cycle() {
   presentData();
 
   // Add up spikes from the queue if the spike should be applied now
-  for (size_t i = 0; i < Ne; i++) {
+  for (size_t i = 0; i < N; i++) {
     processPreviousSpikes(i);
   }
   // Check whether a spike occurs in a neuron, and put that spike in the queue
   // at the given delay
-  for (size_t i = 0; i < Ne; i++) {
-    handleSpikes(i);
-  }
-  for (size_t i = Ne; i < Nn; i++) {
-    handleSpikes(i);
-  }
-  for (size_t i = Nn; i < N; i++) {
-    handleSpikes(i);
+  for (size_t i = 0; i < N; i++) {
+      handleSpikes(i);
   }
 
   // Exponential decay on the neuron state

@@ -189,6 +189,7 @@ void Opt1Network::handleExcSpikes(int i) {
       // firings.push_back(std::make_tuple(mstime_, i, c));
       firingsPerNeuron[i]++;
     }
+    #pragma omp atomic
     exc_spikes++;       // count this spike for activation
     previousSpike[i] = t; // set timestamp as latest activation
   }
@@ -214,6 +215,7 @@ void Opt1Network::handleInhSpikes(int i) {
       // firings.push_back(std::make_tuple(mstime_, i, c));
       firingsPerNeuron[i]++;
     }
+    #pragma omp atomic
     inh_spikes++;
     previousSpike[i] = t;
   }
@@ -237,6 +239,7 @@ void Opt1Network::handleInputSpikes(int i) {
       // firings.push_back(std::make_tuple(mstime_, i, c));
       firingsPerNeuron[i]++;
     }
+    #pragma omp atomic
     input_spikes++;
     previousSpike[i] = t;
   }
