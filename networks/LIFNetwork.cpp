@@ -187,7 +187,7 @@ void LIFNetwork::handleSpikes(int i) {
       if (!learning || record_training) {
         // Store spike
         int c = int(this->labels[this->cur_img]);
-        firings.push_back(std::make_tuple(mstime_, i, c));
+        firings.push_back(std::make_tuple(t, i, c));
       }
 
       exc_spikes++;       // count this spike for activation
@@ -212,7 +212,7 @@ void LIFNetwork::handleSpikes(int i) {
       if (!learning || record_training) {
         // Store spike
         int c = int(this->labels[this->cur_img]);
-        firings.push_back(std::make_tuple(mstime_, i, c));
+        firings.push_back(std::make_tuple(t, i, c));
       }
       inh_spikes++;
       previousSpike[i] = t;
@@ -230,7 +230,7 @@ void LIFNetwork::handleSpikes(int i) {
       if (!learning || record_training) {
         // Store spike
         int c = int(this->labels[this->cur_img]);
-        firings.push_back(std::make_tuple(mstime_, i, c));
+        firings.push_back(std::make_tuple(t, i, c));
       }
       input_spikes++;
       previousSpike[i] = t;
