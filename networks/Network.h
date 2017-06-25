@@ -44,7 +44,9 @@ public:
   unsigned mstime_ = 0;       // current time stamp in natural numbers
   unsigned cur_img = 0;       // index of the current image
   float lastIntensity = 0;    // average intensity of the current image
-  unsigned image_spikes = 0;  // number of spikes in the exc layer during the presentation of the current image
+  unsigned exc_spikes = 0;  // number of spikes in the exc layer during the presentation of the current image
+  unsigned inh_spikes = 0;  // number of spikes in the inh layer during the presentation of the current image
+  unsigned input_spikes = 0;  // number of spikes in the input layer during the presentation of the current image
 
 
   // Dataset used as input

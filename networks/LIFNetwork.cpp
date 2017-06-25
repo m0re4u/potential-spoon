@@ -79,7 +79,9 @@ void LIFNetwork::reset_values() {
   t = 0;
   cycle_switcher = 0;
   cur_img = 0;
-  image_spikes = 0;
+  exc_spikes = 0;
+  inh_spikes = 0;
+  input_spikes = 0;
   sleepingCycle = false;
   firings.clear();
 }
@@ -122,7 +124,9 @@ void LIFNetwork::presentData() {
       cur_img %= 60000; // keep going through the images
       cycle_switcher = 0;
       sleepingCycle = false;
-      image_spikes = 0;
+      exc_spikes = 0;
+      inh_spikes = 0;
+      input_spikes = 0;
       int image_intensity = 0;
       for (size_t i = 0; i < Nd; i++) {
         image_intensity += this->data[this->cur_img][i];
@@ -134,18 +138,16 @@ void LIFNetwork::presentData() {
     // Check state of the next cycle
     cycle_switcher++;
     if (cycle_switcher >= IMG_TIME) {
-      if (image_spikes < 5) {
+      if (exc_spikes < 5) {
         // not enough activation, present the image again with a higher intensity
         // std::cout << " - Not enough spikes, repeating image" << '\n';
         cycle_switcher = 0;
         input_intensity++;
       } else {
-        // std::cout << " - Image: " << cur_img << " intensity: " << image_intensity / 784.<< " input: " << input_spikes << " exc: " << image_spikes << '\n';
+        // std::cout << " - Image: " << cur_img << " intensity: " << image_intensity / 784.<< " input: " << input_spikes << " exc: " << exc_spikes << '\n';
         cycle_switcher = 0;
         sleepingCycle = true;
         input_intensity = 0;
-        input_spikes = 0;
-        image_spikes = 0;
       }
     }
   }
@@ -186,7 +188,7 @@ void LIFNetwork::handleSpikes(int i) {
         firings.push_back(std::make_tuple(mstime_, i, c));
       }
 
-      image_spikes++;       // count this spike for activation
+      exc_spikes++;       // count this spike for activation
       previousSpike[i] = t; // set timestamp as latest activation
     }
   } else if (i >= Ne && i < Nn) {
@@ -210,6 +212,7 @@ void LIFNetwork::handleSpikes(int i) {
         int c = int(this->labels[this->cur_img]);
         firings.push_back(std::make_tuple(mstime_, i, c));
       }
+      inh_spikes++;
       previousSpike[i] = t;
     }
   } else {
@@ -227,6 +230,7 @@ void LIFNetwork::handleSpikes(int i) {
         int c = int(this->labels[this->cur_img]);
         firings.push_back(std::make_tuple(mstime_, i, c));
       }
+      input_spikes++;
       previousSpike[i] = t;
     }
   }
@@ -412,7 +416,7 @@ int LIFNetwork::getLabelFromSpikes() {
   // store the average intensity of the image s.t. the evaluation loop can read
   // it out
   getImageAvgIntensity();
-  while (image_spikes < 5 || mstime_ < IMG_TIME) {
+  while (exc_spikes < 5 || mstime_ < IMG_TIME) {
     cycle();
     t += dt;
     mstime_++;

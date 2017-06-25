@@ -93,13 +93,13 @@ void testLIF(Network* network, bool timing) {
     if (timing) {
       auto end = std::chrono::high_resolution_clock::now();
       std::cout << " - Obtaining answer took: "
-      << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count()
-      << "ms with firings: " << network->firings.size()
-      << '\n';
-      std::cerr << network->firings.size() << ", "
-      << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count()
-      << ", " << network->lastIntensity
-      << '\n';
+                << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count()
+                << "ms with firings: " << network->input_spikes + network->exc_spikes + network->inh_spikes
+                << '\n';
+      std::cerr << network->input_spikes + network->exc_spikes + network->inh_spikes << ", "
+                << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count() << ", "
+                << network->lastIntensity << ", "
+                << '\n';
     } else {
       std::cout << '\n';
     }

@@ -81,13 +81,16 @@ void Opt1Network::reset_values() {
   for (size_t i = 0; i < N; i++) {
     previousSpike[i] = -0.1;
     refractory[i] = 0; // no neuron is has fired, so no refraction
+    firingsPerNeuron[i] = 0;
   }
 
   mstime_ = 0;
   t = 0;
   cycle_switcher = 0;
   cur_img = 0;
-  image_spikes = 0;
+  exc_spikes = 0;
+  inh_spikes = 0;
+  input_spikes = 0;
   sleepingCycle = false;
   firings.clear();
 }
@@ -130,24 +133,28 @@ void Opt1Network::presentData() {
       cur_img %= 60000; // keep going through the images
       cycle_switcher = 0;
       sleepingCycle = false;
-      image_spikes = 0;
+      exc_spikes = 0;
+      inh_spikes = 0;
+      input_spikes = 0;
+      for (size_t i = 0; i < N; i++) {
+        firingsPerNeuron[i] = 0;
+      }
     }
   } else {
     inputSpikes();
     // Check state of the next cycle
     cycle_switcher++;
     if (cycle_switcher >= IMG_TIME) {
-      if (image_spikes < 5) {
+      if (exc_spikes < 5) {
         // not enough activation, present the image again with a higher intensity
         // std::cout << " - Not enough spikes, repeating image" << '\n';
         cycle_switcher = 0;
         input_intensity++;
       } else {
-        // std::cout << " - Image: " << cur_img << " input: " << input_spikes << " exc: " << image_spikes << '\n';
+        // std::cout << " - Image: " << cur_img << " input: " << input_spikes << " exc: " << exc_spikes << '\n';
         cycle_switcher = 0;
         sleepingCycle = true;
         input_intensity = 0;
-        input_spikes = 0;
       }
     }
   }
@@ -178,11 +185,11 @@ void Opt1Network::handleExcSpikes(int i) {
     refractory[i] = 50;   // set refractory period
     if (!learning || record_training) {
       // Store spike
-      int c = int(this->labels[this->cur_img]);
-      firings.push_back(std::make_tuple(mstime_, i, c));
+      // int c = int(this->labels[this->cur_img]);
+      // firings.push_back(std::make_tuple(mstime_, i, c));
+      firingsPerNeuron[i]++;
     }
-
-    image_spikes++;       // count this spike for activation
+    exc_spikes++;       // count this spike for activation
     previousSpike[i] = t; // set timestamp as latest activation
   }
 }
@@ -203,9 +210,11 @@ void Opt1Network::handleInhSpikes(int i) {
     S[i] = v_reset_i;  // reset potential
     if (!learning || record_training) {
       // Store spike
-      int c = int(this->labels[this->cur_img]);
-      firings.push_back(std::make_tuple(mstime_, i, c));
+      // int c = int(this->labels[this->cur_img]);
+      // firings.push_back(std::make_tuple(mstime_, i, c));
+      firingsPerNeuron[i]++;
     }
+    inh_spikes++;
     previousSpike[i] = t;
   }
 }
@@ -224,9 +233,11 @@ void Opt1Network::handleInputSpikes(int i) {
     S[i] = -1;  // reset potential
     if (!learning || record_training) {
       // Store spike
-      int c = int(this->labels[this->cur_img]);
-      firings.push_back(std::make_tuple(mstime_, i, c));
+      // int c = int(this->labels[this->cur_img]);
+      // firings.push_back(std::make_tuple(mstime_, i, c));
+      firingsPerNeuron[i]++;
     }
+    input_spikes++;
     previousSpike[i] = t;
   }
 }
@@ -298,20 +309,24 @@ void Opt1Network::cycle() {
   presentData();
 
   // Add up spikes from the queue if the spike should be applied now
-#pragma omp parallel for
+  #pragma omp parallel for
   for (i = 0; i < Ne; i++) {
     processPreviousSpikes(i);
   }
+
   // Check whether a spike occurs in a neuron, and put that spike in the queue
   // at the given delay
+  #pragma omp parallel for
   for (i = 0; i < Ne; i++) {
     handleExcSpikes(i);
   }
   // Check if spikes in the exc layer have made inh neurons spike
+  #pragma omp parallel for
   for (i = Ne; i < Nn; i++) {
     handleInhSpikes(i);
   }
   // Lastly, handle the spikes created by input image
+  #pragma omp parallel for
   for (i = Nn; i < N; i++) {
     handleInputSpikes(i);
   }
@@ -412,7 +427,7 @@ int Opt1Network::getLabelFromSpikes() {
   // it out
   getImageAvgIntensity();
 
-  while (image_spikes < 5 || mstime_ < IMG_TIME) {
+  while (exc_spikes < 5 || mstime_ < IMG_TIME) {
     cycle();
     t += dt;
     mstime_++;
@@ -428,7 +443,7 @@ int Opt1Network::getLabelFromSpikes() {
       continue;
     }
     classSpikes[label][0]++;
-    classSpikes[label][1] += neuronSpikes[i];
+    classSpikes[label][1] += firingsPerNeuron[i];
   }
 
   // default answer is 11, such that not coming up with a different answer

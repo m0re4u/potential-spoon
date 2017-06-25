@@ -25,7 +25,6 @@ public:
 
   // Overall simulation variables
   unsigned cycle_switcher = 0;  // counter between sleeping input/active input
-  unsigned input_spikes = 0;    // number of spikes in the input layer during the presentation of the current image
   unsigned input_intensity = 0; // input intensity of the current image
   bool sleepingCycle = false;   // whether the input is active or sleeping
   bool plotting = false;        // output all neuron states per cycle for plotting
@@ -81,6 +80,7 @@ public:
   int neuronClass[N];
   float previousSpike[N]; // store the timestamp of the previous spike
   double spikeQueue[max_delay][Ne];
+  int firingsPerNeuron[N];
 
   /**
    * Initializes the paramters for the network. Derived from the Izhikevich
