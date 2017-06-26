@@ -709,10 +709,6 @@ void trainLIF(Network* network, bool show) {
 
 }
 void labelLIF(Network* network) {
-  std::cout << "Resetting values" << '\n';
-  network->learning = false;
-  network->reset_values();
-
   std::cout << "Labelling neurons.." << '\n';
   network->labelNeurons();
 }
@@ -732,12 +728,13 @@ void testLIF(Network* network, bool timing) {
     if (timing) {
       auto end = std::chrono::high_resolution_clock::now();
       std::cout << " - Obtaining answer took: "
-      << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count()
-      << "ms with firings: " << network->firings.size()
-      << '\n';
-      std::cerr << network->firings.size() << ", "
-      << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count()
-      << '\n';
+                << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count()
+                << "ms with firings: " << network->input_spikes + network->exc_spikes + network->inh_spikes
+                << '\n';
+      std::cerr << network->input_spikes + network->exc_spikes + network->inh_spikes << ", "
+                << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count() << ", "
+                << network->lastIntensity << ", "
+                << '\n';
     } else {
       std::cout << '\n';
     }
@@ -799,6 +796,11 @@ int main(int argc, char const *argv[]) {
     n1->showWeightExtrema();
     n1->showThetaExtrema();
   }
+
+
+  std::cout << "Resetting values" << '\n';
+  n1->learning = false;
+  n1->reset_values();
 
   if (label) {
     labelLIF(n1);
