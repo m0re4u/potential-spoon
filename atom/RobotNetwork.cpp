@@ -82,7 +82,9 @@ void RobotNetwork::reset_values() {
   t = 0;
   cycle_switcher = 0;
   cur_img = 0;
-  image_spikes = 0;
+  exc_spikes = 0;
+  inh_spikes = 0;
+  input_spikes = 0;
   sleepingCycle = false;
   firings.clear();
 }
@@ -122,9 +124,11 @@ void RobotNetwork::presentData() {
     cycle_switcher++;
     if (cycle_switcher >= SLEEP_TIME) {
       cur_img++;
+      cur_img %= 60000; // keep going through the images
       cycle_switcher = 0;
       sleepingCycle = false;
-      image_spikes = 0;
+      inh_spikes = 0;
+      input_spikes = 0;
       int image_intensity = 0;
       for (size_t i = 0; i < Nd; i++) {
         image_intensity += this->data[this->cur_img][i];
@@ -136,27 +140,27 @@ void RobotNetwork::presentData() {
     // Check state of the next cycle
     cycle_switcher++;
     if (cycle_switcher >= IMG_TIME) {
-      if (image_spikes < 5) {
+      if (exc_spikes < 5) {
         // not enough activation, present the image again with a higher intensity
         // std::cout << " - Not enough spikes, repeating image" << '\n';
         cycle_switcher = 0;
         input_intensity++;
       } else {
-        // std::cout << " - Image: " << cur_img << " intensity: " << image_intensity / 784.<< " input: " << input_spikes << " exc: " << image_spikes << '\n';
+        // std::cout << " - Image: " << cur_img << " intensity: " << image_intensity / 784.<< " input: " << input_spikes << " exc: " << exc_spikes << '\n';
         cycle_switcher = 0;
         sleepingCycle = true;
         input_intensity = 0;
-        input_spikes = 0;
-        image_spikes = 0;
       }
     }
   }
 }
 void RobotNetwork::processPreviousSpikes(int i) {
-  // Add up any delayed spikes
-  if (spikeQueue[mstime_% max_delay][i] > 0) {
-    S[i] += spikeQueue[mstime_ % max_delay][i];
-    spikeQueue[mstime_ % max_delay][i] = 0;
+  if (i < Ne) {
+    // Add up any delayed spikes
+    if (spikeQueue[mstime_% max_delay][i] > 0) {
+      S[i] += spikeQueue[mstime_ % max_delay][i];
+      spikeQueue[mstime_ % max_delay][i] = 0;
+    }
   }
 }
 
@@ -185,10 +189,10 @@ void RobotNetwork::handleSpikes(int i) {
       if (!learning || record_training) {
         // Store spike
         int c = int(this->labels[this->cur_img]);
-        firings.push_back(std::make_tuple(mstime_, i, c));
+        firings.push_back(std::make_tuple(t, i, c));
       }
 
-      image_spikes++;       // count this spike for activation
+      exc_spikes++;       // count this spike for activation
       previousSpike[i] = t; // set timestamp as latest activation
     }
   } else if (i >= Ne && i < Nn) {
@@ -210,8 +214,9 @@ void RobotNetwork::handleSpikes(int i) {
       if (!learning || record_training) {
         // Store spike
         int c = int(this->labels[this->cur_img]);
-        firings.push_back(std::make_tuple(mstime_, i, c));
+        firings.push_back(std::make_tuple(t, i, c));
       }
+      inh_spikes++;
       previousSpike[i] = t;
     }
   } else {
@@ -227,8 +232,9 @@ void RobotNetwork::handleSpikes(int i) {
       if (!learning || record_training) {
         // Store spike
         int c = int(this->labels[this->cur_img]);
-        firings.push_back(std::make_tuple(mstime_, i, c));
+        firings.push_back(std::make_tuple(t, i, c));
       }
+      input_spikes++;
       previousSpike[i] = t;
     }
   }
@@ -274,14 +280,14 @@ void RobotNetwork::decayTrace() {
 
 void RobotNetwork::decayNeurons() {
   for (size_t i = 0; i < Ne; i++) {
-    float diff = t - previousSpike[i];
-      S[i] *= exp(-taue / diff);
+    float diff;
     // Fix rounding errors
-    // if (t <= previousSpike[i]+0.000001) {
-    //   diff = 0.0001;
-    // } else {
-    //   diff = t - previousSpike[i];
-    // }
+    if (t <= previousSpike[i]+0.000001) {
+      diff = 0.0001;
+    } else {
+      diff = t - previousSpike[i];
+    }
+    S[i] *= exp(-taue / diff);
     // exc neuron
   }
 }
@@ -307,19 +313,13 @@ void RobotNetwork::cycle() {
   presentData();
 
   // Add up spikes from the queue if the spike should be applied now
-  for (size_t i = 0; i < Ne; i++) {
+  for (size_t i = 0; i < N; i++) {
     processPreviousSpikes(i);
   }
   // Check whether a spike occurs in a neuron, and put that spike in the queue
   // at the given delay
-  for (size_t i = 0; i < Ne; i++) {
-    handleSpikes(i);
-  }
-  for (size_t i = Ne; i < Nn; i++) {
-    handleSpikes(i);
-  }
-  for (size_t i = Nn; i < N; i++) {
-    handleSpikes(i);
+  for (size_t i = 0; i < N; i++) {
+      handleSpikes(i);
   }
 
   // Exponential decay on the neuron state
@@ -413,12 +413,13 @@ int RobotNetwork::getLabelFromSpikes() {
   int last_img = cur_img;
   // store the average intensity of the image s.t. the evaluation loop can read
   // it out
-  getImageAvgIntensity();
-  while (image_spikes < 5 || mstime_ < IMG_TIME) {
+  // getImageAvgIntensity();
+  while (exc_spikes < 5 || mstime_ < IMG_TIME) {
     cycle();
     t += dt;
     mstime_++;
   }
+  std::cout << "Firings: " << firings.size() << '\n';
   for (size_t i = 0; i < firings.size(); i++) {
     neuronSpikes[std::get<1>(firings[i])]++;
   }
@@ -439,7 +440,7 @@ int RobotNetwork::getLabelFromSpikes() {
   int answer = 11;
   for (size_t i = 0; i < 10; i++) {
     float avg = classSpikes[i][1] / float(classSpikes[i][0]);
-    // std::cout << "Class: " << i << " spikes:" << classSpikes[i][1] << " Neurons: " << classSpikes[i][0] << " score: " << avg << '\n';
+    std::cout << "Class: " << i << " spikes:" << classSpikes[i][1] << " Neurons: " << classSpikes[i][0] << " score: " << avg << '\n';
     if (avg > highest) {
         highest = avg;
         answer = i;
@@ -667,6 +668,16 @@ void RobotNetwork::showTraces() {
   }
 }
 
+
+void RobotNetwork::getImageAvgIntensity() {
+  int image_intensity = 0;
+  for (size_t i = 0; i < Nd; i++) {
+    image_intensity += this->data[this->cur_img][i];
+  }
+  lastIntensity = image_intensity / float(Nd);
+}
+
+
 void trainLIF(Network* network, bool show) {
   // Run simulation
   bool showWeight = true;
@@ -789,8 +800,10 @@ int main(int argc, char const *argv[]) {
     n1->showThetaExtrema();
   }
 
-  if (label || eval) {
+  if (label) {
     labelLIF(n1);
+  } else {
+    n1->loadNeuronClasses("classes.csv");
   }
 
   if (eval) {
@@ -803,12 +816,4 @@ int main(int argc, char const *argv[]) {
             << std::chrono::duration_cast<std::chrono::milliseconds>(end-begin).count()
             << "ms" << '\n';
   return 0;
-}
-
-void RobotNetwork::getImageAvgIntensity() {
-  int image_intensity = 0;
-  for (size_t i = 0; i < Nd; i++) {
-    image_intensity += this->data[this->cur_img][i];
-  }
-  lastIntensity = image_intensity / float(Nd);
 }
