@@ -136,9 +136,6 @@ void Opt1Network::presentData() {
       exc_spikes = 0;
       inh_spikes = 0;
       input_spikes = 0;
-      for (size_t i = 0; i < N; i++) {
-        firingsPerNeuron[i] = 0;
-      }
     }
   } else {
     inputSpikes();
@@ -359,10 +356,13 @@ void Opt1Network::labelNeurons() {
     if (cur_img != last_img) {
       // When we're done with this image, count the firings that occurred
       // per neuron per class
-      for (size_t i = 0; i < firings.size(); i++) {
-        classSpikes[std::get<1>(firings[i])][std::get<2>(firings[i])]++;
+      for (size_t i = 0; i < N; i++) {
+        classSpikes[i][int(labels[last_img])] += firingsPerNeuron[i];
       }
-      firings.clear();
+      for (size_t i = 0; i < N; i++) {
+        firingsPerNeuron[i] = 0;
+      }
+
       last_img = cur_img;
     }
     cycle();
@@ -434,9 +434,6 @@ int Opt1Network::getLabelFromSpikes() {
     cycle();
     t += dt;
     mstime_++;
-  }
-  for (size_t i = 0; i < firings.size(); i++) {
-    neuronSpikes[std::get<1>(firings[i])]++;
   }
 
   for (size_t i = 0; i < Ne; i++) {
